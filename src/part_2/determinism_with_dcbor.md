@@ -22,7 +22,7 @@ dCBOR identifies and avoids a common set of "foot-guns" that can lead to non-det
 
 ## Optionality
 
-In CBOR there are three common ways to represent “no value” for an otherwise‐required field:
+In CBOR there are three common ways to represent “no value” for an otherwise-required field:
 
 Representation	Example diagnostic	Possible semantic meaning
 Omitted key	{name:"Wolf"}	“We do not track this attribute.”

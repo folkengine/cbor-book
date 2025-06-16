@@ -1,13 +1,13 @@
 # The `dcbor` Command Line Tool
 
-The `dcbor` command line tool is a simple utility that allows you to encode and decode CBOR data using the `dCBOR` library. It is designed to be easy to use and provides a convenient way to work with CBOR data from the command line.
+The `dcbor` tool is an easy to use tool facilitates encoding and decoding dCBOR data from the command line or scripts.
 
-> ✅ **TIP:** This chapter assumes some familiarity with the command line, also called the _shell_. If you're not comfortable using the shell, you may want to refer to the [Command Line Basics](https://www.codecademy.com/learn/learn-the-command-line) course on Codecademy or similar resources.
+> ✅ **TIP:** This chapter assumes some familiarity with the command line, also called the _shell_. If you're not comfortable using the shell, you may want to refer to the [Command Line Basics](https://www.codecademy.com/learn/learn-the-command-line) course on CodeAcademy or similar resources.
 
 
 ## Installation
 
-To install the `dcbor` CLI tool, you need to have Rust and Cargo installed on your system. If you don't have them installed, you can follow the instructions on the [Rust website](https://www.rust-lang.org/tools/install) to get started.
+To install the `dcbor` CLI tool, you need to have Rust and `cargo` installed on your system. If you don't have them installed, you can follow the instructions on the [Rust website](https://www.rust-lang.org/tools/install) to get started.
 
 Once you have Rust and Cargo installed, you can install the `dcbor` tool by running the following command:
 
@@ -66,9 +66,21 @@ fb40091eb851eb851f
 
 ## Quoting Input
 
-For simple cases like the ones above, you don't need to do anything special with quoting the input. But in many cases you'll need to understand how the shell's use of quotes interacts with CBOR diagnostic notation.
+For simple cases like the ones above, you don't need to do anything special with quoting the input. But in many cases you'll need to understand how the shell's use of quotes interacts with CBOR diagnostic notation, because the shell and CBOR diagnostic notation both use single and double quotes for their own purposes.
 
-For example, in CBOR diagnostic notation, a string is quoted with double quotes, so for the `dcbor` tool to recognize it as a string, you need to include the double quotes in the input. But in the shell, double quotes are already used to quote the entire argument. If you naively run this command you'll get an error:
+For example, in CBOR diagnostic notation, a string is quoted with `"double quotes"`, so for the `dcbor` tool to recognize it as a string, you need to include the double quotes in the input. But in the shell, double quotes are also used to group a sequence of characters into an argument. So the following command has two arguments:
+
+```bash
+$ ls "First File" "Second File"
+```
+
+The shell `ls` command will see two arguments, *without* the quotes. The first argument is `First File`, and the second argument is `Second File`. If you passed the command without quotes, the shell would see four arguments:
+
+```bash
+$ ls First File Second File
+```
+
+So back to `dcbor`, if you naïvely run this command you'll get an error:
 
 ```bash
 $ dcbor "Hello"
@@ -77,12 +89,14 @@ Hello
 ^
 ```
 
-This is because the shell is interpreting the double quotes as something to be stripped off. To get around this, you can use single quotes to quote the entire argument:
+This is because the shell is interpreting the double quotes as its own argument grouping syntax, and strips them off, even though `dcbor` still needs them. To get around this, you can use single quotes to quote the entire argument:
 
 ```bash
 $ dcbor '"Hello"'
 6548656c6c6f
 ```
+
+The shell can use either single or double quotes to group arguments.
 
 Another option is to escape the inner double quotes with a backslash:
 
@@ -153,7 +167,7 @@ The `dcbor` tool parses a variety of data types, including the primitives define
 | Boolean             | `true`<br>`false`                                           |
 | Null                | `null`                                                      |
 | Integers            | `0`<br>`1`<br>`-1`<br>`42`                                  |
-| Floats              | `3.14`<br>`-2.5`<br>`Infinity`<br>`-Infinity`<br>`NAN`      |
+| Floats              | `3.14`<br>`-2.5`<br>`Infinity`<br>`-Infinity`<br>`NaN`      |
 | Strings             | `"hello"`<br>`"🌎"`                                          |
 | Hex Byte Strings    | `h'68656c6c6f'`                                             |
 | Base64 Byte Strings | `b64'AQIDBAUGBwgJCg=='`                                     |

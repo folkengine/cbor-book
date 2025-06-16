@@ -2,10 +2,11 @@
 
 So after all that discussion of the motivation for dCBOR, let's just recap its rules all in one place, and specifically how they differ from basic CBOR:
 
-- **Map Keys**: No duplicates. Must be serialized sorted lexicographically by the serialized key.
 - **Numeric Values**: "Preferred Serialization" isn't just preferred, it's required.
 - **Numeric Reduction**: Floating point values that can accurately be represented as integers must be serialized as integers.
-- **Indefinite Length**: Indefinite length values are not allowed.
+- **No NaNs with Payloads**: Did you even know NaN has “payloads”?
+- **Map Keys**: No duplicates. Must be serialized sorted lexicographically by the serialized key.
+- **Indefinite Lengths**: Indefinite length arrays, maps, bytestrings, and strings are not allowed.
 - **Simple Values**: Only `false`, `true`, and `null` are allowed.
 - **Strings**: Must be encoded in Unicode Normalization Form C (NFC).
 - **Decoders**: Must check all the rules above and reject any serialization that doesn't conform to them.

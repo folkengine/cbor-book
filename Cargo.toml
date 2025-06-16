@@ -2,9 +2,10 @@
 name = "cbor-book"
 version = "0.1.0"
 edition = "2024"
+license = "BSD-2-Clause-Patent"
 
 [dependencies]
-dcbor = "^0.19.0"
-bc-envelope = "^0.28.0"
+dcbor = "^0.21.0"
+bc-envelope = "^0.30.0"
 anyhow = "1.0.98"
 hex = "0.4.3"
