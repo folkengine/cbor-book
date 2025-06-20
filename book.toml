@@ -5,6 +5,10 @@ multilingual = false
 src = "src"
 title = "The CBOR, dCBOR, and Gordian Envelope Book"
 
+[output.html]
+theme = "theme"
+additional-css = ["theme/custom.css"]
+
 [output.html.playground]
 runnable = false
 

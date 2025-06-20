@@ -77,8 +77,17 @@ try {
   const actualLang = langMap[lang] || lang;
 
   const code = fs.readFileSync(0, 'utf8');
-  const html = highlighter.codeToHtml(code, { lang: actualLang, theme: darkTheme.name });
-  console.log(html);
+
+  // Generate HTML for both themes with proper CSS classes for mdbook theme switching
+  const darkHtml = highlighter.codeToHtml(code, { lang: actualLang, theme: darkTheme.name });
+  const lightHtml = highlighter.codeToHtml(code, { lang: actualLang, theme: lightTheme.name });
+
+  // Wrap each theme in appropriate CSS classes that mdbook uses for theme switching
+  const dualThemeHtml = `
+<div class="light-theme-only">${lightHtml}</div>
+<div class="dark-theme-only">${darkHtml}</div>`;
+
+  console.log(dualThemeHtml);
 } catch (error) {
   console.error(`Error during initialization: ${error.message}`);
   console.error(`Stack: ${error.stack}`);
