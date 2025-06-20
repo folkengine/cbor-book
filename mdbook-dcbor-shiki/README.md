@@ -3,20 +3,25 @@
 1. Copy assets
 
 ```bash
-cp -R path/to/vscode-dcbor-envelope/syntaxes   mdbook-dcbor-shiki/
-cp -R path/to/vscode-dcbor-envelope/themes     mdbook-dcbor-shiki/
+cp -R path/to/vscode-dcbor-envelope/syntaxes   cbor-book/
+cp -R path/to/vscode-dcbor-envelope/themes     cbor-book/
 ```
 
 2. Install the helper tools
 
 ```bash
+cd cbor-book
 npm install             # brings in Shiki
+```
+
+```bash
+cd cbor-book/mdbook-dcbor-shiki
 cargo install --path .  # builds the Rust pre‑processor
 ```
 
 3. Enable the pre‑processor
 
-In cbor‑book/book.toml add:
+In `cbor‑book/book.toml` add:
 
 ```toml
 [preprocessor.dcbor-shiki]
@@ -33,11 +38,12 @@ In cbor‑book/book.toml add:
 5. Build the book
 
 ```bash
+cd cbor-book
 mdbook build
 mdbook serve
 ```
 
-Your Envelope code now renders with the exact colors you see in VS Code (switches automatically between light & dark based on the user’s preference).
+Your CBOR and Envelope code now renders with the exact colors you see in VS Code (switches automatically between light & dark based on the user’s preference).
 
 
 
