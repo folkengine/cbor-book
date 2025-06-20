@@ -40,7 +40,7 @@ profile = {
 
 Diagnostic examples that all mean “name is unknown”:
 
-```cbor
+```dcbor
 {name:null}
 {}                            ; key omitted
 {name:""}                     ; empty string
@@ -77,7 +77,7 @@ timestamp = #6.0(tstr) / #6.1(int)
 
 Same instant, two encodings:
 
-```cbor
+```dcbor
 0("2025-05-07T10:00:00Z")
 1(1746621600)
 ```
@@ -90,7 +90,7 @@ timestamp = #6.1(int)
 
 Canonical encoding:
 
-```cbor
+```dcbor
 1(1746621600)
 ```
 
@@ -106,7 +106,7 @@ amount = #6.4([exponent:int, mantissa:int])
 
 All three mean “one hundred”:
 
-```cbor
+```dcbor
 4([2,1])    ; [2,1]
 4([1,10])   ; [1,10]
 4([0,100])  ; [0,100]
@@ -120,7 +120,7 @@ amount = #6.4([0, uint])   ; exponent always 0
 
 Canonical encoding:
 
-```cbor
+```dcbor
 4([0,100])
 ```
 
@@ -136,7 +136,7 @@ coord = {lat:float,lon:float}
 
 Equal positions:
 
-```cbor
+```dcbor
 {lat:36.0,lon:-115.0}
 [36.0,-115.0]
 ```
@@ -149,7 +149,7 @@ coord = [lat:float, lon:float]
 
 Canonical encoding:
 
-```cbor
+```dcbor
 [36.0,-115.0]
 ```
 
@@ -166,7 +166,7 @@ distance = {
 
 Two encodings for the same five‑meter length:
 
-```cbor
+```dcbor
 {meters:5.0}
 {kilometres:0.005}
 ```
@@ -179,7 +179,7 @@ distance = {meters:float}
 
 Canonical encoding:
 
-```cbor
+```dcbor
 {meters:5.0}
 ```
 
@@ -192,7 +192,7 @@ Choice of width or scaling.
 price = float          ; 19.99 could be any float width
 ```
 
-```cbor
+```dcbor
 fa4198f5c29            ; float32 19.99
 fb4033f5c28f5c29f      ; float64 19.99
 ```
@@ -205,7 +205,7 @@ price = uint           ; 19.99 USD → 1999
 
 Canonical encoding:
 
-```cbor
+```dcbor
 1999
 ```
 
@@ -220,7 +220,7 @@ duration = {seconds:uint} / {milliseconds:uint}
 
 Two encodings for three seconds:
 
-```cbor
+```dcbor
 {seconds:3}
 {milliseconds:3000}
 ```
@@ -233,7 +233,7 @@ duration = {microseconds:uint}
 
 Canonical encoding:
 
-```cbor
+```dcbor
 {microseconds:3000000}
 ```
 
@@ -248,7 +248,7 @@ blob = bytes / #6.23(tstr)      ; raw vs Base64
 
 Two encodings for the same bytes:
 
-```cbor
+```dcbor
 h'DEADBEEF'
 23(h'DEADBEEF')
 ```
@@ -261,7 +261,7 @@ blob = bytes
 
 Canonical encoding:
 
-```cbor
+```dcbor
 h'DEADBEEF'
 ```
 
@@ -274,7 +274,7 @@ Open maps that tolerate extra keys.
 config = { * tstr => any }
 ```
 
-```cbor
+```dcbor
 {version:1,foo:7}
 {version:1,bar:"x"}
 ```
@@ -292,7 +292,7 @@ config = {
 
 Only allowed encoding for version 1 and foo = 7:
 
-```cbor
+```dcbor
 {version:1,params:{foo:7}}
 ```
 

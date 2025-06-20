@@ -1,0 +1,8 @@
+{
+  "name": "dcbor-shiki-helper",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "shiki": "^1.0.0"
+  }
+}

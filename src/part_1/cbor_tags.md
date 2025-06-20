@@ -90,7 +90,7 @@ Tags can be nested. A tag can enclose another tag, which in turn encloses a data
 
 Later in the book we'll discuss Gordian Envelope. The CBOR diagnostic notation for a very simple envelope containing just a text string might look like this:
 
-```
+```cbor
 200(201("Hello, envelope!"))
 ```
 
@@ -291,9 +291,7 @@ D8 25                   # Tag(37) - uses 1+1 encoding (0xd8 0x25)
 
 Let's see how these tags combine with basic CBOR types to represent a more complex data structure. Consider this JSON object representing a hypothetical sensor reading message:
 
-**JSON:**
-
-```
+```json
 {
   "sensorID": "urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
   "captureTime": "2023-10-27T14:30:15.123Z",
@@ -309,7 +307,7 @@ Here, `sensorID` is a UUID, `captureTime` is a standard timestamp, `reading` cou
 
 **CBOR Diagnostic Notation (using tags):**
 
-```
+```cbor
 {
   "sensorID": 37(h'f81d4fae7dec11d0a76500a0c91e6bf6'),    # Tag 37 for UUID
   "captureTime": 0("2023-10-27T14:30:15.123Z"),           # Tag 0 for RFC3339 string

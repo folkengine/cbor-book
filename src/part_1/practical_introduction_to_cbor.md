@@ -174,7 +174,7 @@ Text strings use Major Type 3 and are explicitly defined as UTF-8 encoded Unicod
 
 > If you use the CBOR Playground to convert this to Diagnostic Notation, you'll get:
 
-```
+```cbor
 "\"Hello\""
 ```
 
@@ -286,9 +286,7 @@ For the most up-to-date information, refer to the [IANA CBOR Simple Values regis
 
 Now let's combine these elements into a more complex, nested structure. Consider the following JSON object:
 
-JSON
-
-```
+```json
 {
   "name": "Gadget",
   "id": 12345,
@@ -308,7 +306,7 @@ Note that the `"data"` value in JSON is base64 encoded, representing the bytes `
 
 **CBOR Diagnostic Notation:**
 
-```
+```cbor
 {
   "name": "Gadget",
   "id": 12345,

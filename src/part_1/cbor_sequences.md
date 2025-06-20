@@ -98,13 +98,13 @@ The fragility in the face of malformed items is a direct consequence of the desi
 
 The current draft for [CBOR Extended Diagnostic Notation](https://www.ietf.org/archive/id/draft-ietf-cbor-edn-literals-16.html) (EDN) proposes a way to represent CBOR Sequences in a human-readable format using `<<` and `>>` as delimiters, with the items separated by commas:
 
-```
+```cbor
 << item1, item2, item3, ... >>
 ```
 
 The sequence from the example given above would be represented as:
 
-```
+```cbor
 << 1, "foo", true >>
 ```
 
@@ -128,7 +128,7 @@ The fact that the byte string header `0x46` is included might be confusing, as i
 
 When we convert the serialized sequence back into diagnostic notation, we just get the byte string representation, as we would expect:
 
-```
+```cbor
 h'0163666F6FF5'
 ```
 

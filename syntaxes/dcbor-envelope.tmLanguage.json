@@ -1,0 +1,128 @@
+{
+  "scopeName": "source.dcbor-envelope",
+    "patterns": [
+    {
+      "name": "comment.block.inline.dcbor",
+      "match": "(?<!\\()\\/[^\\n]*?\\/(?![a-zA-Z])"
+    },
+    {
+      "name": "comment.line.number-sign.dcbor",
+      "match": "#.*$"
+    },
+    {
+      "name": "comment.line.ellipsis.dcbor",
+      "match": "\\.\\.\\.|…"
+    },
+    {
+      "name": "punctuation.square.brackets.dcbor",
+      "match": "\\[|\\]"
+    },
+    {
+      "name": "punctuation.curly.braces.dcbor",
+      "match": "\\{|\\}"
+    },
+    {
+      "name": "punctuation.parenthesis.dcbor",
+      "match": "\\(|\\)"
+    },
+    {
+      "name": "punctuation.angle.brackets.double.dcbor",
+      "match": "<<|>>"
+    },
+    {
+      "name": "punctuation.angle.brackets.guillemet.dcbor",
+      "match": "«|»"
+    },
+    {
+      "name": "punctuation.angle.brackets.floral.dcbor",
+      "match": "❰|❱"
+    },
+    {
+      "name": "punctuation.separator.dcbor",
+      "match": "[,;:]"
+    },
+    {
+      "name": "string.quoted.prefixed.dcbor",
+      "match": "[a-zA-Z]?[a-zA-Z0-9]+'(?:[^'\\\\]|\\\\.)*'"
+    },
+    {
+      "name": "string.quoted.prefixed.multiline.dcbor",
+      "begin": "[a-zA-Z]?[a-zA-Z0-9]+'",
+      "end": "'",
+      "patterns": [
+        {
+          "name": "comment.block.inline.dcbor",
+          "match": "\\/[^\\n]*?\\/"
+        },
+        {
+          "match": "\\\\.",
+          "name": "constant.character.escape.dcbor"
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.double.dcbor",
+      "match": "\"(?:[^\"\\\\]|\\\\.)*\""
+    },
+    {
+      "name": "string.quoted.single.dcbor",
+      "match": "'(?:[^'\\\\]|\\\\.)*'"
+    },
+    {
+      "name": "constant.numeric.date.dcbor",
+      "match": "\\b\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}Z?)?\\b"
+    },
+    {
+      "name": "constant.numeric.hex.dcbor",
+      "match": "\\b0[xX]([0-9a-fA-F]+)(\\.[0-9a-fA-F]+)?[pP][+-]?[0-9]+\\b"
+    },
+    {
+      "name": "constant.numeric.hex.dcbor",
+      "match": "\\b0[xX][0-9a-fA-F]+\\b"
+    },
+    {
+      "name": "constant.numeric.binary.dcbor",
+      "match": "\\b0[bB][01]+\\b"
+    },
+    {
+      "name": "constant.numeric.octal.dcbor",
+      "match": "\\b0[oO][0-7]+\\b"
+    },
+    {
+      "name": "constant.numeric.dcbor",
+      "match": "\\b[0-9]*[a-fA-F][0-9a-fA-F]*\\b"
+    },
+    {
+      "name": "constant.numeric.special.dcbor",
+      "match": "-Infinity|Infinity|NaN"
+    },
+    {
+      "name": "constant.numeric.dcbor",
+      "match": "-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?"
+    },
+    {
+      "name": "constant.language.dcbor",
+      "match": "\\b(?:true|false|null|undefined|simple)\\b"
+    },
+    {
+      "name": "constant.other.ur.dcbor",
+      "match": "(?i)ur:[a-z][a-z0-9-]*/[a-z]+"
+    },
+    {
+      "name": "constant.other.unit.dcbor",
+      "match": "\\bUnit\\b"
+    },
+    {
+      "name": "keyword.other.envcase.dcbor",
+      "match": "\\b(?:ELIDED|ENCRYPTED|COMPRESSED|NODE|WRAPPED|ASSERTION)\\b"
+    },
+    {
+      "name": "keyword.other.treebranch.dcbor",
+      "match": "\\b(?:subj|pred|obj|content)\\b"
+    },
+    {
+      "name": "identifier.bareword.dcbor",
+      "match": "\\b[A-Za-z_][A-Za-z0-9_-]*\\b"
+    }
+  ]
+}

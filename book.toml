@@ -7,3 +7,5 @@ title = "The CBOR, dCBOR, and Gordian Envelope Book"
 
 [output.html.playground]
 runnable = false
+
+[preprocessor.dcbor-shiki]
