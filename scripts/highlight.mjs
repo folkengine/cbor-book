@@ -47,15 +47,24 @@ try {
   const darkTheme = resolveThemeIncludes(darkThemeRaw, themesDir);
   const lightTheme = resolveThemeIncludes(lightThemeRaw, themesDir);
 
-  // Load custom language
-  const languagePath = path.join(projectRoot, 'syntaxes', 'dcbor-envelope.tmLanguage.json');
-  const customLanguageGrammar = JSON.parse(fs.readFileSync(languagePath, 'utf8'));
+  // Load custom languages
+  const dcborLanguagePath = path.join(projectRoot, 'syntaxes', 'dcbor-envelope.tmLanguage.json');
+  const envelopePatternLanguagePath = path.join(projectRoot, 'syntaxes', 'envelope-pattern.tmLanguage.json');
 
-  // Create the language object with proper structure
-  const customLanguage = {
+  const dcborLanguageGrammar = JSON.parse(fs.readFileSync(dcborLanguagePath, 'utf8'));
+  const envelopePatternLanguageGrammar = JSON.parse(fs.readFileSync(envelopePatternLanguagePath, 'utf8'));
+
+  // Create the language objects with proper structure
+  const dcborLanguage = {
     name: 'dcbor-envelope',
-    scopeName: customLanguageGrammar.scopeName,
-    ...customLanguageGrammar
+    scopeName: dcborLanguageGrammar.scopeName,
+    ...dcborLanguageGrammar
+  };
+
+  const envelopePatternLanguage = {
+    name: 'envelope-pattern',
+    scopeName: envelopePatternLanguageGrammar.scopeName,
+    ...envelopePatternLanguageGrammar
   };
 
   const highlighter = await createHighlighter({
@@ -63,7 +72,8 @@ try {
     langs: [
       'javascript',
       'json',
-      customLanguage
+      dcborLanguage,
+      envelopePatternLanguage
     ]
   });
 
@@ -71,7 +81,8 @@ try {
   const langMap = {
     'envelope': 'dcbor-envelope',
     'dcbor': 'dcbor-envelope',
-    'cbor': 'dcbor-envelope'
+    'cbor': 'dcbor-envelope',
+    'envpat': 'Envelope Pattern'
   };
 
   const actualLang = langMap[lang] || lang;
