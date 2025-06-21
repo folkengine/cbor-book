@@ -10,7 +10,7 @@
   background-color: rgba(36, 171, 56, 0.1);
 }
 :is(.admonish-work-in-progress) > :is(.admonition-title, summary.admonition-title)::before {
-  background-color: #24ab38;
+  background-color: #d0da14;
   mask-image: var(--md-admonition-icon--admonish-work-in-progress);
   -webkit-mask-image: var(--md-admonition-icon--admonish-work-in-progress);
   mask-repeat: no-repeat;

@@ -18,7 +18,7 @@ on_failure = "bail"
 [[preprocessor.admonish.custom]]
 directive = "work-in-progress"
 icon = "./theme/wip.svg"
-color = "#24ab38"
+color = "#d0da14"
 aliases = ["wip"]
 
 [preprocessor.pagetoc]
