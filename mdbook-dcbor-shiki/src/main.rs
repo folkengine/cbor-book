@@ -37,7 +37,7 @@ fn highlight_chapter(md: &str) -> StdResult<String> {
         out.push_str(&md[last..m.start()]);
         let lang = &cap[1];
         let code = &cap[2];
-        if matches!(lang, "envelope" | "dcbor" | "cbor") {
+        if matches!(lang, "envelope" | "dcbor" | "cbor" | "envpat") {
             out.push_str(&shiki_html(code, lang)?);
         } else {
             out.push_str(m.as_str());

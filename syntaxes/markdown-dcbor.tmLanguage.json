@@ -10,6 +10,9 @@
     },
     {
       "include": "#markdown-cbor-code-block"
+    },
+    {
+      "include": "#markdown-envpat-code-block"
     }
   ],
   "repository": {
@@ -43,6 +46,17 @@
       "patterns": [
         {
           "include": "source.dcbor-envelope"
+        }
+      ]
+    },
+    "markdown-envpat-code-block": {
+      "name": "meta.embedded.block.envpat",
+      "begin": "(?<=[`~])\\s*(envpat)\\s*$",
+      "end": "(^|\\G)\\s*[`~]{3,}\\s*$",
+      "contentName": "source.envelope-pattern",
+      "patterns": [
+        {
+          "include": "source.envelope-pattern"
         }
       ]
     }

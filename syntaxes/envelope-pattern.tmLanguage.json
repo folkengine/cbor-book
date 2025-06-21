@@ -1,0 +1,78 @@
+{
+  "scopeName": "source.envelope-pattern",
+  "name": "Envelope Pattern",
+  "patterns": [
+    {
+      "include": "#envelope-keywords"
+    },
+    {
+      "include": "#envelope-annotations"
+    },
+    {
+      "include": "#envelope-operators"
+    },
+    {
+      "include": "#parenthesized-with-regex"
+    },
+    {
+      "include": "source.dcbor-envelope"
+    }
+  ],
+  "repository": {
+    "envelope-keywords": {
+      "patterns": [
+        {
+          "comment": "Envelope pattern keywords",
+          "match": "\\b(?:LEAF|ARRAY|BOOL|BSTR|CBOR|DATE|KNOWN|MAP|NUMBER|TAG|TEXT|ASSERT|ASSERTPRED|ASSERTOBJ|DIGEST|NODE|OBJ|OBSCURED|ELIDED|ENCRYPTED|COMPRESSED|PRED|SUBJECT|WRAPPED|UNWRAP|ANY|NONE|SEARCH|NULL|TEST)\\b",
+          "name": "keyword.other.envelope-pattern"
+        }
+      ]
+    },
+    "envelope-annotations": {
+      "patterns": [
+        {
+          "comment": "Named captures (annotations) starting with @",
+          "match": "(@)([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": {"name": "punctuation.definition.annotation.envelope-pattern"},
+            "2": {"name": "variable.annotation.envelope-pattern"}
+          }
+        }
+      ]
+    },
+    "envelope-operators": {
+      "patterns": [
+        {
+          "comment": "Envelope pattern operators",
+          "match": "[&|!*?+>]|<=|>=|<",
+          "name": "keyword.operator.envelope-pattern"
+        }
+      ]
+    },
+    "parenthesized-with-regex": {
+      "patterns": [
+        {
+          "comment": "Parenthesized expressions with regex support",
+          "begin": "\\(",
+          "end": "\\)",
+          "beginCaptures": {
+            "0": {"name": "punctuation.parenthesis.begin.envelope-pattern"}
+          },
+          "endCaptures": {
+            "0": {"name": "punctuation.parenthesis.end.envelope-pattern"}
+          },
+          "patterns": [
+            {
+              "comment": "Regex patterns with optional flags inside parentheses",
+              "match": "/([^/\\\\\\n]|\\\\.)+/[gimsuxy]*",
+              "name": "string.regexp.envelope-pattern"
+            },
+            {
+              "include": "$self"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

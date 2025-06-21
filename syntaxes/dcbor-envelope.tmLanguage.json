@@ -10,7 +10,7 @@
       "match": "#.*$"
     },
     {
-      "name": "comment.line.ellipsis.dcbor",
+      "name": "keyword.operator.ellipsis.dcbor",
       "match": "\\.\\.\\.|…"
     },
     {

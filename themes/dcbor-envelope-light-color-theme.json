@@ -4,7 +4,6 @@
     "type": "light",
     "colors": {},
     "tokenColors": [
-        // Standard language scopes for JSON, C, and others
         {
             "scope": [
                 "string.quoted.double",
@@ -75,7 +74,6 @@
                 "foreground": "#0000FF"
             }
         },
-        // Your custom scopes for dcbor-envelope
         {
             "scope": [
                 "string.quoted.double.dcbor",
@@ -97,6 +95,39 @@
             "scope": "string.quoted.prefixed.dcbor, string.quoted.prefixed.multiline.dcbor, entity.name.tag.dcbor",
             "settings": {
                 "foreground": "#0D7D65"
+            }
+        },
+        {
+            "scope": [
+                "string.regexp",
+                "string.regexp.envelope-pattern"
+            ],
+            "settings": {
+                "foreground": "#b83838"
+            }
+        },
+        {
+            "scope": [
+                "keyword.operator.envelope-pattern",
+                "keyword.operator.ellipsis.dcbor"
+            ],
+            "settings": {
+                "foreground": "#529815"
+            }
+        },
+        {
+            "scope": [
+                "variable.annotation.envelope-pattern",
+                "punctuation.definition.annotation.envelope-pattern"
+            ],
+            "settings": {
+                "foreground": "#c051a2"
+            }
+        },
+        {
+            "scope": "keyword.other.envelope-pattern",
+            "settings": {
+                "foreground": "#1661e1"
             }
         },
         {
@@ -210,8 +241,7 @@
         {
             "scope": [
                 "comment.line.number-sign.dcbor",
-                "comment.block.inline.dcbor",
-                "comment.line.ellipsis.dcbor"
+                "comment.block.inline.dcbor"
             ],
             "settings": {
                 "foreground": "#979696"
