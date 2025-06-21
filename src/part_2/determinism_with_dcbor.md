@@ -1,9 +1,12 @@
 # Determinism with dCBOR
 
-> 🚧 **Work in Progress:** _This chapter is not yet ready for review!_
+```admonish wip "Work in Progress"
+_This chapter is not yet ready for review!_
+```
 
-> "Be conservative in what you send, be liberal in what you accept."\
-> — Postel's Law
+```admonish quote "Postel's Law"
+"Be conservative in what you send, be liberal in what you accept."
+```
 
 John Postel was one of the architects of the early Internet, and his "law" also known as _The Robustness Principle_, suggests that when designing protocols or systems, you should be strict about the data you produce (i.e., follow the specifications closely) but lenient about the data you accept (i.e., be forgiving of minor deviations from the specifications).
 
@@ -298,4 +301,6 @@ Only allowed encoding for version 1 and foo = 7:
 {version:1,params:{foo:7}}
 ```
 
-> 🚧 **Work in Progress:** _More in this chapter and more chapters forthcoming!_
+```admonish wip "Work in Progress"
+_More in this chapter and more chapters forthcoming!_
+```

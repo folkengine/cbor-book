@@ -12,14 +12,13 @@ copyright_year = "2025"
 
 [preprocessor.admonish]
 command = "mdbook-admonish"
-assets_version = "3.0.3" # do not edit: managed by `mdbook-admonish install`
+assets_version = "3.0.3"    # do not edit: managed by `mdbook-admonish install`
 on_failure = "bail"
 
 [[preprocessor.admonish.custom]]
-directive = "work-in-progress"
+directive = "wip"
 icon = "./theme/wip.svg"
 color = "#d0da14"
-aliases = ["wip"]
 
 [preprocessor.pagetoc]
 
@@ -29,13 +28,18 @@ aliases = ["wip"]
 
 [output.html]
 theme = "theme"
-additional-css = ["theme/mdbook-admonish.css", "theme/pagetoc.css", "theme/custom.css"]
-additional-js  = ["theme/pagetoc.js"]
+additional-css = [
+    "theme/mdbook-admonish.css",
+    "theme/mdbook-admonish-custom.css",
+    "theme/pagetoc.css",
+    "theme/custom.css",
+]
+additional-js = ["theme/pagetoc.js"]
 
 [output.html.fold]
-enable = true   # activates collapsible sections
-level  = 0      # 0 = everything starts closed,
-                # 1 = top-level open, deeper levels closed, etc.
+enable = true # activates collapsible sections
+level = 0     # 0 = everything starts closed,
+# 1 = top-level open, deeper levels closed, etc.
 
 [output.linkcheck]
 
