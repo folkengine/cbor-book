@@ -31,8 +31,8 @@ fi
 
 # Build the book from scratch
 echo "📖 Building mdBook..."
-rm -rf book
-mdbook build
+find "$DEPLOY_DIR" -mindepth 1 -not -name '.git' -exec rm -rf {} +
+mdbook build -d "$DEPLOY_DIR"
 
 # If worktree already exists, remove it safely
 if git worktree list | grep -q "$DEPLOY_DIR"; then
@@ -44,9 +44,6 @@ fi
 echo "🌿 Creating worktree for gh-pages..."
 git worktree add -B gh-pages "$DEPLOY_DIR" origin/gh-pages
 
-# Copy contents into the worktree
-echo "📦 Copying book output to gh-pages branch..."
-rsync -a --delete --exclude='.git' --exclude='.gitignore' book/ "$DEPLOY_DIR/"
 touch "$DEPLOY_DIR/.nojekyll"
 
 echo "🔖 Adding CNAME file to preserve custom domain..."
