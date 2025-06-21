@@ -5,11 +5,33 @@ multilingual = false
 src = "src"
 title = "The CBOR, dCBOR, and Gordian Envelope Book"
 
+[preprocessor.variables.variables]
+copyright_year = "2025"
+
+[preprocessor.embed]
+
+[preprocessor.admonish]
+command = "mdbook-admonish"
+assets_version = "3.0.3" # do not edit: managed by `mdbook-admonish install`
+on_failure = "bail"
+
+[preprocessor.pagetoc]
+
+[preprocessor.dcbor-shiki]
+
+[output]
+
 [output.html]
 theme = "theme"
-additional-css = ["theme/custom.css"]
+additional-css = ["./mdbook-admonish.css", "theme/pagetoc.css", "theme/custom.css"]
+additional-js  = ["theme/pagetoc.js"]
+
+[output.html.fold]
+enable = true   # activates collapsible sections
+level  = 0      # 0 = everything starts closed,
+                # 1 = top-level open, deeper levels closed, etc.
+
+[output.linkcheck]
 
 [output.html.playground]
 runnable = false
-
-[preprocessor.dcbor-shiki]
