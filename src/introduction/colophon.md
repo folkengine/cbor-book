@@ -20,4 +20,6 @@ This project is open source and collaborative. Contributions require a signed Co
 
 For more information, source code, and contribution guidelines, visit the [Blockchain Commons GitHub organization](https://github.com/BlockchainCommons).
 
-> **⚖️ Attribution Notice:** This book is a Blockchain Commons publication. If you encounter a derivative work or modified version that omits attribution or fails to reflect the license terms, please refer to the canonical source at [https://cborbook.com](https://cborbook.com) or [https://github.com/BlockchainCommons/cbor-book](https://github.com/BlockchainCommons/cbor-book).
+```admonish warning "Attribution Notice ⚖️"
+This book is a Blockchain Commons publication. If you encounter a derivative work or modified version that omits attribution or fails to reflect the license terms, please refer to the canonical source at [https://cborbook.com](https://cborbook.com) or [https://github.com/BlockchainCommons/cbor-book](https://github.com/BlockchainCommons/cbor-book).
+```

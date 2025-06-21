@@ -6,7 +6,9 @@ In the previous chapter, we explored the diverse landscape of binary serializati
 
 Having understood _why_ CBOR exists and how it relates to other formats, we now shift our focus to _how_ it works. This chapter provides a practical introduction to the core mechanics of CBOR encoding. The goal is not to replicate the exhaustive detail of RFC 8949, but rather to quickly equip engineers with a solid working understanding of how fundamental data types are represented in CBOR.
 
-> **⚠️ NOTE:** Wherever this book may conflict with RFC 8949, the RFC is authoritative. This book is intended to be a practical guide, not a definitive reference. We will also use the term "CBOR" interchangeably to refer to both the encoding and the data model, unless otherwise specified.
+```admonish note
+Wherever this book may conflict with RFC 8949, the RFC is authoritative. This book is intended to be a practical guide, not a definitive reference. We will also use the term "CBOR" interchangeably to refer to both the encoding and the data model, unless otherwise specified.
+```
 
 We will progressively build up understanding by examining common data structures, comparing their representation in:
 
@@ -16,7 +18,9 @@ We will progressively build up understanding by examining common data structures
 
 We will focus on the most common, definite-length encodings and the concept of "preferred serialization" – using the shortest possible form where choices exist. Advanced topics such as semantic tags (Major Type 6), indefinite-length encoding, full deterministic encoding rules (beyond preferred serialization), schema definition with CDDL, and CBOR sequences will be introduced in later chapters. By the end of this chapter, you should be able to look at simple CBOR byte sequences and understand the data they represent.
 
-> **✅ TIP:** The [CBOR Playground](https://cbor.me/) is an excellent tool if you would like to follow along with the examples, converting CBOR Diagnostic Notation to binary and back.
+```admonish tip
+The [CBOR Playground](https://cbor.me/) is an excellent tool if you would like to follow along with the examples, converting CBOR Diagnostic Notation to binary and back.
+```
 
 ## The Core Encoding: Major Types and Additional Information
 
@@ -165,20 +169,21 @@ Text strings use Major Type 3 and are explicitly defined as UTF-8 encoded Unicod
 | `"ü"`    | `"ü"`            | `62 c3bc`           | 3  | 2  | Length 2 bytes; `c3 bc` is UTF-8 for `'ü'`                         |
 | `"你好"` | `"你好"`         | `66 e4bda0e5a5bd`   | 3  | 6  | Length 6 bytes; `e4 bd a0 e5 a5 bd` is UTF-8 for `'你好'`           |
 
-> **⚠️ NOTE:** that CBOR does not perform string escaping like JSON does (e.g., for quotes or backslashes). Since the length is provided upfront, the decoder knows exactly how many bytes constitute the string content. So the string `"Hello"`, *including* the quotes is seven bytes long, and the CBOR encoding would be eight bytes:
+````admonish tip
+CBOR does not perform string escaping like JSON does (e.g., for quotes or backslashes). Since the length is provided upfront, the decoder knows exactly how many bytes constitute the string content. So the string `"Hello"`, *including* the quotes is seven bytes long, and the CBOR encoding would be eight bytes:
 
 ```
 67               # Text(7 bytes)
   2248656C6C6F22 # "Hello"
 ```
 
-> If you use the CBOR Playground to convert this to Diagnostic Notation, you'll get:
+If you use the CBOR Playground to convert this to Diagnostic Notation, you'll get:
 
 ```cbor
 "\"Hello\""
 ```
-
-> So backslash escapes are part of CBOR Diagnostic Notation, but *not* part of the CBOR encoding itself.
+The backslash escapes you see are part of CBOR Diagnostic Notation, but *not* part of the CBOR encoding itself.
+````
 
 ## Collections: Arrays and Maps
 
@@ -218,7 +223,9 @@ CBOR maps use Major Type 5. The Additional Information (AI) specifies the number
 | `{"a": 1, "b": 2}` | `{"a": 1, "b": 2}`     | `a2 61 61 01 61 62 02`         | 5  | 2  | 2 pairs: `"a"`→`1`, `"b"`→`2`; encoded in sequence                    |
 | _no equivalent_    | `{1: "one", 2: "two"}` | `a2 01 63 6f6e65 02 63 74776f` | 5  | 2  | 2 pairs: `1`→`"one"`, `2`→`"two"`; strings encoded as `63` (length 3) |
 
-> **⚠️ NOTE:** Although map keys have to be serialized in *some* order, CBOR maps are considered *orderless*. This means that CBOR encoders will typically not treat the order of pairs as significant, and neither should you. Similarly, nothing in the CBOR specification requires that map keys be *unique*. Theoretically you could have multiple pairs with the same key, but many implementations will simply choose to keep one of the pairs and throw away the other. You should therefore never rely on the behavior of particular implementations regarding the order of keys or duplicate keys. Deterministic encoding profiles we'll discuss later in this book will address these ambiguities.
+```admonish note
+Although map keys have to be serialized in *some* order, CBOR maps are considered *orderless*. This means that CBOR encoders will typically not treat the order of pairs as significant, and neither should you. Similarly, nothing in the CBOR specification requires that map keys be *unique*. Theoretically you could have multiple pairs with the same key, but many implementations will simply choose to keep one of the pairs and throw away the other. You should therefore never rely on the behavior of particular implementations regarding the order of keys or duplicate keys. Deterministic encoding profiles we'll discuss later in this book address these ambiguities.
+```
 
 ## Floating-Point and Other Simple Values (Major Type 7)
 

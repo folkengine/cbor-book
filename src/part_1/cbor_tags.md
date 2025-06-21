@@ -18,7 +18,9 @@ This chapter delves into CBOR Tags (Major Type 6). We will explore:
 
 By the end of this chapter, you will understand how to use and interpret CBOR tags, unlocking a powerful feature for representing complex and meaningful data structures efficiently.
 
-> **⚠️ NOTE:** As before, this chapter aims for practical understanding. For definitive details, always refer to the official specification,([https://datatracker.ietf.org/doc/html/rfc8949](https://datatracker.ietf.org/doc/html/rfc8949)), and the IANA registries it defines.
+```admonish info
+As before, this chapter aims for practical understanding. For definitive details, always refer to the official specification,([https://datatracker.ietf.org/doc/html/rfc8949](https://datatracker.ietf.org/doc/html/rfc8949)), and the IANA registries it defines.
+```
 
 ## Tagging Mechanism (Major Type 6)
 
@@ -61,7 +63,9 @@ Immediately following the initial byte(s) that encode the tag number comes the c
 
 **CBOR Diagnostic Notation:** `2(h'0102')`
 
-> **⚠️ NOTE:** If you put this diagnostic notation into the [CBOR playground](https://cbor.me/), convert it to its hexadecimal representation and back, you will get the value `258`! This is because the playground understands that byte strings tagged with **Tag 2** (unsigned bignum) are interpreted as a single integer value. In this case, the first byte `0x01` is the most significant byte, and the second byte `0x02` is the least significant byte, leading to the calculation: `(1 * 256 + 2) = 258`. This is the playground enforcing *preferred serialization* of numbers, which is a feature of the playground, not a requirement of CBOR itself.
+```admonish info
+If you put this diagnostic notation into the [CBOR playground](https://cbor.me/), convert it to its hexadecimal representation and back, you will get the value `258`! This is because the playground understands that byte strings tagged with **Tag 2** (unsigned bignum) are interpreted as a single integer value. In this case, the first byte `0x01` is the most significant byte, and the second byte `0x02` is the least significant byte, leading to the calculation: `(1 * 256 + 2) = 258`. This is the playground enforcing *preferred serialization* of numbers, which is a feature of the playground, not a requirement of CBOR itself.
+```
 
 ### Purpose of Tags
 
@@ -148,11 +152,15 @@ The existence of different registration ranges has direct practical consequences
     - **Specification Required (24-32767):** Provides good interoperability _within the community that uses the defining specification_. Consumers outside this community may not recognize the tag without consulting the specification. Ideal for domain-specific standards (e.g., security tokens, IoT protocols).
     - **FCFS (32768+):** Offers the lowest _inherent_ interoperability guarantee. Use primarily for private or application-specific data types where producers and consumers are tightly coupled or have explicitly agreed on the tag's meaning. Relying on FCFS tags for broad, unspecified interoperability is risky.
 
-> **⚠️ NOTE:** **The Danger of "Squatting"** Never use an _unregistered_ tag number from the Standards Action (0-23) or Specification Required (24-32767) ranges for your own private or experimental purposes. This practice, sometimes called "tag squatting," inevitably leads to collisions when IANA officially assigns that number for a different purpose. It breaks interoperability and creates significant problems down the line. Use the FCFS range for experimentation or application-specific needs.
+```admonish warning "The Danger of “Squatting”"
+Never use an _unregistered_ tag number from the Standards Action (0-23) or Specification Required (24-32767) ranges for your own private or experimental purposes. This practice, sometimes called "tag squatting," inevitably leads to collisions when IANA officially assigns that number for a different purpose. It breaks interoperability and creates significant problems down the line. Use the FCFS range for experimentation or application-specific needs.
+```
 
 ## How to Register your own FCFS Tags
 
-> **✅ TIP:** There is no charge to register a new tag.
+```admonish tip
+There is no charge to register a new tag.
+```
 
 1. Check the [IANA CBOR Tags Registry](https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml) to ensure that there isn't already an existing tag that does what you want. If you find one, use that instead of creating a new one.
 2. Write your specification. This should be a stable, publicly accessible document that defines the tag's semantics, expected data item format, and intended use. It can be as simple as a [GitHub Gist](https://gist.github.com/), but it should be clear, unambiguous, and have a stable URL.
@@ -208,7 +216,9 @@ The [Internet Draft on Notable Tags](https://datatracker.ietf.org/doc/draft-borm
 - **Implementation Aids**
     Tags intended to assist with implementation, such as invalid tags and programming aids for simple values.
 
-> **✅ TIP:** While the IANA registry is the definitive source, the "Notable CBOR Tags" draft provides valuable context and summaries for many practical tags.
+```admonish tip
+While the IANA registry is the definitive source, the "Notable CBOR Tags" draft provides valuable context and summaries for many practical tags.
+```
 
 ## A Few Commonly Used Tags
 
@@ -247,7 +257,9 @@ C1                     # tag(1)
    FB 41D94EF25DC7DF3B # 1698417015.123
 ```
 
-> **✅ TIP:** The choice between integer and float depends on the need for sub-second precision. More advanced time tags exist (e.g., Tag 1001) offering higher precision and timescale information, but Tag 1 remains the basic epoch representation.
+```admonish tip
+The choice between integer and float depends on the need for sub-second precision. More advanced time tags exist (e.g., Tag 1001) offering higher precision and timescale information, but Tag 1 remains the basic epoch representation.
+```
 
 ### Tag 2 and 3: Bignums
 

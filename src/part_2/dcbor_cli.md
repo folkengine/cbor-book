@@ -2,8 +2,9 @@
 
 The `dcbor` tool is an easy to use tool facilitates encoding and decoding dCBOR data from the command line or scripts.
 
-> ✅ **TIP:** This chapter assumes some familiarity with the command line, also called the _shell_. If you're not comfortable using the shell, you may want to refer to the [Command Line Basics](https://www.codecademy.com/learn/learn-the-command-line) course on CodeAcademy or similar resources.
-
+```admonish tip
+This chapter assumes some familiarity with the command line, also called the _shell_. If you're not comfortable using the shell, you may want to refer to the [Command Line Basics](https://www.codecademy.com/learn/learn-the-command-line) course on CodeAcademy or similar resources.
+```
 
 ## Installation
 
@@ -153,10 +154,13 @@ $ dcbor -i hex -o diag 826548656c6c6f65576f726c64
 ["Hello", "World"]
 ```
 
-> ✅ **TIP:** The `-i` and `-o` flags are short for `--in` and `--out`, respectively. You can use the full names if you prefer, but the short names are more convenient for quick commands.
+```admonish tip
+The `-i` and `-o` flags are short for `--in` and `--out`, respectively. You can use the full names if you prefer, but the short names are more convenient for quick commands.
+```
 
-> ⚠️ **WARNING:** CBOR diagnostic notation looks a lot like JSON, but as its name suggests, it is for use during development and debugging, while CBOR is the actual binary encoding format. Diagnostic notation is not optimized for size or speed, and may not be perfectly compatible across implementations. So don't use diagnostic notation in production code.
-
+```admonish warning
+CBOR diagnostic notation looks a lot like JSON, but as its name suggests, it is for use during development and debugging, while CBOR is the actual binary encoding format. Diagnostic notation is not optimized for size or speed, and may not be perfectly compatible across implementations. So don't use diagnostic notation in production code.
+```
 
 ## Supported Data Types
 

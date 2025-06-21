@@ -53,7 +53,9 @@ In the following example we use `try_from` to convert from CBOR to both a `u8` t
 {{#rustdoc_include ../../tests/using_dcbor.rs:test_3}}
 ```
 
-> **✅ NOTE:** Observe the call to `clone()` above, which we need because the `try_from` method consumes the `CBOR` value, and we still need an instance for the second `try_from` call. Instances of `CBOR` are immutable, and the `dcbor` library implements structure sharing, so cloning is always cheap.
+```admonish note
+Observe the call to `clone()` above, which we need because the `try_from` method consumes the `CBOR` value, and we still need an instance for the second `try_from` call. Instances of `CBOR` are immutable, and the `dcbor` library implements structure sharing, so cloning is always cheap.
+```
 
 Below we encode a floating point value with a non-zero fractional part, which succeeds in being decoded back to floating point but fails to decode back to an integer, because precision would be lost:
 
@@ -111,7 +113,9 @@ Rust has no `null` value, so the `dcbor` library provides a `CBOR::null()` metho
 
 And since all three elements of the array are being converted directly into CBOR, there is no problem constructing the heterogeneous array.
 
-> **✅ NOTE:** Of course, dCBOR doesn't support CBOR `undefined` or any of the other simple values, so the `dcbor` API doesn't have ways to let you construct them.
+```admonish note
+Of course, dCBOR doesn't support CBOR `undefined` or any of the other simple values, so the `dcbor` API doesn't have ways to let you construct them.
+```
 
 ## Extracting from a Heterogeneous Array
 

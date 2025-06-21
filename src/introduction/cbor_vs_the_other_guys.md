@@ -184,7 +184,9 @@ The following table summarizes the key distinctions between these formats:
 | **Standardization**     | IETF RFC 8949                                  | De facto (MongoDB)               | De facto (Google)                  | Community Spec                            | Apache Project                           |
 | **Primary Use Cases**   | IoT, CoAP, COSE, Security, Deterministic Needs | MongoDB                          | RPC, Microservices, Internal Comms | Network Comms, Caching, RPC               | Big Data (Hadoop, Kafka), Data Pipelines |
 
-_Note: Size and speed comparisons are general tendencies; actual performance depends heavily on data structure, implementation quality, and specific workload._
+```admonish info
+Size and speed comparisons are general tendencies; actual performance depends heavily on data structure, implementation quality, and specific workload.
+```
 
 This comparison highlights the complex trade-offs between formats. Protocol Buffers excels when validation, compactness, and RPC performance are critical in environments where schema management is feasible. Avro offers superior schema evolution capabilities for large-scale data pipelines, despite requiring schema distribution mechanisms. BSON serves specialized needs within the MongoDB ecosystem. MessagePack provides an efficient binary alternative to JSON for network communication, though with potential streaming limitations. CBOR stands out when IETF standardization, constrained device support, binary-efficient JSON encoding, standardized extensibility, or deterministic encoding are priorities.
 

@@ -392,7 +392,9 @@ coordinate = [ float ] .size 2  ; Array must have exactly 2 floats
 simple-map = { * tstr => any } .size (1..5) ; Map with 1 to 5 pairs
 ```
 
-> **⚠️ NOTE**: The whitespace before "dot operator" is significant. If you get errors, check for missing whitespace.
+```admonish tip
+The whitespace before "dot operator" is significant. If you get errors, check for missing whitespace.
+```
 
 - `.regexp tstr`: Validates that a `tstr` matches a given regular expression pattern (syntax follows XML Schema Definition Language (XSD) style regular expressions, as per [XSD Appendix F](https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#regexs)).
 
@@ -417,7 +419,9 @@ timestamp = uint
 
 These operators allow schema authors to declaratively state constraints without needing to specify the validation logic itself. CDDL tools interpret these declarations to perform the checks.  
 
-> **✅ TIP:** dCBOR, which we will discuss later in this book, also defines two additional operators, `.dcbor` and `.dcborseq`, which are exactly like `.cbor` and `.cborseq` except that they also require the encoded data item(s) be valid dCBOR.
+```admonish tip
+dCBOR, which we will discuss later in this book, also defines two additional operators, `.dcbor` and `.dcborseq`, which are exactly like `.cbor` and `.cborseq` except that they also require the encoded data item(s) be valid dCBOR.
+```
 
 The following table summarizes the most frequently used operators for controlling structure and content:
 

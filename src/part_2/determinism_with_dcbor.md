@@ -18,7 +18,9 @@ Well, not really. Determinism as a goal is not a simple problem, and no semantic
 
 dCBOR identifies and avoids a common set of "foot-guns" that can lead to non-deterministic encodings, so by adopting it you gain those benefits. But when determinism is a goal, you also have to design your data structures with determinism in mind, which is why we visit this topic several times in this book.
 
-> ✅ **Note:** _Not everyone needs determinism._ You might adopt CBOR or even the `dCBOR` library for other reasons, including its support for Gordian Envelope, which we'll discuss in Part III. Envelope has its own ways of supporting determinism, and its own set of best practices for achieving it.
+```admonish note "Not everyone needs determinism."
+You might adopt CBOR or even the `dCBOR` library for other reasons, including its support for Gordian Envelope, which we'll discuss in Part III. Envelope has its own ways of supporting determinism, and its own set of best practices for achieving it.
+```
 
 ## Optionality
 

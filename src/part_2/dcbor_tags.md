@@ -28,7 +28,9 @@ We can extract the tag and the tagged value using `try_into_tagged_value()`. The
 
 The reason you have to call `value()` on the returned `Tag` to get back the numeric value is that a `Tag` may also include a human-readable name you can define for your tag. We'll discuss naming tags later in this chapter.
 
-> ✅ **NOTE:** A _tagged value_ is the combination of a tag and the value (data item) it tags. But the _value of the tag_ is the integer that identifies the tag.
+```admonish note
+A _tagged value_ is the combination of a tag and the value (data item) it tags. But the _value of the tag_ is the integer that identifies the tag.
+```
 
 If we print the diagnostic notation of our tagged value, we can see the tag in the output:
 
@@ -52,7 +54,9 @@ Let's define a new type called `DecimalFraction` that holds an integer mantissa 
 {{#rustdoc_include ../decimal_fraction.rs:example_6}}
 ```
 
-> ✅ **NOTE:** We're not showing a lot of the typical boilerplate code here, like the `impl`s for `Debug`, `Clone`, `Display`, and things like `new()` methods. You can find the complete code in the repo for this book.
+```admonish note
+We're not showing a lot of the typical boilerplate code here, like the `impl`s for `Debug`, `Clone`, `Display`, and things like `new()` methods. You can find the complete code in the repo for this book.
+```
 
 It turns out that [RFC8949 §3.4.4](https://www.rfc-editor.org/rfc/rfc8949.html#name-decimal-fractions-and-bigfl) already defines a CBOR schema for decimal fractions, so we can use that: it's just a two-element array with the exponent first and the mantissa second. It also reserves the tag `4` for decimal fractions, so we can use that as our tag.
 
@@ -157,7 +161,7 @@ Here's the same example as before, but calling `register_tags()` at the start of
 {{#rustdoc_include ../../tests/dcbor_tags.rs:example_18}}
 ```
 
-## A Note About the `Debug` and `Display` implementations on `CBOR`
+## The `Debug` and `Display` implementations on `CBOR`
 
 You've been learning about calls like `CBOR::diagnostic_annotated()` and `CBOR::hex_annotated()`, which are used to print the CBOR data in a human-readable format, and `CBOR::to_cbor_data()`, which returns the raw CBOR data as a `Vec<u8>`.
 
