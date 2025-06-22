@@ -227,7 +227,7 @@
             }
         },
         {
-            "scope": "constant.other.ur.dcbor",
+            "scope": "constant.other.uri.dcbor",
             "settings": {
                 "foreground": "#3D724C"
             }

@@ -38,6 +38,10 @@
       "match": "❰|❱"
     },
     {
+      "name": "constant.other.uri.dcbor",
+      "match": "\\b[a-zA-Z][a-zA-Z0-9+.-]*:[^\\s\\[\\]{}()<>\"',;]*"
+    },
+    {
       "name": "punctuation.separator.dcbor",
       "match": "[,;:]"
     },
@@ -103,10 +107,6 @@
     {
       "name": "constant.language.dcbor",
       "match": "\\b(?:true|false|null|undefined|simple)\\b"
-    },
-    {
-      "name": "constant.other.ur.dcbor",
-      "match": "(?i)ur:[a-z][a-z0-9-]*/[a-z]+"
     },
     {
       "name": "constant.other.unit.dcbor",
