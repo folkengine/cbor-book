@@ -1,6 +1,6 @@
 {
   "scopeName": "markdown.dcbor.codeblock",
-  "injectionSelector": "L:markup.fenced_code.block.markdown",
+  "injectionSelector": "L:text.html.markdown",
   "patterns": [
     {
       "include": "#markdown-dcbor-code-block"
@@ -18,8 +18,21 @@
   "repository": {
     "markdown-dcbor-code-block": {
       "name": "meta.embedded.block.dcbor",
-      "begin": "(?<=[`~])\\s*(dcbor)\\s*$",
-      "end": "(^|\\G)\\s*[`~]{3,}\\s*$",
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(dcbor)\\s*$",
+      "end": "(^|\\G)(\\2)(\\3)\\s*$",
+      "beginCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        }
+      },
+      "endCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
+      },
       "contentName": "source.dcbor-envelope",
       "patterns": [
         {
@@ -29,8 +42,21 @@
     },
     "markdown-envelope-code-block": {
       "name": "meta.embedded.block.envelope",
-      "begin": "(?<=[`~])\\s*(envelope)\\s*$",
-      "end": "(^|\\G)\\s*[`~]{3,}\\s*$",
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(envelope)\\s*$",
+      "end": "(^|\\G)(\\2)(\\3)\\s*$",
+      "beginCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        }
+      },
+      "endCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
+      },
       "contentName": "source.dcbor-envelope",
       "patterns": [
         {
@@ -40,8 +66,21 @@
     },
     "markdown-cbor-code-block": {
       "name": "meta.embedded.block.cbor",
-      "begin": "(?<=[`~])\\s*(cbor)\\s*$",
-      "end": "(^|\\G)\\s*[`~]{3,}\\s*$",
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(cbor)\\s*$",
+      "end": "(^|\\G)(\\2)(\\3)\\s*$",
+      "beginCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        }
+      },
+      "endCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
+      },
       "contentName": "source.dcbor-envelope",
       "patterns": [
         {
@@ -51,8 +90,21 @@
     },
     "markdown-envpat-code-block": {
       "name": "meta.embedded.block.envpat",
-      "begin": "(?<=[`~])\\s*(envpat)\\s*$",
-      "end": "(^|\\G)\\s*[`~]{3,}\\s*$",
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(envpat)\\s*$",
+      "end": "(^|\\G)(\\2)(\\3)\\s*$",
+      "beginCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        },
+        "4": {
+          "name": "fenced_code.block.language.markdown"
+        }
+      },
+      "endCaptures": {
+        "3": {
+          "name": "punctuation.definition.markdown"
+        }
+      },
       "contentName": "source.envelope-pattern",
       "patterns": [
         {

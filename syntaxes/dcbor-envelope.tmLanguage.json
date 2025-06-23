@@ -39,7 +39,7 @@
     },
     {
       "name": "constant.other.uri.dcbor",
-      "match": "\\b[a-zA-Z][a-zA-Z0-9+.-]*:[^\\s\\[\\]{}()<>\"',;]*"
+      "match": "\\b[a-zA-Z][a-zA-Z0-9+.-]*:[^\\s\\[\\]{}()<>\"']+"
     },
     {
       "name": "punctuation.separator.dcbor",
