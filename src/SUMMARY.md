@@ -24,6 +24,7 @@
 - [dCBOR Tags](./part_2/dcbor_tags.md)
 - [The `dcbor` Command Line Tool](./part_2/dcbor_cli.md)
 - [Matching using the `dcbor` CLI](./part_2/dcbor_cli_matching.md)
+- [Advanced Pattern Matching with `dcbor`](./part_2/dcbor_cli_advanced_matching.md)
 <!-- - [Determinism with dCBOR](./part_2/determinism_with_dcbor.md) -->
 
 # Part III: Gordian Envelope
@@ -38,3 +39,4 @@
 # Appendices
 
 - [Appendix A: CBOR Header Bytes](./appendices/cbor_header_bytes.md)
+- [Appendix B: Pattern Syntax](./appendices/pattern_syntax.md)
