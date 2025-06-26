@@ -282,7 +282,7 @@ CBOR is, after all, a binary format, and `bin` can be used with `--in` or `--out
 $ dcbor --in hex --out bin $CBOR_SEED >test.bin
 
 # Show the first 48 bytes of the binary file.
-(base) ➜  ~ hexdump -C test.bin | head -n 3
+$ hexdump -C test.bin | head -n 3
 00000000  d9 9d 6c a4 01 50 59 f2  29 3a 5b ce 7d 4d e5 9e  |..l..PY.):[.}M..|
 00000010  71 b4 20 7a c5 d2 02 c1  1a 60 35 97 00 03 75 44  |q. z.....`5...uD|
 00000020  61 72 6b 20 50 75 72 70  6c 65 20 41 71 75 61 20  |ark Purple Aqua |
@@ -330,11 +330,11 @@ $ dcbor <<EOF
 EOF
 826548656c6c6f65576f726c64
 
-# Compose a map of with string keys and values:
+# Compose a map with string keys and values:
 $ dcbor <<EOF
 { "Hello": "World" }
 EOF
-a26148656c6c6f576f726c64
+a16548656c6c6f65576f726c64
 ```
 
 When working with shell scripts, you can interpolate shell variable into the input. For example, let's define a shell variable with a string value:
@@ -383,7 +383,7 @@ $ echo $FIB_MAP
 
 The `map` subcommand takes a list alternating keys and values. Note how we're being careful to quote the keys and values, with single-quotes being used for strings (so they don't get interpreted by the shell) and double-quotes used for the `$FIB_DIAG` variable (so it gets interpolated).
 
-When we've got our map composed the way we want it, we can serialized it to binary, or hex for use with the `envelope` tool we'll discuss in Part III:
+When we've got our map composed the way we want it, we can serialize it to binary, or hex for use with the `envelope` tool we'll discuss in Part III:
 
 ```bash
 $ dcbor --in diag --out hex $FIB_MAP
