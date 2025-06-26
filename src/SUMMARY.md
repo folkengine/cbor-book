@@ -39,4 +39,5 @@
 # Appendices
 
 - [Appendix A: CBOR Header Bytes](./appendices/cbor_header_bytes.md)
-- [Appendix B: Pattern Syntax](./appendices/pattern_syntax.md)
+- [Appendix B: dCBOR Patex Reference](./appendices/dcbor_patex.md)
+- [Appendix C: Envelope Patex Reference](./appendices/envelope_patex.md)

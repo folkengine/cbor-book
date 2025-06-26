@@ -16,7 +16,7 @@ This deliberate balance in RFC 8949 reflects a common approach in standards deve
 
 ## 2.2 Stepping Up: CBOR Common Deterministic Encoding (CDE)
 
-Recognizing the limitations of base CBOR's determinism guidelines for critical applications, the IETF CBOR Working Group initiated work on the CBOR Common Deterministic Encoding (CDE) specification (draft-ietf-cbor-cde). CDE represents a community effort to define a standardized, stricter set of encoding rules built upon CBOR, aiming to provide a reliable baseline for deterministic output that can be shared across diverse applications and implemented as a selectable feature in generic CBOR encoders. Its purpose is to systematically eliminate the ambiguities left open by RFC 8949's Section 4.2, thereby facilitating interoperable deterministic encoding.
+Recognizing the limitations of base CBOR's determinism guidelines for critical applications, the IETF CBOR Working Group initiated work on the CBOR Common Deterministic Encoding (CDE) specification ([draft-ietf-cbor-cde](https://datatracker.ietf.org/doc/draft-ietf-cbor-cde/)). CDE represents a community effort to define a standardized, stricter set of encoding rules built upon CBOR, aiming to provide a reliable baseline for deterministic output that can be shared across diverse applications and implemented as a selectable feature in generic CBOR encoders. Its purpose is to systematically eliminate the ambiguities left open by RFC 8949's Section 4.2, thereby facilitating interoperable deterministic encoding.
 
 CDE achieves this by mandating specific choices where base CBOR (even with Basic Serialization) offered flexibility. Conceptually, the key rules introduced by CDE include:
 
@@ -34,7 +34,7 @@ CDE, therefore, establishes a significantly more constrained profile of CBOR com
 
 ## 2.3 The Vision and the Need: Enter dCBOR
 
-While CDE represented a significant advancement towards standardized deterministic encoding, the impetus for an even stricter set of rules emerged from a specific vision and a pressing practical need. This vision was largely articulated by Christopher Allen and pursued through the work of Blockchain Commons, focusing on enabling a new generation of secure, private, and user-controlled digital interactions. Central to this vision is the concept of the **Gordian Envelope**, designed as a format for "smart documents" capable of handling complex, hierarchical data while prioritizing user privacy and control.
+While CDE represents a significant advancement towards standardized deterministic encoding, the impetus for an even stricter set of rules emerged from a specific vision and a pressing practical need. This vision was largely articulated by Christopher Allen and pursued through the work of Blockchain Commons, focusing on enabling a new generation of secure, private, and user-controlled digital interactions. Central to this vision is the concept of the **Gordian Envelope**, designed as a format for "smart documents" capable of handling complex, hierarchical data while prioritizing user privacy and control.
 
 The Gordian vision emphasizes several key principles, including independence, privacy, resilience, and openness. Gordian Envelope aims to embody these principles by being:
 

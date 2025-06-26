@@ -1,44 +1,18 @@
 # Matching Patterns with `dcbor` CLI
 
-## Chapter Overview
-
-We'll cover the fundamental pattern matching concepts progressively, building a solid foundation before moving to advanced techniques:
-
-1. **Pattern Matching Fundamentals** - Basic syntax and matching concepts
-2. **Value Patterns** - Matching specific data types and values
-3. **Structure Patterns** - Arrays, maps, and tagged values
-4. **Basic Output Formats** - Understanding simple match results
-5. **Getting Started Examples** - Simple, practical use cases
-6. **Foundation for Advanced Work** - Preparing for complex
-
-The `dcbor` CLI tool includes powerful pattern matching capabilities that allow you to search for, extract, and validate specific structures within dCBOR data. This chapter explores the `dcbor match` subcommand, which leverages the comprehensive pattern syntax of the `dcbor-pattern` crate to enable sophisticated data analysis and extraction workflows.
+The `dcbor` CLI tool includes powerful pattern matching capabilities that allow you to search for, extract, and validate specific structures within dCBOR data. This chapter explores the `dcbor match` subcommand, which leverages the comprehensive pattern expression (_"patex"_) syntax of the `dcbor-pattern` crate to enable sophisticated data analysis and extraction workflows.
 
 ```admonish tip
 This chapter builds upon the foundation established in [The `dcbor` Command Line Tool](dcbor_cli.md) chapter. If you haven't read that chapter yet, we recommend doing so first to familiarize yourself with the basic `dcbor` CLI operations.
 ```
 
-## Chapter Overview
-
-We'll cover the pattern matching system progressively, starting with simple examples and building toward complex search patterns:
-
-1. **Pattern Matching Fundamentals** - Basic syntax and matching concepts
-2. **Value Patterns** - Matching specific data types and values
-3. **Structure Patterns** - Arrays, maps, and tagged values
-4. **Search Patterns** - Recursive searching through data structures
-5. **Named Captures** - Extracting and labeling matched data
-6. **Advanced Patterns** - Sequences, quantifiers, and logical combinations
-7. **Output Formats** - Understanding match results and formatting options
-8. **Practical Examples** - Real-world scenarios and workflows
-9. **Error Handling** - Debugging patterns and understanding failures
-
-## Basic Pattern Matching Concepts
-
-### What is Pattern Matching?
+## What is Pattern Matching?
 
 Pattern matching in the context of dCBOR allows you to:
 - **Find specific data structures** within complex CBOR documents
 - **Extract values** that match certain criteria
 - **Validate data conformance** to expected patterns
+- **Find the paths** that lead to matching values within nested structures
 - **Transform data** by capturing and reformatting matches
 
 ### The `dcbor match` Command
@@ -50,21 +24,65 @@ dcbor match <PATTERN> [INPUT] [OPTIONS]
 ```
 
 Where:
-- `<PATTERN>` is a pattern expression written in dcbor-pattern syntax
+- `<PATTERN>` is a pattern expression (or _"patex"_) written in dcbor-pattern expression syntax we'll explore in detail
 - `[INPUT]` is the dCBOR data to match against (or read from stdin)
 - `[OPTIONS]` control input/output formats and matching behavior
 
+### Pattern Syntax Reference
+
+You can find a complete reference for the patex syntax in the [Pattern Expression Syntax Appendix](../appendices/patex_syntax.md). This appendix provides a quick reference for the patex syntax, including value patterns, structure patterns, and meta patterns we'll cover later.
+
 ## Value Patterns
 
-Value patterns are the foundation of dCBOR pattern matching. They allow you to match specific data types, exact values, or any combination thereof. Let's start with the most basic patterns and build up your understanding progressively.
+Value patterns are the foundation of dCBOR pattern matching. They allow you to match specific data types and exact values. Let's start with the most basic patterns and build up your understanding progressively.
 
-### Basic Type Matching
+### Numbers
 
-The simplest patterns match any value of a specific CBOR data type. These are fundamental building blocks that you'll use constantly.
+Recall that if you simply type:
 
-#### Numbers
+```bash
+$ dcbor 42
+```
 
-The `NUMBER` pattern matches any numeric value, whether it's an integer or floating-point number:
+You get back the hex representation of the CBOR number 42:
+
+```bash
+182a
+```
+
+If you want the CBOR diagnostic notation, you can use the `--diag` option:
+
+```bash
+$ dcbor -o diag 42
+42
+```
+
+What if you have two pieces of CBOR data, and you want to check whether one of them is a number?
+
+```bash
+$ CBOR1=182a
+$ CBOR2=6548656c6c6f
+```
+
+You can use the `dcbor match` command to check whether either of these is a number:
+
+```bash
+$ dcbor match NUMBER -i hex $CBOR1
+42
+$ dcbor match NUMBER -i hex $CBOR2
+Error: No Match
+```
+
+We can see that `CBOR1` is the number `42`, and `CBOR2` is not a numeric value. So let's see whether it is a textual string by using the `TEXT` pattern:
+
+```bash
+$ dcbor match TEXT -i hex $CBOR2
+"Hello"
+```
+
+The pattern matches, and we can see it is the string `"Hello"`.
+
+The `NUMBER` pattern matches *any* numeric value, whether it's an integer or floating-point number:
 
 ```bash
 $ dcbor match NUMBER 42
@@ -76,20 +94,23 @@ $ dcbor match NUMBER 3.14
 3.14
 ```
 
+
+```admonish note
+Numbers in CBOR can be positive integers, negative integers, or floating-point values. The `NUMBER` pattern captures all of these types.
+```
+
+````admonish tip
+To avoid confusion with command-line flags, you can use `--` to separate the pattern from the input. `--` signals that there are no command-line flags following it, allowing you to pass values that might otherwise be interpreted as flags:
+
 ```bash
 $ dcbor match NUMBER -- -1
 -1
 ```
+````
 
-Numbers in CBOR can be positive integers, negative integers, or floating-point values. The `NUMBER` pattern captures all of these types.
+### Text Strings
 
-```admonish tip
-When using negative numbers as input to the CLI, you need to use `--` to prevent them from being interpreted as command-line flags.
-```
-
-#### Text Strings
-
-The `TEXT` pattern matches any text string:
+As we demonstrated above, the `TEXT` pattern matches any text string:
 
 ```bash
 $ dcbor match TEXT '"hello"'
@@ -103,9 +124,9 @@ $ dcbor match TEXT '"🌎"'
 
 Notice that when providing text strings as input to the CLI, you need to include the quotes as part of the dCBOR diagnostic notation. This is the same quoting consideration we discussed in the [basic dcbor CLI chapter](dcbor_cli.md#quoting-input).
 
-#### Byte Strings
+### Byte Strings
 
-The `BSTR` pattern matches any byte string:
+The `BSTR` pattern matches any byte string. Byte strings in CBOR are sequences of raw bytes, distinct from text strings which have UTF-8 character encoding semantics:
 
 ```bash
 $ dcbor match BSTR "h'68656c6c6f'"
@@ -117,9 +138,7 @@ $ dcbor match BSTR "h''"
 h''
 ```
 
-Byte strings in CBOR are sequences of raw bytes, distinct from text strings which have UTF-8 character encoding semantics.
-
-#### Booleans and Null
+### Booleans and Null
 
 The `BOOL` pattern matches boolean values:
 
@@ -133,14 +152,18 @@ $ dcbor match BOOL false
 false
 ```
 
-The `NULL` pattern matches the null value:
+```admonish note
+Don't confuse the response `false` here as meaning that the pattern didn't match; it means that the input value was `false`, which is a valid match for the `BOOL` pattern.
+```
+
+The `NULL` pattern matches CBOR's `null` value:
 
 ```bash
 $ dcbor match NULL null
 null
 ```
 
-#### The Universal Pattern
+### The Universal Pattern
 
 The `ANY` pattern matches any CBOR value whatsoever:
 
@@ -161,11 +184,11 @@ h'1234'
 
 This is useful when you want to match any value in a particular position within a larger structure.
 
-### Specific Value Matching
+## Specific Value Matching
 
 Beyond matching types, you can match exact values by providing the specific value inside parentheses.
 
-#### Specific Numbers
+### Specific Numbers
 
 ```bash
 $ dcbor match "NUMBER(42)" 42
@@ -178,7 +201,7 @@ $ dcbor match "NUMBER(42)" 43
 Error: No match
 ```
 
-#### Specific Text Strings
+### Specific Text Strings
 
 ```bash
 $ dcbor match 'TEXT("hello")' '"hello"'
@@ -191,14 +214,14 @@ $ dcbor match 'TEXT("hello")' '"world"'
 Error: No match
 ```
 
-#### Specific Byte Strings
+### Specific Byte Strings
 
 ```bash
 $ dcbor match "BSTR(h'1234')" "h'1234'"
 h'1234'
 ```
 
-#### Specific Boolean Values
+### Specific Boolean Values
 
 ```bash
 $ dcbor match "BOOL(true)" true
@@ -215,9 +238,9 @@ Error: No match
 
 Beyond basic type and exact value matching, dCBOR patterns support sophisticated matching criteria including ranges for numbers and regular expressions for text and byte strings.
 
-#### Number Ranges and Comparisons
+#### Number Ranges
 
-Numbers can be matched using ranges and comparison operators, which is particularly useful for validating data within acceptable bounds.
+Numbers can be matched using ranges and inequality operators, which is useful for validating data within acceptable bounds.
 
 ##### Range Matching
 
@@ -233,9 +256,20 @@ $ dcbor match "NUMBER(1...10)" 15
 Error: No match
 ```
 
-##### Comparison Operators
+````admonish note
+The `...` syntax is shorthand for an _inclusive_, or _closed_ range, meaning it includes the start and end values in the range.
 
-Numbers support various comparison operators:
+The same range of numbers can also be specified with a more complex syntax using the `&` operator, which we'll cover later.
+
+```bash
+$ dcbor match "NUMBER(>=1)&NUMBER(<=10)" 5
+5
+```
+````
+
+##### Inequality Operators
+
+Numbers support various inequality operators:
 
 ```bash
 # Greater than
@@ -261,20 +295,45 @@ $ dcbor match "NUMBER(<=10)" 10
 10
 ```
 
+Using the `&` operator allows you to construct patterns that match _half-open_ ranges (where one end is inclusive and the other is exclusive):
+
+```bash
+$ dcbor match "NUMBER(>1)&NUMBER(<=10)" 10
+10
+$ dcbor match "NUMBER(>1)&NUMBER(<=10)" 1
+Error: No match
+```
+
 ##### Special Number Values
 
-You can also match special floating-point values:
+You can also match three special floating-point values: `NaN` ("not a number"), `Infinity`, and `-Infinity`.
 
 ```bash
 $ dcbor match "NUMBER(NaN)" NaN
 NaN
 ```
 
-These comparison patterns are invaluable for data validation scenarios where you need to ensure numeric values fall within acceptable ranges.
+```bash
+$ dcbor match "NUMBER(Infinity)" Infinity
+Infinity
+```
+
+```bash
+$ dcbor match -- "NUMBER(-Infinity)" -Infinity
+-Infinity
+```
+
+```admonish note
+Note the use of `--` to signal the end of command-line options, allowing you to pass values that might otherwise be interpreted as flags.
+```
 
 #### Text Regular Expressions
 
-Text strings can be matched using regular expressions, enabling sophisticated pattern matching for string content.
+Regular expressions (or _regexes_) are powerful pattern matching tools for text, allowing you to search for specific patterns rather than exact text. They use special characters and syntax to define search patterns. For instance, `\d+` matches one or more digits, `[A-Z]+` matches one or more uppercase letters, and `^` and `$` anchor patterns to the beginning and end of a string respectively. With regular expressions, you can validate formats, extract information, and perform sophisticated text processing operations.
+
+dCBOR patexes that this chapter describes are based on some of the same concepts as regexes, but they are not the same. The dCBOR pattern syntax is designed specifically for matching CBOR data structures and values, while regular expressions are a more general-purpose text processing tool. Nonetheless, some of the types you can match with dCBOR patterns, such as text strings and byte strings, can be matched using regular expressions.
+
+Text strings can be matched using regular expressions, by using the `TEXT` pattern with a regex enclosed in forward slashes: `TEXT(/regex/)`:
 
 ```bash
 # Match any email-like pattern
@@ -296,14 +355,27 @@ Error: No match
 
 Regular expressions use standard Rust regex syntax, which is based on Perl-compatible regular expressions (PCRE). This allows for complex pattern matching including:
 
-- Character classes: `[a-z]`, `[0-9]`, `\d`, `\w`
-- Quantifiers: `*`, `+`, `?`, `{n,m}`
+- Literal characters: `abc`, `123`
+- Any character: `.`
+- Character classes: `[a-z]`, `[0-9]`, `\d` (digit), `\w` (word character)
+- Quantifiers: `*` (zero or more), `+` (one or more), `?` (zero or one), `{n,m}` (between n and m times)
 - Anchors: `^` (start), `$` (end)
 - Groups and alternation: `(pattern)`, `pattern1|pattern2`
+
+Explaining the full syntax of regular expressions is beyond the scope of this book, but you can find more information in the [Rust regex documentation](https://docs.rs/regex/latest/regex/#syntax).
 
 #### Byte String Regular Expressions
 
 Byte strings also support regular expression matching, useful for matching binary patterns or encoded data. Binary regexes operate on raw byte content, not on the hex string representation you see in diagnostic notation.
+
+```admonish note
+Binary regexes must start with the `(?s-u)` flags to work correctly:
+- `(?s)` enables "dot matches newline" mode, allowing `.` to match across newlines (like byte `0x0a`)
+- `(?-u)` disables Unicode mode, allowing `.` to match any byte value instead of just valid UTF-8 sequences
+- Use `\x` notation for specific byte values (e.g., `\xFF` for byte 255)
+
+Without these flags, patterns may fail on byte strings containing newlines or invalid UTF-8 sequences.
+```
 
 ```bash
 # Match byte strings containing the byte 0xFF anywhere
@@ -329,17 +401,6 @@ $ dcbor match 'BSTR(/(?s-u)^.{4}$/)' "h'12345678'"
 h'12345678'
 ```
 
-:::admonition type="note"
-
-Binary regexes require the `(?s-u)` flags to work correctly:
-- `(?s)` enables "dot matches newline" mode, allowing `.` to match across newlines (like byte `0x0a`)
-- `(?-u)` disables Unicode mode, allowing `.` to match any byte value instead of just valid UTF-8 sequences
-- Use `\x` notation for specific byte values (e.g., `\xFF` for byte 255)
-
-Without these flags, patterns may fail on byte strings containing newlines or invalid UTF-8 sequences.
-
-:::
-
 #### Practical Examples
 
 These advanced patterns are particularly useful for data validation and extraction:
@@ -364,30 +425,6 @@ $ dcbor match 'TEXT(/^\d{4}-\d{2}-\d{2}$/)' '"2023-12-25"'
 
 These advanced value patterns form the building blocks for more complex structure matching, which we'll explore in the next section.
 
-### Pattern Syntax Reference
-
-Here's a complete reference for value patterns:
-
-| Pattern                  | Matches                          | Example Input      | Matches? |
-| ------------------------ | -------------------------------- | ------------------ | -------- |
-| `NUMBER`                 | Any numeric value                | `42`, `3.14`, `-1` | ✓        |
-| `NUMBER(42)`             | Exactly the number 42            | `42`               | ✓        |
-| `NUMBER(42)`             | Exactly the number 42            | `43`               | ✗        |
-| `NUMBER(1...10)`         | Range 1 to 10 (inclusive)        | `5`, `1`, `10`     | ✓        |
-| `NUMBER(>0)`             | Greater than 0                   | `1`, `100`         | ✓        |
-| `TEXT`                   | Any text string                  | `"hello"`, `"🌎"`   | ✓        |
-| `TEXT("hello")`          | Exactly the string "hello"       | `"hello"`          | ✓        |
-| `TEXT("hello")`          | Exactly the string "hello"       | `"world"`          | ✗        |
-| `TEXT(/^temp/)`          | Text starting with "temp"        | `"temporary"`      | ✓        |
-| `BSTR`                   | Any byte string                  | `h'1234'`, `h''`   | ✓        |
-| `BSTR(h'1234')`          | Exactly the bytes `h'1234'`      | `h'1234'`          | ✓        |
-| `BSTR(/(?s-u).*\xFF.*/)` | Byte string containing byte 0xFF | `h'FF0102'`        | ✓        |
-| `BOOL`                   | Any boolean value                | `true`, `false`    | ✓        |
-| `BOOL(true)`             | Exactly `true`                   | `true`             | ✓        |
-| `BOOL(true)`             | Exactly `true`                   | `false`            | ✗        |
-| `NULL`                   | The null value                   | `null`             | ✓        |
-| `ANY`                    | Any CBOR value                   | Anything           | ✓        |
-
 ### Understanding Match Output
 
 When a pattern matches, the default output shows the matched value. This seems simple now, but it becomes more meaningful when we start working with complex structures where patterns might match multiple values or nested elements.
@@ -409,6 +446,18 @@ Error: No match
 ```
 
 This happens because the input `42` is a number, but the pattern `TEXT` expects a string. Understanding these error messages helps you debug your patterns and understand why they might not be working as expected.
+
+Finally, here's are a couple of example of patterns that fail to parse:
+
+```bash
+$ dcbor match TEX '"Hello"'
+Error: Failed to parse pattern at position 0..1: unrecognized token 'T'
+Pattern: TEX
+         ^
+
+$ dcbor match 'TEXT("Hello"' '"Hello"'
+Error: Failed to parse pattern: Expected closing parenthesis
+```
 
 ## Structure Patterns
 
@@ -435,9 +484,9 @@ $ dcbor match ARRAY '[]'
 []
 ```
 
-#### Element-Specific Patterns
+#### Array Sequence Patterns
 
-You can specify patterns for array elements using sequence notation with `>`:
+The `>` operator creates sequences within arrays, requiring elements to appear in the specified order:
 
 ```bash
 # Match an array with a number followed by text
@@ -445,21 +494,28 @@ $ dcbor match "ARRAY(NUMBER > TEXT)" '[42, "hello"]'
 [42, "hello"]
 ```
 
+````admonish note
+`NUMBER > TEXT` means the first element must be a number, followed by a text string, and that's it: these must be the only elements and they must appear in that order, so adding another element would not match:
+
 ```bash
-# Match specific values in sequence
+$ dcbor match "ARRAY(NUMBER > TEXT)" '[42, "hello", 0]'
+Error: No match
+```
+````
+
+In this case the first element must be the exact number `42`, but the second element can be any text string:
+
+```bash
 $ dcbor match "ARRAY(NUMBER(42) > TEXT)" '[42, "hello"]'
 [42, "hello"]
 ```
 
+This won't match because the elements are in wrong order:
+
 ```bash
-# This won't match because the elements are in wrong order
 $ dcbor match "ARRAY(NUMBER > TEXT)" '["hello", 42]'
 Error: No match
 ```
-
-#### Array Sequences with `>`
-
-The `>` operator creates sequences within arrays, requiring elements to appear in the specified order:
 
 ```bash
 # Match array starting with number, then text, then anything else
@@ -468,7 +524,7 @@ $ dcbor match "ARRAY(NUMBER > TEXT > ANY)" '[42, "hello", true]'
 ```
 
 ```bash
-# Match exact three-element sequence
+# Match array starting with a boolean, then a number, then any text
 $ dcbor match "ARRAY(BOOL > NUMBER > TEXT)" '[true, 42, "world"]'
 [true, 42, "world"]
 ```
@@ -480,10 +536,12 @@ $ dcbor match "ARRAY(BOOL > NUMBER > TEXT)" '[true, 42, "world"]'
 Maps can be matched by specifying key-value patterns using `:` notation:
 
 ```bash
-# Match map with specific key-value pair
+# Match map with a specific key, and a text value
 $ dcbor match 'MAP(TEXT("name"): TEXT)' '{"name": "Alice", "age": 30}'
 {"age": 30, "name": "Alice"}
 ```
+
+Notice that it is not necessary to match every key-value pair in the map; you can match just the ones you care about. The output will show the entire map.
 
 ```bash
 # Match map with number key
@@ -491,7 +549,17 @@ $ dcbor match 'MAP(NUMBER(1): TEXT)' '{1: "first", 2: "second"}'
 {1: "first", 2: "second"}
 ```
 
-Note that map output is shown in dCBOR's canonical ordering (by key), which may differ from input order.
+If you want to match a map that *only* contains a specific key-value pair, you can specify the exact number of entries using the `&` operator:
+
+```bash
+# Match map with exactly one key-value pair, where key is 1 and value is any text
+$ dcbor match 'MAP({1})&MAP(NUMBER(1): TEXT)' '{1: "first", 2: "second"}'
+Error: No match
+
+# Same thing, but specify there must be two entries
+$ dcbor match 'MAP({2})&MAP(NUMBER(1): TEXT)' '{1: "first", 2: "second"}'
+{1: "first", 2: "second"}
+```
 
 #### Specific Key Patterns
 
@@ -500,13 +568,7 @@ You can match maps containing specific keys regardless of other content:
 ```bash
 # Match any map that contains a "name" key with text value
 $ dcbor match 'MAP(TEXT("name"): TEXT)' '{"name": "Bob", "id": 42, "active": true}'
-{"active": true, "id": 42, "name": "Bob"}
-```
-
-```bash
-# Match map with multiple required key-value pairs
-$ dcbor match 'MAP(TEXT("id"): NUMBER, TEXT("name"): TEXT)' '{"id": 1, "name": "Alice", "extra": "data"}'
-{"extra": "data", "id": 1, "name": "Alice"}
+{"id": 42, "name": "Bob", "active": true}
 ```
 
 #### Multiple Entry Patterns
@@ -514,9 +576,15 @@ $ dcbor match 'MAP(TEXT("id"): NUMBER, TEXT("name"): TEXT)' '{"id": 1, "name": "
 Maps can specify multiple key-value requirements using comma-separated patterns:
 
 ```bash
-# Both key-value pairs must exist
-$ dcbor match 'MAP(TEXT("id"): NUMBER(1), TEXT("name"): TEXT("Alice"))' '{"id": 1, "name": "Alice"}'
-{"id": 1, "name": "Alice"}
+# Match map with multiple required key-value pairs
+$ dcbor match 'MAP(TEXT("id"): NUMBER, TEXT("name"): TEXT)' '{"id": 1, "name": "Alice", "extra": "data"}'
+{"id": 1, "name": "Alice", "extra": "data"}
+```
+
+```bash
+# Both key-value pairs must exist, but other entries are allowed
+$ dcbor match 'MAP(TEXT("id"): NUMBER(1), TEXT("name"): TEXT("Alice"))' '{"id": 1, "name": "Alice", "age": 30}'
+{"id": 1, "name": "Alice", "age": 30}
 ```
 
 ### Tagged Value Patterns
@@ -526,17 +594,15 @@ CBOR tagged values apply semantic meaning to data. Patterns can match both the t
 #### Tag Number Matching
 
 ```bash
-# Match any value with tag 1 (often timestamps) containing a number
-$ dcbor match "TAG(1, NUMBER)" "1(42)"
-1970-01-01T00:00:42Z
+# Match any value with tag 1234 containing a number
+$ dcbor match "TAG(1234, NUMBER)" "1234(42)"
+1234(42)
 ```
 
-Note that the output shows the semantic interpretation (Unix timestamp as ISO date) rather than the raw number.
-
 ```bash
-# Match tag 100 with any content
-$ dcbor match "TAG(100, ANY)" '100("tagged string")'
-100("tagged string")
+# Match tag 12345 with any content
+$ dcbor match "TAG(12345, ANY)" '12345("tagged string")'
+12345("tagged string")
 ```
 
 #### Content Pattern Matching
@@ -571,24 +637,7 @@ $ dcbor match 'MAP(TEXT("key"): ANY)' '{"key": "value", "other": 42}'
 {"key": "value", "other": 42}
 ```
 
-The output shows you what matched, which becomes more meaningful when working with search patterns or captures that can match multiple items or nested elements.
-
-### Simple Output Examples
-
-#### Single Value Matches
-```bash
-$ dcbor match NUMBER 42
-42
-```
-
-#### Structure Matches
-```bash
-$ dcbor match "ARRAY(NUMBER)" '[42]'
-[42]
-```
-
-#### Multiple Matches
-When searching structures, you might see multiple matching paths:
+The output shows you what matched, which becomes more meaningful when working with search patterns or captures that can match multiple items or nested elements. For example, later we'll discuss the `SEARCH` pattern, which visits all the elements in a dcbor item. For a quick example, if you match a pattern that finds all numbers in an array, the output will show each number along with its context, or _path_ from the root of the structure:
 
 ```bash
 $ dcbor match "SEARCH(NUMBER)" '[1, [2, 3]]'
@@ -602,139 +651,19 @@ $ dcbor match "SEARCH(NUMBER)" '[1, [2, 3]]'
         3
 ```
 
-Each line represents a path to a matching value, showing the context and the matched item.
+You can choose to output the last item of each path using the `--last-only` option, which will only show the final matched items:
+
+```bash
+$ dcbor match --last-only "SEARCH(NUMBER)" '[1, [2, 3]]'
+1
+2
+3
+```
 
 ### Output Options Overview
 
 The `dcbor match` command provides several options for controlling output format:
 
 - `--captures`: Show named capture information (covered in advanced chapter)
-- `--no-indent`: Remove indentation from multi-line output
 - `--last-only`: Show only the final matched items
 - `--in FORMAT` / `--out FORMAT`: Control input/output formats (hex, diag, etc.)
-
-### Simple Getting Started Examples
-
-These examples help you get comfortable with pattern matching before moving to advanced techniques:
-
-#### Finding Known Keys
-
-```bash
-# Find maps with specific structure
-$ dcbor match 'MAP(TEXT("status"): ANY)' '{"status": "active", "count": 5}'
-{"count": 5, "status": "active"}
-```
-
-#### Basic Content Discovery
-
-```bash
-# Find arrays containing numbers
-$ dcbor match "ARRAY(NUMBER)" '[42]'
-[42]
-```
-
-```bash
-# Find tagged timestamps
-$ dcbor match "TAG(1, NUMBER)" "1(1640995200)"
-2022-01-01
-```
-
-#### Experimenting Safely
-
-Start with simple test data and gradually increase complexity:
-
-```bash
-# Start simple
-$ dcbor match NUMBER 42
-
-# Add structure
-$ dcbor match "ARRAY(NUMBER)" '[42]'
-
-# Add constraints
-$ dcbor match "ARRAY(NUMBER(42))" '[42]'
-
-# Try variations
-$ dcbor match "ARRAY(NUMBER(42))" '[43]'  # Will fail
-```
-
-## Preparing for Advanced Patterns
-
-### What We've Covered
-
-By now you should be comfortable with:
-
-- **Value patterns**: Matching specific types (`NUMBER`, `TEXT`, `BSTR`, etc.) and exact values
-- **Advanced value patterns**: Ranges, comparisons, and regular expressions
-- **Structure patterns**: Arrays, maps, and tagged values with specific element requirements
-- **Basic output**: Understanding what successful matches look like
-- **Pattern syntax**: The core notation for combining patterns with `>`, `:`, and parentheses
-
-### Understanding Pattern Validation
-
-When patterns don't match, the CLI provides clear error messages:
-
-```bash
-$ dcbor match TEXT 42
-Error: No match
-```
-
-This happens because the input `42` is a number, but the pattern `TEXT` expects a string. Understanding these error messages helps you debug your patterns and verify your data structure assumptions.
-
-### What's Next
-
-In the next chapter, [Advanced Pattern Matching with `dcbor`](dcbor_cli_advanced_matching.md), we'll explore:
-
-- **Search Patterns**: Using `SEARCH` to find data anywhere in complex structures
-- **Named Captures**: Using `@name(pattern)` to extract and label specific data
-- **Advanced Features**: Logical combinations, sequences, and quantifiers
-- **Complex Workflows**: Real-world data processing scenarios
-
-:::admonition type="tip"
-
-Practice these basic patterns first! The advanced features build directly on these fundamentals. Try creating test data files with nested structures and experimenting with different pattern combinations to build your intuition.
-
-:::
-
-## Getting Started with Simple Patterns
-
-## Preparing for Advanced Patterns
-
-### What We've Covered
-
-By now you should be comfortable with:
-
-- **Value patterns**: Matching specific types (`NUMBER`, `TEXT`, `BSTR`, etc.) and exact values
-- **Advanced value patterns**: Ranges, comparisons, and regular expressions
-- **Structure patterns**: Arrays, maps, and tagged values with specific element requirements
-- **Basic output**: Understanding what successful matches look like
-- **Pattern syntax**: The core notation for combining patterns with `>`, `:`, and parentheses
-
-### Understanding Pattern Validation
-
-When patterns don't match, the CLI provides clear error messages:
-
-```bash
-$ dcbor match TEXT 42
-Error: No match
-```
-
-This happens because the input `42` is a number, but the pattern `TEXT` expects a string. Understanding these error messages helps you debug your patterns and verify your data structure assumptions.
-
-### What's Next
-
-In the next chapter, [Advanced Pattern Matching with `dcbor`](dcbor_cli_advanced_matching.md), we'll explore:
-
-- **Search Patterns**: Using `SEARCH` to find data anywhere in complex structures
-- **Named Captures**: Using `@name(pattern)` to extract and label specific data
-- **Advanced Features**: Logical combinations, sequences, and quantifiers
-- **Complex Workflows**: Real-world data processing scenarios
-
-:::admonition type="tip"
-
-Practice these basic patterns first! The advanced features build directly on these fundamentals. Try creating test data files with nested structures and experimenting with different pattern combinations to build your intuition.
-
-:::
-
----
-
-*This chapter has established the fundamentals of pattern matching with the dcbor CLI. With these basic skills, you can already accomplish many useful data validation and extraction tasks. The next chapter will build on this foundation to unlock the full power of the pattern matching system.*

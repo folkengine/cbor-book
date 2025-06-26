@@ -335,6 +335,23 @@ $ dcbor <<EOF
 { "Hello": "World" }
 EOF
 a16548656c6c6f65576f726c64
+
+# Duplicate map keys are not allowed:
+$ dcbor <<EOF
+{ "Hello": "World", "Hello": "CBOR" }
+EOF
+Error: line 1: Duplicate map key
+{ "Hello": "World", "Hello": "CBOR" }
+                    ^^^^^^^
+
+# dCBOR does not distinguish between integer and floating point numbers,
+# so this is also a case of duplicate keys:
+$ dcbor <<EOF
+{ 42: "Forty-Two", 42.0: "Forty-Two Float" }
+EOF
+Error: line 1: Duplicate map key
+{ 42: "Forty-Two", 42.0: "Forty-Two Float" }
+                   ^^^^
 ```
 
 When working with shell scripts, you can interpolate shell variable into the input. For example, let's define a shell variable with a string value:
