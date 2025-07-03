@@ -13,19 +13,19 @@ To install the `dcbor` CLI tool, you need to have Rust and `cargo` installed on 
 Once you have Rust and Cargo installed, you can install the `dcbor` tool by running the following command:
 
 ```bash
-$ cargo install dcbor-cli
+cargo install dcbor-cli
 ```
 
 You can verify that the installation was successful by running:
 
 ```bash
-$ dcbor --version
+dcbor --version
 ```
 
 You can get help on how to use the `dcbor` tool by running:
 
 ```bash
-$ dcbor --help
+dcbor --help
 ```
 
 This will display the available options and usage information.
@@ -51,8 +51,9 @@ The three output formats are:
 The default input format is `diag`, and the default output format is `hex`. The hex format is useful for sending to other tools like the `envelope` command line tool we'll discuss in Part III. So by default you put in some human-readable diagnostic notation and get out some CBOR hex:
 
 ```bash
-$ dcbor 42
-182a
+dcbor 42
+
+│ 182a
 ```
 
 In the above example, `42` is the string input, and `182a` is the hexadecimal output.
@@ -60,8 +61,9 @@ In the above example, `42` is the string input, and `182a` is the hexadecimal ou
 Here's an example with a floating-point number:
 
 ```bash
-$ dcbor 3.14
-fb40091eb851eb851f
+dcbor 3.14
+
+│ fb40091eb851eb851f
 ```
 
 
@@ -72,29 +74,31 @@ For simple cases like the ones above, you don't need to do anything special with
 For example, in CBOR diagnostic notation, a string is quoted with `"double quotes"`, so for the `dcbor` tool to recognize it as a string, you need to include the double quotes in the input. But in the shell, double quotes are also used to group a sequence of characters into an argument. So the following command has two arguments:
 
 ```bash
-$ ls "First File" "Second File"
+ls "First File" "Second File"
 ```
 
 The shell `ls` command will see two arguments, *without* the quotes. The first argument is `First File`, and the second argument is `Second File`. If you passed the command without quotes, the shell would see four arguments:
 
 ```bash
-$ ls First File Second File
+ls First File Second File
 ```
 
 So back to `dcbor`, if you naïvely run this command you'll get an error:
 
 ```bash
-$ dcbor "Hello"
-Error: line 1: Unrecognized token
-Hello
-^
+dcbor "Hello"
+
+│ Error: line 1: Unrecognized token
+│ Hello
+│ ^
 ```
 
 This is because the shell is interpreting the double quotes as its own argument grouping syntax, and strips them off, even though `dcbor` still needs them. To get around this, you can use single quotes to quote the entire argument:
 
 ```bash
-$ dcbor '"Hello"'
-6548656c6c6f
+dcbor '"Hello"'
+
+│ 6548656c6c6f
 ```
 
 The shell can use either single or double quotes to group arguments.
@@ -102,29 +106,32 @@ The shell can use either single or double quotes to group arguments.
 Another option is to escape the inner double quotes with a backslash:
 
 ```bash
-$ dcbor "\"Hello\""
-6548656c6c6f
+dcbor "\"Hello\""
+
+│ 6548656c6c6f
 ```
 
 But the most general and flexible way is to use the _here document_ ("_heredoc_") shell feature. This allows you to pass a block of text to the `dcbor` tool without worrying about quoting:
 
 ```bash
-$ dcbor <<EOF
+dcbor <<EOF
 "Hello"
 EOF
-6548656c6c6f
+
+│ 6548656c6c6f
 ```
 
 Notice the first line uses `<<` to indicate the start of a heredoc, which is immediately followed by the delimiter `EOF`. The last line is the same delimiter, which indicates the end of the here document. You can use any string as a delimiter, but `EOF` is a common convention. The here document can also be used to pass as many lines of input as you want. Here is an example of an array of strings spread across multiple lines:
 
 ```bash
-$ dcbor <<EOF
+dcbor <<EOF
 [
   "Hello",
   "World"
 ]
 EOF
-826548656c6c6f65576f726c64
+
+│ 826548656c6c6f65576f726c64
 ```
 
 
@@ -133,13 +140,14 @@ EOF
 CBOR diagnostic notation supports two different types of comments: _inline comments_ delimited by `/` and _end-of-line comments_ delimited by `#`. The `dcbor` tool ignores comments in the input, so you can use them freely to annotate your input. Here is an example of both types of comments:
 
 ```bash
-$ dcbor <<EOF
+dcbor <<EOF
 [ # Start of array
   / First element / "Hello",
   / Second element / "World"
 ] # End of array
 EOF
-826548656c6c6f65576f726c64
+
+│ 826548656c6c6f65576f726c64
 ```
 
 This example produces the same output as the previous example, but it includes comments to explain what each part of the input is doing.
@@ -150,8 +158,9 @@ This example produces the same output as the previous example, but it includes c
 Now that we have an example of hex-encoded CBOR, let's see how to convert it back to diagnostic notation. The `dcbor` tool can do this by specifying the input format as `hex` and the output format as `diag`:
 
 ```bash
-$ dcbor -i hex -o diag 826548656c6c6f65576f726c64
-["Hello", "World"]
+dcbor -i hex -o diag 826548656c6c6f65576f726c64
+
+│ ["Hello", "World"]
 ```
 
 ```admonish tip
@@ -199,15 +208,17 @@ Where it can, it will accept these names in place of numeric values.
 Every time the `dcbor` tool is run, it validates the input as valid CBOR, and the dCBOR deterministic encoding rules. If the input is valid, it will produce the output in the specified format. If the input is not valid, it will produce an error message. For example, if we change the first byte of the hex-encoded CBOR from the example above to `0x83` (representing a CBOR array of three elements), we will get an error:
 
 ```bash
-$ dcbor -i hex -o diag 836548656c6c6f65576f726c64
-Error: early end of CBOR data
+dcbor -i hex -o diag 836548656c6c6f65576f726c64
+
+│ Error: early end of CBOR data
 ```
 
 This error message indicates that the input expected a third array element, but it reached the end of the input before finding it. We can "hack" the input to make it valid by adding a third element. Let's just add a `0` to the end of the array:
 
 ```bash
-$ dcbor -i hex -o diag 836548656c6c6f65576f726c6400
-["Hello", "World", 0]
+dcbor -i hex -o diag 836548656c6c6f65576f726c6400
+
+│ ["Hello", "World", 0]
 ```
 
 This is a valid CBOR array of three elements, and the `dcbor` tool produces the expected output.
@@ -218,32 +229,34 @@ This is a valid CBOR array of three elements, and the `dcbor` tool produces the 
 When producing either hex or diagnostic notation output, the `--annotate` flag can be used to produce output that is even more human-readable. Let's define a shell variable with a hex-encoded CBOR structure, a cryptographic seed:
 
 ```bash
-$ CBOR_SEED=d99d6ca4015059f2293a5bce7d4de59e71b4207ac5d202c11a6035970003754461726b20507572706c652041717561204c6f766504787b4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e
+CBOR_SEED=d99d6ca4015059f2293a5bce7d4de59e71b4207ac5d202c11a6035970003754461726b20507572706c652041717561204c6f766504787b4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e
 ```
 
 Now we can pass this variable to the `dcbor` by just referring to it as `$CBOR_SEED`:
 
 ```bash
-$ dcbor --in hex --out diag $CBOR_SEED
-40300({1: h'59f2293a5bce7d4de59e71b4207ac5d2', 2: 1(1614124800), 3: "Dark Purple Aqua Love", 4: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."})
+dcbor --in hex --out diag $CBOR_SEED
+
+│ 40300({1: h'59f2293a5bce7d4de59e71b4207ac5d2', 2: 1(1614124800), 3: "Dark Purple Aqua Love", 4: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."})
 ```
 
 The output is "flat" diagnostic notation, entirely on one line. This is useful for passing to other tools, but not very human-readable. The `--annotate` flag will produce a more readable output:
 
 ```bash
-$ dcbor --in hex --out diag --annotate $CBOR_SEED
-40300(   / seed /
-    {
-        1:
-        h'59f2293a5bce7d4de59e71b4207ac5d2',
-        2:
-        1(1614124800),   / date /
-        3:
-        "Dark Purple Aqua Love",
-        4:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    }
-)
+dcbor --in hex --out diag --annotate $CBOR_SEED
+
+│ 40300(   / seed /
+│     {
+│         1:
+│         h'59f2293a5bce7d4de59e71b4207ac5d2',
+│         2:
+│         1(1614124800),   / date /
+│         3:
+│         "Dark Purple Aqua Love",
+│         4:
+│         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+│     }
+│ )
 ```
 
 Now it's much easier to see that the entire structure is a map with four keys: the first key is a byte string, the second key is a tagged number representing a date, and so on. The entire structure is tagged with `40300`, which is a registered CBOR tag for a cryptographic seed in this format. You can see the definition of this format in the [Blockchain Commons Registry of UR Types](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md#cryptographic-seed-seed).
@@ -251,21 +264,22 @@ Now it's much easier to see that the entire structure is a map with four keys: t
 The hex output format also supports the `--annotate` flag:
 
 ```bash
-$ dcbor --in hex --annotate $CBOR_SEED
-d9 9d6c                                 # tag(40300) seed
-    a4                                  # map(4)
-        01                              # unsigned(1)
-        50                              # bytes(16)
-            59f2293a5bce7d4de59e71b4207ac5d2
-        02                              # unsigned(2)
-        c1                              # tag(1) date
-            1a60359700                  # unsigned(1614124800)
-        03                              # unsigned(3)
-        75                              # text(21)
-            4461726b20507572706c652041717561204c6f7665 # "Dark Purple Aqua Love"
-        04                              # unsigned(4)
-        78 7b                           # text(123)
-            4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e # "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+dcbor --in hex --annotate $CBOR_SEED
+
+│ d9 9d6c                                 # tag(40300) seed
+│     a4                                  # map(4)
+│         01                              # unsigned(1)
+│         50                              # bytes(16)
+│             59f2293a5bce7d4de59e71b4207ac5d2
+│         02                              # unsigned(2)
+│         c1                              # tag(1) date
+│             1a60359700                  # unsigned(1614124800)
+│         03                              # unsigned(3)
+│         75                              # text(21)
+│             4461726b20507572706c652041717561204c6f7665 # "Dark Purple Aqua Love"
+│         04                              # unsigned(4)
+│         78 7b                           # text(123)
+│             4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e # "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 ```
 
 The annotated hex output also uses indentation and comments to make its structure and semantics more clear.
@@ -279,25 +293,32 @@ CBOR is, after all, a binary format, and `bin` can be used with `--in` or `--out
 
 ```bash
 # Write the binary to a file using stdout.
-$ dcbor --in hex --out bin $CBOR_SEED >test.bin
+dcbor --in hex --out bin $CBOR_SEED >test.bin
 
 # Show the first 48 bytes of the binary file.
-$ hexdump -C test.bin | head -n 3
-00000000  d9 9d 6c a4 01 50 59 f2  29 3a 5b ce 7d 4d e5 9e  |..l..PY.):[.}M..|
-00000010  71 b4 20 7a c5 d2 02 c1  1a 60 35 97 00 03 75 44  |q. z.....`5...uD|
-00000020  61 72 6b 20 50 75 72 70  6c 65 20 41 71 75 61 20  |ark Purple Aqua |
+hexdump -C test.bin | head -n 3
+
+│ 00000000  d9 9d 6c a4 01 50 59 f2  29 3a 5b ce 7d 4d e5 9e  |..l..PY.):[.}M..|
+│ 00000010  71 b4 20 7a c5 d2 02 c1  1a 60 35 97 00 03 75 44  |q. z.....`5...uD|
+│ 00000020  61 72 6b 20 50 75 72 70  6c 65 20 41 71 75 61 20  |ark Purple Aqua |
 
 # The file is exactly 178 bytes long.
 wc -c < test.bin | xargs
-178
+
+│ 178
 
 # Read it back in from the file.
-$ dcbor --in bin <test.bin
-d99d6ca4015059f2293a5bce7d4de59e71b4207ac5d202c11a6035970003754461726b20507572706c652041717561204c6f766504787b4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e
+dcbor --in bin <test.bin
+
+│ d99d6ca4015059f2293a5bce7d4de59e71b4207ac5d202c11a6035970003754461726b20507572706c652041717561204c6f766504787b4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e
 
 # Read it in again, but with output in diagnostic notation.
-$ dcbor --in bin --out diag <test.bin
-40300({1: h'59f2293a5bce7d4de59e71b4207ac5d2', 2: 1(1614124800), 3: "Dark Purple Aqua Love", 4: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."})
+dcbor --in bin --out diag <test.bin
+
+│ 40300({1: h'59f2293a5bce7d4de59e71b4207ac5d2', 2: 1(1614124800), 3: "Dark Purple Aqua Love", 4: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."})
+
+# Clean up the test file.
+rm test.bin
 ```
 
 
@@ -306,7 +327,7 @@ $ dcbor --in bin --out diag <test.bin
 In [a previous chapter](../part_1/cbor_tags.html#example-tags-in-action) we saw an example of a CBOR structure in diagnostic notation that used a number of different tags and complex types like arrays and maps. Let's see how to encode that structure using the `dcbor` tool:
 
 ```bash
-$ dcbor <<EOF
+dcbor <<EOF
 {
   "sensorID": 37(h'f81d4fae7dec11d0a76500a0c91e6bf6'),    # Tag 37 for UUID
   "captureTime": 0("2023-10-27T14:30:15.123Z"),           # Tag 0 for RFC3339 string
@@ -315,7 +336,8 @@ $ dcbor <<EOF
   "alertPayload": h'01020304'                             # Direct byte string
 }
 EOF
-a56772656164696e67c482223930386873656e736f724944d82550f81d4fae7dec11d0a76500a0c91e6bf66973746174757355524cd820782368747470733a2f2f6578616d706c652e636f6d2f7374617475732f66383164346661656b6361707475726554696d65c07818323032332d31302d32375431343a33303a31352e3132335a6c616c6572745061796c6f61644401020304
+
+│ a56772656164696e67c482223930386873656e736f724944d82550f81d4fae7dec11d0a76500a0c91e6bf66973746174757355524cd820782368747470733a2f2f6578616d706c652e636f6d2f7374617475732f66383164346661656b6361707475726554696d65c07818323032332d31302d32375431343a33303a31352e3132335a6c616c6572745061796c6f61644401020304
 ```
 
 
@@ -325,59 +347,66 @@ We've seen how to compose arrays and maps in CBOR diagnostic notation:
 
 ```bash
 # Compose an array of strings:
-$ dcbor <<EOF
+dcbor <<EOF
 [ "Hello", "World" ]
 EOF
-826548656c6c6f65576f726c64
+
+│ 826548656c6c6f65576f726c64
 
 # Compose a map with string keys and values:
-$ dcbor <<EOF
+dcbor <<EOF
 { "Hello": "World" }
 EOF
-a16548656c6c6f65576f726c64
+
+│ a16548656c6c6f65576f726c64
 
 # Duplicate map keys are not allowed:
-$ dcbor <<EOF
+dcbor <<EOF
 { "Hello": "World", "Hello": "CBOR" }
 EOF
-Error: line 1: Duplicate map key
-{ "Hello": "World", "Hello": "CBOR" }
-                    ^^^^^^^
+
+│ Error: line 1: Duplicate map key
+│ { "Hello": "World", "Hello": "CBOR" }
+│                     ^^^^^^^
 
 # dCBOR does not distinguish between integer and floating point numbers,
 # so this is also a case of duplicate keys:
-$ dcbor <<EOF
+dcbor <<EOF
 { 42: "Forty-Two", 42.0: "Forty-Two Float" }
 EOF
-Error: line 1: Duplicate map key
-{ 42: "Forty-Two", 42.0: "Forty-Two Float" }
-                   ^^^^
+
+│ Error: line 1: Duplicate map key
+│ { 42: "Forty-Two", 42.0: "Forty-Two Float" }
+│                    ^^^^
 ```
 
 When working with shell scripts, you can interpolate shell variable into the input. For example, let's define a shell variable with a string value:
 
 ```bash
-$ HELLO="Hello"
-$ dcbor <<EOF
+HELLO="Hello"
+dcbor <<EOF
 [ "$HELLO", "World" ]
 EOF
-826548656c6c6f65576f726c64
+
+│ 826548656c6c6f65576f726c64
 ```
 
 This isn't bad when you know the number of elements in the array, but what if you have a variable number of elements? Here's a little script that generates the first 10 Fibonacci numbers and puts them in an array:
 
 ```bash
-$ FIB=($(awk 'BEGIN{a=1;b=1;for(i=0;i<10;i++){printf "%d ",a; t=a;a=b;b=t+b}}'))
-$ echo "${FIB[@]}"
-1 1 2 3 5 8 13 21 34 55
+FIB=($(awk 'BEGIN{a=1;b=1;for(i=0;i<10;i++){printf "%d ",a; t=a;a=b;b=t+b}}'))
+echo "${FIB[@]}"
+
+│ 1 1 2 3 5 8 13 21 34 55
 ```
 
 To get this into a CBOR array, we can use the `array` subcommand of the `dcbor` tool:
 
 ```bash
-$ FIB_DIAG=`dcbor array --out diag "${FIB[@]}"`
-$ echo $FIB_DIAG
-[1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+FIB_DIAG=`dcbor array --out diag "${FIB[@]}"`
+echo $FIB_DIAG
+
+│ [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
 ```
 
 The `array` subcommand takes a strings which can be *any* diagnostic notation (not just atomic values like the numbers we're using here), and produces a CBOR array so you don't have to muck about with brackets and commas.
@@ -385,17 +414,17 @@ The `array` subcommand takes a strings which can be *any* diagnostic notation (n
 Now let's say you want to use `$FIB_DIAG` in a CBOR map. You can use the `map` subcommand to do this:
 
 ```bash
-$ FIB_MAP=`dcbor map --annotate --out diag \
+FIB_MAP=`dcbor map --annotate --out diag \
     '"name"' '"Fibonacci Numbers"' \
     '"value"' "$FIB_DIAG"`
+echo $FIB_MAP
 
-$ echo $FIB_MAP
-{
-    "name":
-    "Fibonacci Numbers",
-    "value":
-    [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
-}
+│ {
+│     "name":
+│     "Fibonacci Numbers",
+│     "value":
+│     [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+│ }
 ```
 
 The `map` subcommand takes a list alternating keys and values. Note how we're being careful to quote the keys and values, with single-quotes being used for strings (so they don't get interpreted by the shell) and double-quotes used for the `$FIB_DIAG` variable (so it gets interpolated).
@@ -403,6 +432,7 @@ The `map` subcommand takes a list alternating keys and values. Note how we're be
 When we've got our map composed the way we want it, we can serialize it to binary, or hex for use with the `envelope` tool we'll discuss in Part III:
 
 ```bash
-$ dcbor --in diag --out hex $FIB_MAP
-a2646e616d65714669626f6e61636369204e756d626572736576616c75658a0101020305080d1518221837
+dcbor --in diag --out hex $FIB_MAP
+
+│ a2646e616d65714669626f6e61636369204e756d626572736576616c75658a0101020305080d1518221837
 ```
