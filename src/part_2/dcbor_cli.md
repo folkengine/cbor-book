@@ -203,6 +203,14 @@ The `dcbor` tool has built-in libraries of name-number correspondences for:
 
 Where it can, it will accept these names in place of numeric values.
 
+```admonish note
+Currently there is no way to define your own names for tagged values or known values within the `dcbor` tool.
+
+Tagged values could definitely benefit from a feature where users can define name-tag correspondences.
+
+Known values, by definition, are all publicly defined in the registry linked to above, so if you want to define some named known values, then registration information is also in the link above.
+```
+
 ## Validating Input
 
 Every time the `dcbor` tool is run, it validates the input as valid CBOR, and the dCBOR deterministic encoding rules. If the input is valid, it will produce the output in the specified format. If the input is not valid, it will produce an error message. For example, if we change the first byte of the hex-encoded CBOR from the example above to `0x83` (representing a CBOR array of three elements), we will get an error:
@@ -213,7 +221,7 @@ dcbor -i hex -o diag 836548656c6c6f65576f726c64
 │ Error: early end of CBOR data
 ```
 
-This error message indicates that the input expected a third array element, but it reached the end of the input before finding it. We can "hack" the input to make it valid by adding a third element. Let's just add a `0` to the end of the array:
+This error message indicates that the input expected a third array element, but it reached the end of the input before finding it. We can "hack" the input to make it valid by adding a third element. Let's just add a `0` byte to the end of the array:
 
 ```bash
 dcbor -i hex -o diag 836548656c6c6f65576f726c6400
@@ -223,6 +231,30 @@ dcbor -i hex -o diag 836548656c6c6f65576f726c6400
 
 This is a valid CBOR array of three elements, and the `dcbor` tool produces the expected output.
 
+dCBOR does not allow duplicate map keys:
+
+```bash
+dcbor <<EOF
+{ "Hello": "World", "Hello": "CBOR" }
+EOF
+
+│ Error: line 1: Duplicate map key
+│ { "Hello": "World", "Hello": "CBOR" }
+│                     ^^^^^^^
+```
+
+dCBOR does not distinguish between integer and floating point numbers, so this
+is also a case of duplicate keys:
+
+```bash
+dcbor <<EOF
+{ 42: "Forty-Two", 42.0: "Forty-Two Float" }
+EOF
+
+│ Error: line 1: Duplicate map key
+│ { 42: "Forty-Two", 42.0: "Forty-Two Float" }
+│                    ^^^^
+```
 
 ## Annotated Output
 
@@ -359,25 +391,6 @@ dcbor <<EOF
 EOF
 
 │ a16548656c6c6f65576f726c64
-
-# Duplicate map keys are not allowed:
-dcbor <<EOF
-{ "Hello": "World", "Hello": "CBOR" }
-EOF
-
-│ Error: line 1: Duplicate map key
-│ { "Hello": "World", "Hello": "CBOR" }
-│                     ^^^^^^^
-
-# dCBOR does not distinguish between integer and floating point numbers,
-# so this is also a case of duplicate keys:
-dcbor <<EOF
-{ 42: "Forty-Two", 42.0: "Forty-Two Float" }
-EOF
-
-│ Error: line 1: Duplicate map key
-│ { 42: "Forty-Two", 42.0: "Forty-Two Float" }
-│                    ^^^^
 ```
 
 When working with shell scripts, you can interpolate shell variable into the input. For example, let's define a shell variable with a string value:
@@ -409,7 +422,7 @@ echo $FIB_DIAG
 │ [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
 ```
 
-The `array` subcommand takes a strings which can be *any* diagnostic notation (not just atomic values like the numbers we're using here), and produces a CBOR array so you don't have to muck about with brackets and commas.
+The `array` subcommand takes all its arguments, which can be *any* diagnostic notation (not just atomic values like the numbers we're using here), and produces a CBOR array so you don't have to muck about with brackets and commas.
 
 Now let's say you want to use `$FIB_DIAG` in a CBOR map. You can use the `map` subcommand to do this:
 

@@ -12,7 +12,7 @@
       "include": "#markdown-cbor-code-block"
     },
     {
-      "include": "#markdown-envpat-code-block"
+      "include": "#markdown-patex-code-block"
     }
   ],
   "repository": {
@@ -88,9 +88,9 @@
         }
       ]
     },
-    "markdown-envpat-code-block": {
-      "name": "meta.embedded.block.envpat",
-      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(envpat)\\s*$",
+    "markdown-patex-code-block": {
+      "name": "meta.embedded.block.patex",
+      "begin": "(^|\\G)(\\s*)(`{3,}|~{3,})\\s*(patex)\\s*$",
       "end": "(^|\\G)(\\2)(\\3)\\s*$",
       "beginCaptures": {
         "3": {
@@ -105,10 +105,10 @@
           "name": "punctuation.definition.markdown"
         }
       },
-      "contentName": "source.envelope-pattern",
+      "contentName": "source.patex",
       "patterns": [
         {
-          "include": "source.envelope-pattern"
+          "include": "source.patex"
         }
       ]
     }

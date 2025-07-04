@@ -1,131 +1,135 @@
-# Appendix B: dCBOR Patex Reference
+# dCBOR Pattern Expression Syntax (_patex_)
 
 This syntax is inspired by regular expressions but is specifically designed for dCBOR.
 
-The pattern syntax is designed to be flexible and expressive. Patterns can be composed of *leaf patterns*, *structure patterns*, and combinators known as *meta-patterns*.
+The pattern syntax is designed to be flexible and expressive. Patterns can be composed of *value patterns*, *structure patterns*, and combinators known as *meta-patterns*.
 
-Keywords like `BOOL`, `ARRAY`, `MAP`, etc., are case-sensitive and must be written in uppercase. Patterns can include specific values, ranges, or regexes to match against the corresponding parts of the dCBOR item.
-
-Spaces may used to separate different parts of the pattern.
+Keywords like `bool`, `number`, etc., are case-sensitive. Patterns can include specific values, ranges, or regexes to match against the corresponding parts of the dCBOR item.
 
 Parentheses are used to group patterns or specify ranges. The syntax `(pattern)` is really just the repeat pattern with a repeat that matches the pattern exactly once.
 
 White space is ignored between tokens, so you can use it to make patterns more readable. The syntax examples below include white space both to show where it can be used and to show where it *cannot* be used (i.e., between characters of a token like `*?`)
 
-# Value Patterns
+## Value Patterns
 
 All value patterns match atomic CBOR values.
 
 - Boolean
-    - `BOOL`
+    - `bool`
         - Matches any boolean value.
-    - `BOOL ( true )`
+    - `true`
         - Matches the boolean value `true`.
-    - `BOOL ( false )`
+    - `false`
         - Matches the boolean value `false`.
 - ByteString
-    - `BSTR`
+    - `bstr`
         - Matches any byte string.
-    - `BSTR ( h'hex' )`
+    - `h'hex'`
         - Matches a byte string with the specified hex value. Note that the `h'...'` syntax is used to denote hex strings in CBOR diagnostic notation, so we use it here for familiarity.
-    - `BSTR ( /regex/ )`
+    - `h'/regex/'`
         - Matches a byte string that matches the specified binary regex.
 - Date
-    - `DATE`
+    - `date`
         - Matches any date value.
-    - `DATE ( iso-8601 )`
-        - Matches a date value with the specified ISO 8601 format. This is a bare string with no delimiters apart from the enclosing parentheses.
-    - `DATE ( iso-8601 ... iso-8601 )`
+    - `date'iso-8601'`
+        - Matches a date value with the specified ISO 8601 format.
+    - `date'iso-8601...iso-8601'`
         - Matches a date value within the specified range.
-    - `DATE ( iso-8601 ... )`
+    - `date'iso-8601...'`
         - Matches a date value greater than or equal to the specified ISO 8601 date.
-    - `DATE ( ... iso-8601 )`
+    - `date'...iso-8601'`
         - Matches a date value less than or equal to the specified ISO 8601 date.
-    - `DATE ( /regex/ )`
+    - `date'/regex/'`
         - Matches a date value that matches the specified regex.
 - Known Value
-    - `KNOWN`
+    - `known`
         - Matches any known value. (See the `known-values` crate for more information.)
-    - `KNOWN ( 'value' )`
-        - Matches the specified known value, which is a u64 value. dCBOR prints known values enclosed in single quotes, so we use that syntax here for familiarity.
-    - `KNOWN ( 'name' )`
-        - Matches the known value with the specified name. Again we use single quotes here for familiarity.
-    - `KNOWN ( /regex/ )`
-        - Matches a known value with a name that matches the specified regex. We do not use the single quotes here.
+    - `'value'`
+        - Matches the specified known value, which is a u64 value. dCBOR prints known values enclosed in single quotes, so we use that syntax here for familiarity. Note: This is a non-prefixed single-quoted pattern.
+    - `'name'`
+        - Matches the known value with the specified name. Again we use single quotes here for familiarity. Note: This is a non-prefixed single-quoted pattern.
+    - `'/regex/'`
+        - Matches a known value with a name that matches the specified regex. We do not use the single quotes here. Note: This is a non-prefixed single-quoted pattern.
 - Null
-    - `NULL`
+    - `null`
         - Matches the null value.
 - Number
-    - `NUMBER`
-        - Matches any number.
-    - `NUMBER ( value )`
-        - Matches the specified number.
-    - `NUMBER ( value ... value )`
+    - `number`
+        - keyword `number` matches any number.
+    - `value`
+        - Bare numeric value matches the specified number.
+    - `value...value`
         - Matches a number within the specified range.
-    - `NUMBER ( >= value )`
+    - `>=value`
         - Matches a number greater than or equal to the specified value.
-    - `NUMBER ( <= value )`
+    - `<=value`
         - Matches a number less than or equal to the specified value.
-    - `NUMBER ( > value )`
+    - `>value`
         - Matches a number greater than the specified value.
-    - `NUMBER ( < value )`
+    - `<value`
         - Matches a number less than the specified value.
-    - `NUMBER ( NaN )`
+    - `NaN`
         - Matches the NaN (Not a Number) value.
-    - `NUMBER ( Infinity )`
-        - Matches positive infinity.
-    - `NUMBER ( -Infinity )`
-        - Matches negative infinity.
+    - `Infinity`
+        - Matches the Infinity value.
+    - `-Infinity`
+        - Matches the negative Infinity value.
 - Text
-    - `TEXT`
+    - `text`
         - Matches any text value.
-    - `TEXT ( "string" )`
+    - `"string"`
         - Matches a text value with the specified string. dCBOR diagnostic notation uses double quotes for text strings, so we use that syntax here for familiarity.
-    - `TEXT ( /regex/ )`
+    - `/text-regex/`
         - Matches a text value that matches the specified regex. No double quotes are used here, as the regex is not a string but a pattern to match against the text value.
 - Digest
-    - `DIGEST ( hex )`
+    - `digest`
+        - Matches any digest value.
+    - `digest'hex'`
         - Matches a digest whose value starts with the specified hex prefix. Up to 32 bytes can be specified, which is the length of the full SHA-256 digest.
-    - `DIGEST ( ur:digest/value )`
+    - `digest'ur:digest/value'`
         - Matches the specified `ur:digest` value, parsed using `Digest::from_ur_string()`.
+    - `digest'/regex/'`
+        - Matches a digest value that matches the specified binary regex.
 
 ## Structure Patterns
 
 Structure patterns match parts of dCBOR items.
 - Array
-    - `ARRAY`
+    - `[*]`
         - Matches any array.
-    - `ARRAY ( { n } )`
+    - `[{n}]`
         - Matches an array with exactly `n` elements.
-    - `ARRAY ( { n , m } )`
+    - `[{n,m}]`
         - Matches an array with between `n` and `m` elements, inclusive.
-    - `ARRAY ( { n , } )`
+    - `[{n,}]`
         - Matches an array with at least `n` elements.
-    - `ARRAY ( pattern )`
+    - `[patex]`
         - Matches an array where the elements match the specified pattern. The pattern can be a simple pattern, a sequence of patterns, or patterns with repeat quantifiers.
         - Examples:
-            - `ARRAY ( NUMBER(42) )` - Array containing exactly one element: the number 42
-            - `ARRAY ( TEXT("a") > TEXT("b") > TEXT("c") )` - Array containing exactly `["a", "b", "c"]` in sequence
-            - `ARRAY ( ( ANY )* > NUMBER(42) > ( ANY )* )` - Array containing `42` anywhere within it
-            - `ARRAY ( NUMBER(42) > ( ANY )* )` - Array starting with `42`, followed by any elements
-            - `ARRAY ( ( ANY )* > NUMBER(42) )` - Array ending with `42`, preceded by any elements
+            - `[42]` - Array containing exactly one element: the number 42
+            - `["a", "b", "c"]` - Array containing exactly ["a", "b", "c"] in sequence
+            - `[(*)*, 42, (*)*]` - Array containing 42 anywhere within it
+            - `[42, (*)*]` - Array starting with 42, followed by any elements
+            - `[(*)*, 42]` - Array ending with 42, preceded by any elements
 - Map
-    - `MAP`
+    - `{*}`
         - Matches any map.
-    - `MAP ( n )`
+    - `{{n}}`
         - Matches a map with exactly `n` entries.
-    - `MAP ( { n , m } )`
+    - `{{n,m}}`
         - Matches a map with between `n` and `m` entries, inclusive.
-    - `MAP ( pattern: pattern, pattern: pattern, ... )`
+    - `{{n,}}`
+        - Matches a map with at least `n` entries.
+    - `{patex: patex, patex: patex, ...}`
         - Matches if the specified patterns match the map's keys and values (order isn't important).
 - Tagged
-    - `TAG`
+    - `tagged`
         - Matches any CBOR tagged value.
-    - `TAG ( value, pattern )`
+    - `tagged ( value, patex )`
         - Matches the specified CBOR tagged value with content that matches the given pattern. The tag value is a u64 value, formatted as a bare integer with no delimiters apart from the enclosing parentheses.
-    - `TAG ( name, pattern )`
-        - Matches the CBOR tagged value with the specified name and content that matches the given pattern. The tag name is formatted as a bare alphanumeric string (including hyphens and underscores) with no delimiters apart from the enclosing parentheses.
-    - `TAG ( /regex/, pattern )`
+    - `tagged ( name, patex )`
+        - Matches the CBOR tagged value with the specified name and content that matches the given patex. The tag name is formatted as a bare alphanumeric string (including hyphens and underscores) with no delimiters apart from the enclosing parentheses.
+    - `tagged ( /regex/, patex )`
         - Matches a CBOR tagged value with a name that matches the specified regex and content that matches the given pattern.
 
 ## Meta Patterns
@@ -135,55 +139,50 @@ The following meta patterns are available to combine or modify other patterns.
 Precedence: Repeat has the highest precedence, followed by And, Not, Sequence, and then Or. Parentheses can be used to group patterns and change precedence.
 
 - And
-    - `pattern & pattern & pattern`…
+    - `patex & patex & patex`…
         - Matches if all specified patterns match.
 - Any
-    - `ANY`
-        - Always matches.
+    - `*`
+        - A bare asterisk matches any value.
 - Capture
-    - `@name ( pattern )`
+    - `@name ( patex )`
         - Matches the specified pattern and captures the match for later use with the given name.
-- None
-    - `NONE`
-        - Never matches.
 - Not
-    - `! pattern`
+    - `! patex`
         - Matches if the specified pattern does not match.
+            - The pattern `!*` matches no values.
 - Or
-    - `pattern | pattern | pattern…`
+    - `patex | patex | patex...`
         - Matches if any of the specified patterns match.
 - Repeat
     - Greedy — grabs as many repetitions as possible, then backtracks if the rest of the pattern cannot match.
-        - `( pattern )` (exactly once, this is used to group patterns)
-        - `( pattern )*` (0 or more)
-        - `( pattern )?` (0 or 1)
-        - `( pattern )+` (1 or more)
-        - `( pattern ){ n , m }` (`n` to `m` repeats, inclusive)
+        - `( patex )` (exactly once, this is used to group patterns)
+        - `( patex )*` (0 or more)
+        - `( patex )?` (0 or 1)
+        - `( patex )+` (1 or more)
+        - `( patex ){ n , m }` (`n` to `m` repeats, inclusive)
     - Lazy — starts with as few repetitions as possible, adding more only if the rest of the pattern cannot match.
-        - `( pattern )*?` (0 or more)
-        - `( pattern )??` (0 or 1)
-        - `( pattern )+?` (1 or more)
-        - `( pattern ){ n , m }?` (`n` to `m` repeats, inclusive)
+        - `( patex )*?` (0 or more)
+        - `( patex )??` (0 or 1)
+        - `( patex )+?` (1 or more)
+        - `( patex ){ n , m }?` (`n` to `m` repeats, inclusive)
     - Possessive — grabs as many repetitions as possible and never backtracks; if the rest of the pattern cannot match, the whole match fails.
-        - `( pattern )*+` (0 or more)
-        - `( pattern )?+` (0 or 1)
-        - `( pattern )++` (1 or more)
-        - `( pattern ){ n , m }+` (`n` to `m` repeats, inclusive)
+        - `( patex )*+` (0 or more)
+        - `( patex )?+` (0 or 1)
+        - `( patex )++` (1 or more)
+        - `( patex ){ n , m }+` (`n` to `m` repeats, inclusive)
 - Search
-    - `SEARCH ( pattern )`
+    - `search ( patex )`
       - Visits every node in the CBOR tree, matching the specified pattern against each node.
-- Sequence
-    - `pattern > pattern > pattern`
-        - Matches if the specified patterns match in sequence, with no other nodes in between.
 
-## Advanced Composite Patterns
+## Example Composite Patterns
 
 The following patterns show examples of combining structure patterns with meta patterns to create complex matching expressions:
 
 - Nested Structure Patterns
-    - `TAG ( value , ARRAY ( pattern ) )`
+    - `tagged ( value , [ patex ] )`
         - Matches a tagged value containing an array with the specified pattern. The pattern can be simple patterns, sequences, or patterns with repeat quantifiers.
-    - `MAP ( pattern : ARRAY ( { n , } ) )`
+    - `{patex: [{{n,}}]}`
         - Matches a map where the specified key pattern maps to an array with at least `n` elements.
-    - `ARRAY ( MAP ( pattern : pattern ) > ( pattern )* )`
+    - `[{patex: patex}, (patex)*]`
         - Matches an array starting with a map that contains the specified key-value pattern, followed by any other elements.

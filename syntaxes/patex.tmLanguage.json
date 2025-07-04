@@ -1,0 +1,292 @@
+{
+  "scopeName": "source.patex",
+  "name": "Patex",
+  "patterns": [
+    {
+      "include": "#prefixed-regex-strings"
+    },
+    {
+      "include": "#prefixed-strings"
+    },
+    {
+      "include": "#double-quoted-strings"
+    },
+    {
+      "include": "#bare-quoted-regex"
+    },
+    {
+      "include": "#envelope-keywords"
+    },
+    {
+      "include": "#syntactic-placeholders"
+    },
+    {
+      "include": "#envelope-annotations"
+    },
+    {
+      "include": "#envelope-operators"
+    },
+    {
+      "include": "#bare-regex"
+    },
+    {
+      "include": "#parenthesized-with-regex"
+    },
+    {
+      "include": "source.dcbor-envelope"
+    }
+  ],
+  "repository": {
+    "envelope-keywords": {
+      "patterns": [
+        {
+          "comment": "Patex keywords",
+          "match": "\\b(?:leaf|bool|bstr|cbor|date|known|number|tagged|text|assert|assertpred|assertobj|digest|node|obj|obscured|elided|encrypted|compressed|pred|subj|wrapped|unwrap|search)\\b",
+          "name": "keyword.other.patex"
+        }
+      ]
+    },
+    "syntactic-placeholders": {
+      "patterns": [
+        {
+          "comment": "Syntactic placeholders in angle brackets",
+          "match": "<[a-zA-Z0-9_/:-]+>",
+          "name": "keyword.placeholder.patex"
+        }
+      ]
+    },
+    "envelope-annotations": {
+      "patterns": [
+        {
+          "comment": "Named captures (annotations) starting with @",
+          "match": "(@)([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": {"name": "punctuation.definition.annotation.patex"},
+            "2": {"name": "variable.annotation.patex"}
+          }
+        }
+      ]
+    },
+    "envelope-operators": {
+      "patterns": [
+        {
+          "comment": "Comparison operators with numbers",
+          "match": "(?<![a-zA-Z0-9])(>=|<=|>|<)(?=\\s*[0-9])",
+          "name": "keyword.operator.patex"
+        },
+        {
+          "comment": "General envelope pattern operators",
+          "match": "[&|!*?+]|->",
+          "name": "keyword.operator.patex"
+        }
+      ]
+    },
+    "prefixed-regex-strings": {
+      "patterns": [
+        {
+          "comment": "Prefixed single-quoted strings containing regex patterns with keyword prefixes",
+          "begin": "\\b(leaf|bool|bstr|cbor|date|known|number|tagged|text|assert|assertpred|assertobj|digest|node|obj|obscured|elided|encrypted|compressed|pred|subj|wrapped|unwrap|search)(')(/)",
+          "end": "(/[gimsuxy]*)(')",
+          "beginCaptures": {
+            "1": {"name": "keyword.other.patex"},
+            "2": {"name": "punctuation.definition.string.begin.patex"},
+            "3": {"name": "string.regexp.patex"}
+          },
+          "endCaptures": {
+            "1": {"name": "string.regexp.patex"},
+            "2": {"name": "punctuation.definition.string.end.patex"}
+          },
+          "patterns": [
+            {
+              "comment": "Syntactic placeholders within regex",
+              "match": "<[a-zA-Z0-9_/:-]+>",
+              "name": "keyword.placeholder.patex"
+            },
+            {
+              "comment": "Regex content",
+              "match": "[^/<\\\\]+",
+              "name": "string.regexp.patex"
+            },
+            {
+              "comment": "Escaped characters in regex",
+              "match": "\\\\.",
+              "name": "constant.character.escape.patex"
+            }
+          ]
+        },
+        {
+          "comment": "Prefixed single-quoted strings containing regex patterns with non-keyword prefixes",
+          "begin": "([a-zA-Z_][a-zA-Z0-9_]*)(')(/)",
+          "end": "(/[gimsuxy]*)(')",
+          "beginCaptures": {
+            "1": {"name": "storage.type.string.patex"},
+            "2": {"name": "punctuation.definition.string.begin.patex"},
+            "3": {"name": "string.regexp.patex"}
+          },
+          "endCaptures": {
+            "1": {"name": "string.regexp.patex"},
+            "2": {"name": "punctuation.definition.string.end.patex"}
+          },
+          "patterns": [
+            {
+              "comment": "Syntactic placeholders within regex",
+              "match": "<[a-zA-Z0-9_/:-]+>",
+              "name": "keyword.placeholder.patex"
+            },
+            {
+              "comment": "Regex content",
+              "match": "[^/<\\\\]+",
+              "name": "string.regexp.patex"
+            },
+            {
+              "comment": "Escaped characters in regex",
+              "match": "\\\\.",
+              "name": "constant.character.escape.patex"
+            }
+          ]
+        }
+      ]
+    },
+    "prefixed-strings": {
+      "patterns": [
+        {
+          "comment": "Prefixed single-quoted strings with syntactic placeholders and keyword prefixes",
+          "begin": "\\b(leaf|bool|bstr|cbor|date|known|number|tagged|text|assert|assertpred|assertobj|digest|node|obj|obscured|elided|encrypted|compressed|pred|subj|wrapped|unwrap|search)(')",
+          "end": "'",
+          "beginCaptures": {
+            "1": {"name": "keyword.other.patex"},
+            "2": {"name": "punctuation.definition.string.begin.patex"}
+          },
+          "endCaptures": {
+            "0": {"name": "punctuation.definition.string.end.patex"}
+          },
+          "patterns": [
+            {
+              "comment": "Syntactic placeholders within prefixed strings",
+              "match": "<[a-zA-Z0-9_/:-]+>",
+              "name": "keyword.placeholder.patex"
+            },
+            {
+              "comment": "Regular string content",
+              "match": "[^'<\\\\]+",
+              "name": "string.quoted.prefixed.patex"
+            },
+            {
+              "comment": "Escaped characters",
+              "match": "\\\\.",
+              "name": "constant.character.escape.patex"
+            }
+          ]
+        },
+        {
+          "comment": "Prefixed single-quoted strings with syntactic placeholders and non-keyword prefixes",
+          "begin": "([a-zA-Z_][a-zA-Z0-9_]*)(')",
+          "end": "'",
+          "beginCaptures": {
+            "1": {"name": "storage.type.string.patex"},
+            "2": {"name": "punctuation.definition.string.begin.patex"}
+          },
+          "endCaptures": {
+            "0": {"name": "punctuation.definition.string.end.patex"}
+          },
+          "patterns": [
+            {
+              "comment": "Syntactic placeholders within prefixed strings",
+              "match": "<[a-zA-Z0-9_/:-]+>",
+              "name": "keyword.placeholder.patex"
+            },
+            {
+              "comment": "Regular string content",
+              "match": "[^'<\\\\]+",
+              "name": "string.quoted.prefixed.patex"
+            },
+            {
+              "comment": "Escaped characters",
+              "match": "\\\\.",
+              "name": "constant.character.escape.patex"
+            }
+          ]
+        }
+      ]
+    },
+    "double-quoted-strings": {
+      "patterns": [
+        {
+          "comment": "Double-quoted strings with syntactic placeholders",
+          "begin": "\"",
+          "end": "\"",
+          "beginCaptures": {
+            "0": {"name": "punctuation.definition.string.begin.patex"}
+          },
+          "endCaptures": {
+            "0": {"name": "punctuation.definition.string.end.patex"}
+          },
+          "patterns": [
+            {
+              "comment": "Syntactic placeholders within double-quoted strings",
+              "match": "<[a-zA-Z0-9_/:-]+>",
+              "name": "keyword.placeholder.patex"
+            },
+            {
+              "comment": "Regular string content",
+              "match": "[^\"<\\\\]+",
+              "name": "string.quoted.double.patex"
+            },
+            {
+              "comment": "Escaped characters",
+              "match": "\\\\.",
+              "name": "constant.character.escape.patex"
+            }
+          ]
+        }
+      ]
+    },
+    "bare-regex": {
+      "patterns": [
+        {
+          "comment": "Bare regex patterns",
+          "match": "/([^/\\\\\\n]|\\\\.)+/[gimsuxy]*",
+          "name": "string.regexp.patex"
+        }
+      ]
+    },
+    "bare-quoted-regex": {
+      "patterns": [
+        {
+          "comment": "Bare single-quoted strings containing regex patterns",
+          "match": "(')(/[^/\\\\\\n]*(?:\\\\.[^/\\\\\\n]*)*/[gimsuxy]*)(')",
+          "captures": {
+            "1": {"name": "punctuation.definition.string.begin.patex"},
+            "2": {"name": "string.regexp.patex"},
+            "3": {"name": "punctuation.definition.string.end.patex"}
+          }
+        }
+      ]
+    },
+    "parenthesized-with-regex": {
+      "patterns": [
+        {
+          "comment": "Parenthesized expressions with regex support",
+          "begin": "\\(",
+          "end": "\\)",
+          "beginCaptures": {
+            "0": {"name": "punctuation.parenthesis.begin.patex"}
+          },
+          "endCaptures": {
+            "0": {"name": "punctuation.parenthesis.end.patex"}
+          },
+          "patterns": [
+            {
+              "comment": "Regex patterns with optional flags inside parentheses",
+              "match": "/([^/\\\\\\n]|\\\\.)+/[gimsuxy]*",
+              "name": "string.regexp.patex"
+            },
+            {
+              "include": "$self"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

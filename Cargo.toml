@@ -5,7 +5,7 @@ edition = "2024"
 license = "BSD-2-Clause-Patent"
 
 [dependencies]
-dcbor = "^0.21.0"
-bc-envelope = "^0.32.0"
+dcbor = "^0.22.0"
+bc-envelope = "^0.33.0"
 anyhow = "1.0.98"
 hex = "0.4.3"

@@ -1,9 +1,9 @@
 # Matching Patterns with `dcbor` CLI
 
-The `dcbor` CLI tool includes powerful pattern matching capabilities that allow you to search for, extract, and validate specific structures within dCBOR data. This chapter explores the `dcbor match` subcommand, which leverages the comprehensive pattern expression (_"patex"_) syntax of the `dcbor-pattern` crate to enable sophisticated data analysis and extraction workflows.
+The `dcbor` CLI tool includes powerful pattern matching capabilities that allow you to search for, extract, and validate specific structures within dCBOR data. This chapter introduces the `dcbor match` subcommand, which leverages the comprehensive pattern expression (AKA _"patex"_) syntax of the `dcbor-pattern` crate to enable sophisticated data analysis and extraction workflows.
 
 ```admonish tip
-This chapter builds upon the foundation established in [The `dcbor` Command Line Tool](dcbor_cli.md) chapter. If you haven't read that chapter yet, we recommend doing so first to familiarize yourself with the basic `dcbor` CLI operations.
+This chapter builds on the foundation established in [The `dcbor` Command Line Tool](dcbor_cli.md) chapter. If you haven't read that chapter yet, we recommend doing so first to familiarize yourself with the basic `dcbor` CLI operations.
 ```
 
 ## What is Pattern Matching?
@@ -24,7 +24,7 @@ dcbor match <PATTERN> [INPUT] [OPTIONS]
 ```
 
 Where:
-- `<PATTERN>` is a pattern expression (or _"patex"_) written in dcbor-pattern expression syntax we'll explore in detail
+- `<PATTERN>` is a pattern expression (AKA _"patex"_) written in dcbor-pattern expression syntax we'll explore in detail
 - `[INPUT]` is the dCBOR data to match against (or read from stdin)
 - `[OPTIONS]` control input/output formats and matching behavior
 
@@ -144,6 +144,8 @@ dcbor match bstr "h'68656c6c6f'"
 │ h'68656c6c6f'
 ```
 
+The empty byte string is perfectly legal:
+
 ```bash
 dcbor match bstr "h''"
 
@@ -152,7 +154,7 @@ dcbor match bstr "h''"
 
 ### Booleans and Null
 
-The `bool` pattern matches boolean values:
+The `bool` pattern matches both boolean values:
 
 ```bash
 dcbor match bool true
@@ -189,9 +191,9 @@ dcbor match '*' 42
 ```
 
 ```bash
-dcbor match '*' '"text"'
+dcbor match '*' '"hello"'
 
-│ "text"
+│ "hello"
 ```
 
 ```bash
@@ -204,7 +206,7 @@ dcbor match '*' "h'1234'"
 
 ## Specific Value Matching
 
-Beyond matching types, you can match exact values by providing the specific value.
+Beyond matching types, you can match exact values by providing the specific value as your pattern.
 
 ### Specific Numbers
 
@@ -372,6 +374,16 @@ Regular expressions (or _regexes_) are powerful pattern matching tools for text,
 dCBOR patexes that this chapter describes are based on some of the same concepts as regexes, but they are not the same. The dCBOR pattern expression syntax is designed specifically for matching CBOR data structures and values, while regular expressions are specifically for processing text. Nonetheless, some of the types you can match with dCBOR patterns, such as text strings and byte strings, can be matched using regular expressions.
 
 Text strings can be matched using regular expressions, by using the a regex enclosed in forward slashes: `/regex/`:
+
+```envelope
+"Alice" [
+    'knows': "Bob"
+]
+```
+
+```patex
+/^[^@]+@[^@]+\.[^@]+$/
+```
 
 ```bash
 # Match any email-like pattern
@@ -617,12 +629,12 @@ If you want to match a map that *only* contains a specific key-value pair, you c
 
 ```bash
 # Match map with exactly one key-value pair, where key is 1 and value is any text
-dcbor match '{{1}} & {1: text}' '{1: "first", 2: "second"}'
+dcbor match '{ {1} } & {1: text}' '{1: "first", 2: "second"}'
 
 │ Error: No match
 
 # Same thing, but specify there must be two entries
-dcbor match '{{2}} & {1: text}' '{1: "first", 2: "second"}'
+dcbor match '{ {2} } & {1: text}' '{1: "first", 2: "second"}'
 
 │ {1: "first", 2: "second"}
 ```

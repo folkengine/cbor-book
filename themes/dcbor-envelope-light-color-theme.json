@@ -92,7 +92,7 @@
             }
         },
         {
-            "scope": "string.quoted.prefixed.dcbor, string.quoted.prefixed.multiline.dcbor, entity.name.tag.dcbor",
+            "scope": "string.quoted.prefixed.dcbor, string.quoted.prefixed.multiline.dcbor, entity.name.tag.dcbor, string.quoted.prefixed.patex",
             "settings": {
                 "foreground": "#0D7D65"
             }
@@ -100,7 +100,7 @@
         {
             "scope": [
                 "string.regexp",
-                "string.regexp.envelope-pattern"
+                "string.regexp.patex"
             ],
             "settings": {
                 "foreground": "#b83838"
@@ -108,7 +108,24 @@
         },
         {
             "scope": [
-                "keyword.operator.envelope-pattern",
+                "storage.type.string.patex"
+            ],
+            "settings": {
+                "foreground": "#0D7D65"
+            }
+        },
+        {
+            "scope": [
+                "punctuation.definition.string.begin.patex",
+                "punctuation.definition.string.end.patex"
+            ],
+            "settings": {
+                "foreground": "#0D7D65"
+            }
+        },
+        {
+            "scope": [
+                "keyword.operator.patex",
                 "keyword.operator.ellipsis.dcbor"
             ],
             "settings": {
@@ -117,17 +134,24 @@
         },
         {
             "scope": [
-                "variable.annotation.envelope-pattern",
-                "punctuation.definition.annotation.envelope-pattern"
+                "variable.annotation.patex",
+                "punctuation.definition.annotation.patex"
             ],
             "settings": {
                 "foreground": "#c051a2"
             }
         },
         {
-            "scope": "keyword.other.envelope-pattern",
+            "scope": "keyword.other.patex",
             "settings": {
                 "foreground": "#1661e1"
+            }
+        },
+        {
+            "scope": "keyword.placeholder.patex",
+            "settings": {
+                "foreground": "#8e8ee8",
+                "fontStyle": "italic"
             }
         },
         {

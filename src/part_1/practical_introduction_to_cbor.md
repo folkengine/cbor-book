@@ -309,6 +309,9 @@ Now let's combine these elements into a more complex, nested structure. Consider
 }
 ```
 
+*Total size of file: 154 bytes*\
+*Without whitespace: 109 bytes*
+
 Note that the `"data"` value in JSON is base64 encoded, representing the bytes `0x01, 0x00, 0x00, 0xff`. In CBOR, we can represent this directly as a byte string.
 
 **CBOR Diagnostic Notation:**
@@ -350,6 +353,8 @@ a5                     # map(5 pairs follow)
       64 64617461         # key 1: text(4 bytes, "data")
       44 010000FF         # value 1: bytes(4 bytes, h'010000FF')
 ```
+
+*Total size of file: 68 bytes*
 
 This example demonstrates how the basic building blocks combine to represent complex, nested data structures efficiently.
 
