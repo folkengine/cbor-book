@@ -124,7 +124,68 @@ fn process_inline_syntax(md: &str) -> StdResult<String> {
     Ok(result.to_string())
 }
 
+/// Extracts content from HEREDOC assignment patterns in patex blocks.
+///
+/// Looks for patterns like:
+/// ```
+/// PATTERN=$(cat <<'EOF'
+/// "hello"
+/// EOF
+/// )
+/// ```
+///
+/// And extracts just the heredoc content: `"hello"`
+fn extract_heredoc_content(code: &str) -> Option<String> {
+    let lines: Vec<&str> = code.lines().collect();
+
+    // Look for the heredoc pattern
+    let mut heredoc_start = None;
+    let mut heredoc_end = None;
+    let mut delimiter = None;
+
+    for (i, line) in lines.iter().enumerate() {
+        let trimmed = line.trim();
+
+        // Look for HEREDOC start pattern: VARIABLE=$(cat <<'DELIMITER'
+        if let Some(captures) =
+            Regex::new(r"^\w+\s*=\s*\$\(cat\s+<<'([^']+)'\s*$")
+                .ok()?
+                .captures(trimmed)
+        {
+            delimiter = Some(captures.get(1)?.as_str());
+            heredoc_start = Some(i + 1);
+            continue;
+        }
+
+        // Look for HEREDOC end pattern
+        if let (Some(delim), Some(_)) = (delimiter, heredoc_start) {
+            if trimmed == delim {
+                heredoc_end = Some(i);
+                break;
+            }
+        }
+    }
+
+    // Extract the content between start and end
+    if let (Some(start), Some(end)) = (heredoc_start, heredoc_end) {
+        if start < end {
+            let content_lines = &lines[start..end];
+            let content = content_lines.join("\n");
+            return Some(content.trim().to_string());
+        }
+    }
+
+    None
+}
+
 fn shiki_html(code: &str, lang: &str) -> StdResult<String> {
+    // Special handling for patex blocks with HEREDOC assignments
+    let processed_code = if lang == "patex" {
+        extract_heredoc_content(code).unwrap_or_else(|| code.to_string())
+    } else {
+        code.to_string()
+    };
+
     let mut child = Command::new("node")
         .arg("scripts/highlight.mjs")
         .arg(lang)
@@ -132,7 +193,11 @@ fn shiki_html(code: &str, lang: &str) -> StdResult<String> {
         .stdout(Stdio::piped())
         .spawn()
         .context("Cannot spawn Node (is it installed and on PATH?)")?;
-    child.stdin.as_mut().unwrap().write_all(code.as_bytes())?;
+    child
+        .stdin
+        .as_mut()
+        .unwrap()
+        .write_all(processed_code.as_bytes())?;
     let output = child.wait_with_output()?;
     if !output.status.success() {
         anyhow::bail!("Shiki exited with error: {}", output.status);

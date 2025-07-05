@@ -60,6 +60,23 @@ dcbor -o diag 42
 │ 42
 ```
 
+````admonish note
+For clarity, in the examples in this chapter, the actual patex used is shown in its own block, and referred to in the command lines that follow it as `[bash] $PATTERN`. So when you see a block like this:
+
+```patex
+number
+```
+
+What we're hiding is that we really wrote this:
+
+```bash
+PATTERN=$(cat <<'EOF'
+number
+EOF
+)
+```
+````
+
 What if you have two pieces of CBOR data, and you want to check whether one of them is a number?
 
 ```bash
@@ -70,11 +87,14 @@ CBOR2=6548656c6c6f
 You can use the `dcbor match` command to check whether either of these is a number:
 
 ```patex
-PATTERN=number
+PATTERN=$(cat <<'EOF'
+number
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" -i hex $CBOR1
+dcbor match $PATTERN -i hex $CBOR1
 ```
 
 ```dcbor
@@ -82,7 +102,7 @@ dcbor match "$PATTERN" -i hex $CBOR1
 ```
 
 ```bash
-dcbor match $NUMBER -i hex $CBOR2
+dcbor match $PATTERN -i hex $CBOR2
 ```
 
 ```dcbor
@@ -92,11 +112,14 @@ dcbor match $NUMBER -i hex $CBOR2
 We can see that `CBOR1` is the number `42`, and `CBOR2` is not a numeric value. So let's see whether it is a textual string by using the `TEXT` pattern:
 
 ```patex
-PATTERN=text
+PATTERN=$(cat <<'EOF'
+text
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" -i hex $CBOR2
+dcbor match $PATTERN -i hex $CBOR2
 ```
 
 ```dcbor
@@ -108,11 +131,14 @@ The pattern matches, and we can see it is the string `"Hello"`.
 The `number` pattern matches *any* numeric value, whether it's an integer or floating-point number:
 
 ```patex
-PATTERN=number
+PATTERN=$(cat <<'EOF'
+number
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" 42
+dcbor match $PATTERN 42
 ```
 
 ```dcbor
@@ -120,7 +146,7 @@ dcbor match "$PATTERN" 42
 ```
 
 ```bash
-dcbor match "$PATTERN" 3.14
+dcbor match $PATTERN 3.14
 ```
 
 ```dcbor
@@ -136,11 +162,14 @@ Numbers in CBOR can be positive or negative integers, or floating-point values.
 To avoid confusion with command-line flags, you can use `--` to separate the pattern from the input. `--` signals that there are no command-line flags following it, allowing you to pass values that might otherwise be interpreted as flags. This is especially useful for negative numbers or special values like `-Infinity`.
 
 ```patex
-PATTERN=number
+PATTERN=$(cat <<'EOF'
+number
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" -- -1
+dcbor match $PATTERN -- -1
 ```
 
 ```dcbor
@@ -153,11 +182,14 @@ dcbor match "$PATTERN" -- -1
 As we demonstrated above, the `text` pattern matches any text string:
 
 ```patex
-PATTERN=text
+PATTERN=$(cat <<'EOF'
+text
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" '"hello"'
+dcbor match $PATTERN '"hello"'
 ```
 
 ```dcbor
@@ -165,7 +197,7 @@ dcbor match "$PATTERN" '"hello"'
 ```
 
 ```bash
-dcbor match "$PATTERN" '"🌎"'
+dcbor match $PATTERN '"🌎"'
 ```
 
 ```dcbor
@@ -179,11 +211,14 @@ Notice that when providing text strings as input to the CLI, you need to include
 The `bstr` pattern matches any byte string. Byte strings in CBOR are sequences of raw bytes, distinct from text strings which have UTF-8 character encoding semantics:
 
 ```patex
-PATTERN=bstr
+PATTERN=$(cat <<'EOF'
+bstr
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" "h'68656c6c6f'"
+dcbor match $PATTERN "h'68656c6c6f'"
 ```
 
 ```dcbor
@@ -193,7 +228,7 @@ dcbor match "$PATTERN" "h'68656c6c6f'"
 The empty byte string is perfectly legal:
 
 ```bash
-dcbor match "$PATTERN" "h''"
+dcbor match $PATTERN "h''"
 ```
 
 ```dcbor
@@ -205,11 +240,14 @@ dcbor match "$PATTERN" "h''"
 The `bool` pattern matches both boolean values:
 
 ```patex
-PATTERN=bool
+PATTERN=$(cat <<'EOF'
+bool
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" true
+dcbor match $PATTERN true
 ```
 
 ```dcbor
@@ -217,7 +255,7 @@ dcbor match "$PATTERN" true
 ```
 
 ```bash
-dcbor match "$PATTERN" false
+dcbor match $PATTERN false
 ```
 
 ```dcbor
@@ -231,11 +269,14 @@ Don't confuse the response `[dcbor] false` here as meaning that the pattern didn
 The `[patex] null` pattern matches CBOR's `[dcbor] null` value:
 
 ```patex
-PATTERN=null
+PATTERN=$(cat <<'EOF'
+null
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" null
+dcbor match $PATTERN null
 ```
 
 ```dcbor
@@ -247,11 +288,14 @@ dcbor match "$PATTERN" null
 The `*` ("any") pattern matches any CBOR value whatsoever.
 
 ```patex
-PATTERN=*
+PATTERN=$(cat <<'EOF'
+*
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" 42
+dcbor match $PATTERN 42
 ```
 
 ```dcbor
@@ -259,7 +303,7 @@ dcbor match "$PATTERN" 42
 ```
 
 ```bash
-dcbor match "$PATTERN" '"hello"'
+dcbor match $PATTERN '"hello"'
 ```
 
 ```dcbor
@@ -267,7 +311,7 @@ dcbor match "$PATTERN" '"hello"'
 ```
 
 ```bash
-dcbor match "$PATTERN" "h'1234'"
+dcbor match $PATTERN "h'1234'"
 ```
 
 ```dcbor
@@ -283,11 +327,14 @@ Beyond matching types, you can match exact values by providing the specific valu
 ### Specific Numbers
 
 ```patex
-PATTERN=42
+PATTERN=$(cat <<'EOF'
+42
+EOF
+)
 ```
 
 ```bash
-dcbor match "$PATTERN" 42
+dcbor match $PATTERN 42
 ```
 
 ```dcbor
@@ -296,7 +343,7 @@ dcbor match "$PATTERN" 42
 
 ```bash
 # This won't match because 43 ≠ 42
-dcbor match "$PATTERN" 43
+dcbor match $PATTERN 43
 ```
 
 ```dcbor
@@ -322,7 +369,7 @@ dcbor match $PATTERN '"hello"'
 
 ```bash
 # This won't match because the strings are different
-dcbor match '"hello"' '"world"'
+dcbor match $PATTERN '"world"'
 ```
 
 ```dcbor
@@ -331,8 +378,15 @@ dcbor match '"hello"' '"world"'
 
 ### Specific Byte Strings
 
+```patex
+PATTERN=$(cat <<'EOF'
+h'1234'
+EOF
+)
+```
+
 ```bash
-dcbor match "h'1234'" "h'1234'"
+dcbor match $PATTERN "h'1234'"
 ```
 
 ```dcbor
@@ -341,8 +395,15 @@ dcbor match "h'1234'" "h'1234'"
 
 ### Specific Boolean Values
 
+```patex
+PATTERN=$(cat <<'EOF'
+true
+EOF
+)
+```
+
 ```bash
-dcbor match true true
+dcbor match $PATTERN true
 ```
 
 ```dcbor
@@ -351,7 +412,7 @@ dcbor match true true
 
 ```bash
 # This won't match because false ≠ true
-dcbor match true false
+dcbor match $PATTERN false
 ```
 
 ```dcbor
@@ -370,8 +431,15 @@ Numbers can be matched using ranges and inequality operators, which is useful fo
 
 You can match numbers within a specific range using the `...` syntax:
 
+```patex
+PATTERN=$(cat <<'EOF'
+1...10
+EOF
+)
+```
+
 ```bash
-dcbor match "1...10" 5
+dcbor match $PATTERN 5
 ```
 
 ```dcbor
@@ -379,7 +447,7 @@ dcbor match "1...10" 5
 ```
 
 ```bash
-dcbor match "1...10" 15
+dcbor match $PATTERN 15
 ```
 
 ```dcbor
@@ -391,8 +459,15 @@ The `...` syntax is shorthand for an _inclusive_, or _closed_ range, meaning it 
 
 The same range of numbers can also be specified with a more complex syntax using the `&` operator, which we'll cover later.
 
+```patex
+PATTERN=$(cat <<'EOF'
+>=1 & <=10
+EOF
+)
+```
+
 ```bash
-dcbor match ">=1 & <=10" 5
+dcbor match $PATTERN 5
 ```
 
 ```dcbor
@@ -404,9 +479,16 @@ dcbor match ">=1 & <=10" 5
 
 Numbers support various inequality operators. Quoting is important here to ensure the shell doesn't misinterpret the operators as command-line directives:
 
+```patex
+PATTERN=$(cat <<'EOF'
+>5
+EOF
+)
+```
+
 ```bash
 # Greater than
-dcbor match ">5" 10
+dcbor match $PATTERN 10
 ```
 
 ```dcbor
