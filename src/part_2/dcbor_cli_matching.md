@@ -375,8 +375,6 @@ dCBOR patexes that this chapter describes are based on some of the same concepts
 
 Text strings can be matched using regular expressions, by using the a regex enclosed in forward slashes: `/regex/`:
 
-`[patex] /^[^@]+@[^@]+\.[^@]+$/`
-
 ```bash
 # Match any email-like pattern
 dcbor match '/^[^@]+@[^@]+\.[^@]+$/' '"user@example.com"'
