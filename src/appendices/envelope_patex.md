@@ -1,4 +1,4 @@
-# Envelope Pattern Expression Syntax (_patex_)
+# Envelope Pattern Expressions (_patex_)
 
 This syntax is inspired by regular expressions but is specifically designed for Gordian Envelope.
 
@@ -26,49 +26,49 @@ All leaf patterns match Envelope leaves, which are CBOR values.
 - ByteString
     - `[patex] bstr`
         - Matches any byte string.
-    - `[patex] h'hex'`
-        - Matches a byte string with the specified hex value. Note that the `[patex] h'...'` syntax is used to denote hex strings in CBOR diagnostic notation, so we use it here for familiarity.
-    - `[patex] h'/regex/'`
+    - `[patex] h'<hex>'`
+        - Matches a byte string with the specified hex value.
+    - `[patex] h'/<regex>/'`
         - Matches a byte string that matches the specified binary regex.
 - Date
     - `[patex] date`
         - Matches any date value.
-    - `[patex] date'iso-8601'`
+    - `[patex] date'<iso-date>'`
         - Matches a date value with the specified ISO 8601 format.
-    - `[patex] date'iso-8601...iso-8601'`
+    - `[patex] date'<iso-date>...<iso-date>'`
         - Matches a date value within the specified range.
-    - `[patex] date'iso-8601...'`
+    - `[patex] date'<iso-date>...'`
         - Matches a date value greater than or equal to the specified ISO 8601 date.
-    - `[patex] date'...iso-8601'`
+    - `[patex] date'...<iso-date>'`
         - Matches a date value less than or equal to the specified ISO 8601 date.
-    - `[patex] date'/regex/'`
+    - `[patex] date'/<regex>/'`
         - Matches a date value that matches the specified regex.
 - Known Value
     - `[patex] known`
         - Matches any known value. (See the `known-values` crate for more information.)
-    - `[patex] 'value'`
+    - `[patex] '<value>'`
         - Matches the specified known value, which is a u64 value. dCBOR prints known values enclosed in single quotes, so we use that syntax here for familiarity. Note: This is a non-prefixed single-quoted pattern.
-    - `[patex] 'name'`
+    - `[patex] '<name>'`
         - Matches the known value with the specified name. Again we use single quotes here for familiarity. Note: This is a non-prefixed single-quoted pattern.
-    - `[patex] '/regex/'`
+    - `[patex] '/<regex>/'`
         - Matches a known value with a name that matches the specified regex. We do not use the single quotes here. Note: This is a non-prefixed single-quoted pattern.
 - Null
     - `[patex] null`
         - Matches the null value.
 - Number
     - `[patex] number`
-        - keyword `number` matches any number.
-    - `[patex] value`
+        - Matches any number.
+    - `[patex] <n>`
         - Bare numeric value matches the specified number.
-    - `[patex] value...value`
+    - `[patex] <n>...<m>`
         - Matches a number within the specified range.
-    - `[patex] >=value`
+    - `[patex] >= <n>`
         - Matches a number greater than or equal to the specified value.
-    - `[patex] <=value`
+    - `[patex] <= <n>`
         - Matches a number less than or equal to the specified value.
-    - `[patex] >value`
+    - `[patex] > <n>`
         - Matches a number greater than the specified value.
-    - `[patex] <value`
+    - `[patex] < <n>`
         - Matches a number less than the specified value.
     - `[patex] NaN`
         - Matches the NaN (Not a Number) value.
@@ -79,18 +79,27 @@ All leaf patterns match Envelope leaves, which are CBOR values.
 - Text
     - `[patex] text`
         - Matches any text value.
-    - `[patex] "string"`
+    - `[patex] "<string>"`
         - Matches a text value with the specified string. dCBOR diagnostic notation uses double quotes for text strings, so we use that syntax here for familiarity.
-    - `[patex] /text-regex/`
+    - `[patex] /<regex>/`
         - Matches a text value that matches the specified regex. No double quotes are used here, as the regex is not a string but a pattern to match against the text value.
 - Digest
     - `[patex] digest`
         - Matches any digest value.
-    - `[patex] digest'hex'`
+    - `[patex] digest'<hex>'`
         - Matches a digest whose value starts with the specified hex prefix. Up to 32 bytes can be specified, which is the length of the full SHA-256 digest.
-    - `[patex] digest'ur:digest/value'`
-        - Matches the specified `ur:digest` value, parsed using `Digest::from_ur_string()`.
-    - `[patex] digest'/regex/'`
+    - `[patex] digest'<ur:digest>'`
+        - Matches the specified `ur:digest` value.
+    - `[patex] digest'/<regex>/'`
+        - Matches a digest value that matches the specified binary regex.
+- Digest
+    - `[patex] digest`
+        - Matches any digest value.
+    - `[patex] digest'<hex>'`
+        - Matches a digest whose value starts with the specified hex prefix. Up to 32 bytes can be specified, which is the length of the full SHA-256 digest.
+    - `[patex] digest'<ur:digest>'`
+        - Matches the specified `ur:digest` value.
+    - `[patex] digest'/<regex>/'`
         - Matches a digest value that matches the specified binary regex.
 - Array
     - `[patex] [*]`
@@ -101,7 +110,7 @@ All leaf patterns match Envelope leaves, which are CBOR values.
         - Matches an array with between `n` and `m` elements, inclusive.
     - `[patex] [{n,}]`
         - Matches an array with at least `n` elements.
-    - `[patex] [patex]`
+    - `[patex] [<patex>, <patex>, ...]`
         - Matches an array where the elements match the specified pattern. The pattern can be a simple pattern, a sequence of patterns, or patterns with repeat quantifiers.
         - Examples:
             - `[patex] [42]` - Array containing exactly one element: the number 42
@@ -118,16 +127,16 @@ All leaf patterns match Envelope leaves, which are CBOR values.
         - Matches a map with between `n` and `m` entries, inclusive.
     - `[patex] {{n,}}`
         - Matches a map with at least `n` entries.
-    - `[patex] {patex: patex, patex: patex, ...}`
+    - `[patex] {<patex>: <patex>, <patex>: <patex>, ...}`
         - Matches if the specified patterns match the map's keys and values (order isn't important).
 - Tagged
     - `[patex] tagged`
         - Matches any CBOR tagged value.
-    - `[patex] tagged ( value, patex )`
+    - `[patex] tagged ( <value>, <patex> )`
         - Matches the specified CBOR tagged value with content that matches the given pattern. The tag value is a u64 value, formatted as a bare integer with no delimiters apart from the enclosing parentheses.
-    - `[patex] tagged ( name, patex )`
+    - `[patex] tagged ( <name>, <patex> )`
         - Matches the CBOR tagged value with the specified name and content that matches the given patex. The tag name is formatted as a bare alphanumeric string (including hyphens and underscores) with no delimiters apart from the enclosing parentheses.
-    - `[patex] tagged ( /regex/, patex )`
+    - `[patex] tagged ( /<regex>/, <patex> )`
         - Matches a CBOR tagged value with a name that matches the specified regex and content that matches the given pattern.
 
 ### Envelope dCBOR Patterns
@@ -135,11 +144,11 @@ All leaf patterns match Envelope leaves, which are CBOR values.
 - CBOR
     - `[patex] cbor`
         - Matches any subject CBOR value.
-    - `[patex] cbor ( dcbor-diagnostic-notation )`
-        - Matches a subject CBOR value that matches the specified diagnostic notation, parsed using the `dcbor-parse` crate, which uses the `logos` crate for parsing.
-    - `[patex] cbor ( ur:type/value )`
+    - `[patex] cbor ( <dcbor-diagnostic-notation> )`
+        - Matches a subject CBOR value that matches the specified diagnostic notation.
+    - `[patex] cbor ( <ur:type/value> )`
         - Matches a subject CBOR value that matches the specified `ur`.
-    - `[patex] cbor ( /dcbor-patex/ )`
+    - `[patex] cbor ( /<dcbor-patex>/ )`
         - Matches a subject CBOR value that matches the specified dcbor-pattern expression. This enables advanced pattern matching within CBOR structures including quantifiers, captures, and complex structural patterns. The pattern expression uses dcbor-pattern syntax.
 
 ## Structure Patterns
@@ -152,14 +161,14 @@ Structure patterns match parts of Gordian Envelope structures.
 - Assertions
     - `[patex] assert`
         - Matches any assertion.
-    - `[patex] assertpred ( patex )`
+    - `[patex] assertpred ( <patex> )`
         - Matches an assertion having a predicate that matches the specified pattern.
-    - `[patex] assertobj ( patex )`
+    - `[patex] assertobj ( <patex> )`
         - Matches an assertion having an object that matches the specified pattern.
 - Digest
-    - `[patex] digest ( hex )`
+    - `[patex] digest ( <hex> )`
         - Matches a digest whose value starts with the specified hex prefix. Up to 32 bytes can be specified, which is the length of the full SHA-256 digest.
-    - `[patex] digest ( ur:digest/value )`
+    - `[patex] digest ( <ur:digest> )`
         - Matches the specified `ur:digest` value, parsed using the `bc-ur` crate.
 - Node
     - `[patex] node`
@@ -169,7 +178,7 @@ Structure patterns match parts of Gordian Envelope structures.
 - Objects
     - `[patex] obj`
         - Matches any object.
-    - `[patex] obj ( patex )`
+    - `[patex] obj ( <patex> )`
         - Matches an object that matches the specified pattern.
 - Obscured
     - `[patex] obscured`
@@ -183,12 +192,12 @@ Structure patterns match parts of Gordian Envelope structures.
 - Predicates
     - `[patex] pred`
         - Matches any predicate.
-    - `[patex] pred ( patex )`
+    - `[patex] pred ( <patex> )`
         - Matches a predicate that matches the specified pattern.
 - Subjects
     - `[patex] subj`
         - Matches any subject. If the envelope is not a NODE, then this is the identity function.
-    - `[patex] subj ( patex )`
+    - `[patex] subj ( <patex> )`
         - Matches a subject that matches the specified pattern.
 - Wrapped
     - `[patex] wrapped`
@@ -203,59 +212,41 @@ The following meta patterns are available to combine or modify other patterns.
 Precedence: Repeat has the highest precedence, followed by And, Not, Traversal, and then Or. Parentheses can be used to group patterns and change precedence.
 
 - And
-    - `[patex] patex & patex & patex...`
+    - `[patex] <patex> & <patex> & <patex>...`
         - Matches if all specified patterns match.
 - Any
     - `[patex] *`
         - Always matches.
 - Capture
-    - `@[name] ( patex )`
+    - `@[name] ( <patex> )`
         - Matches the specified pattern and captures the match for later use with the given name.
 - Not
-    - `[patex] ! patex`
+    - `[patex] ! <patex>`
         - Matches if the specified patex does not match.
         - A pattern that never matches can be represented as `[patex] !*`.
 - Or
-    - `[patex] patex | patex | pattern…`
+    - `[patex] <patex> | <patex> | <patex> ...`
         - Matches if any of the specified patterns match.
 - Repeat
     - Greedy — grabs as many repetitions as possible, then backtracks if the rest of the patex cannot match.
-        - `[patex] ( patex )` (exactly once, this is used to group patterns)
-        - `[patex] ( patex )*` (0 or more)
-        - `[patex] ( patex )?` (0 or 1)
-        - `[patex] ( patex )+` (1 or more)
-        - `[patex] ( patex ){ n , m }` (`n` to `m` repeats, inclusive)
+        - `[patex] ( <patex> )` (exactly once, this is used to group patterns)
+        - `[patex] ( <patex> )*` (0 or more)
+        - `[patex] ( <patex> )?` (0 or 1)
+        - `[patex] ( <patex> )+` (1 or more)
+        - `[patex] ( <patex> ){ n , m }` (`n` to `m` repeats, inclusive)
     - Lazy — starts with as few repetitions as possible, adding more only if the rest of the pattern cannot match.
-        - `[patex] ( patex )*?` (0 or more)
-        - `[patex] ( patex )??` (0 or 1)
-        - `[patex] ( patex )+?` (1 or more)
-        - `[patex] ( patex ){ n , m }?` (`n` to `m` repeats, inclusive)
+        - `[patex] ( <patex> )*?` (0 or more)
+        - `[patex] ( <patex> )??` (0 or 1)
+        - `[patex] ( <patex> )+?` (1 or more)
+        - `[patex] ( <patex> ){ n , m }?` (`n` to `m` repeats, inclusive)
     - Possessive — grabs as many repetitions as possible and never backtracks; if the rest of the pattern cannot match, the whole match fails.
-        - `[patex] ( patex )*+` (0 or more)
-        - `[patex] ( patex )?+` (0 or 1)
-        - `[patex] ( patex )++` (1 or more)
-        - `[patex] ( patex ){ n , m }+` (`n` to `m` repeats, inclusive)
+        - `[patex] ( <patex> )*+` (0 or more)
+        - `[patex] ( <patex> )?+` (0 or 1)
+        - `[patex] ( <patex> )++` (1 or more)
+        - `[patex] ( <patex> ){ n , m }+` (`n` to `m` repeats, inclusive)
 - Search
-    - `[patex] search ( patex )`
+    - `[patex] search ( <patex> )`
       - Visits every node in the Envelope tree, matching the specified pattern against each node.
 - Traversal
-    - `[patex] patex -> patex -> patex`
+    - `[patex] <patex> -> <patex> -> <patex>`
         - Matches if the specified patterns match a traversal path, with no other nodes in between.
-
-
-This code fence is working:
-
-```json
-{ "firstName": "Wolf", "lastName": "McNally" }
-```
-
-This inline highlighting is working: `[json] { "firstName": "Wolf", "lastName": "McNally" }`
-
-
-This code fence is working:
-
-```dcbor
-{ "firstName": "Wolf", "lastName": "McNally" }
-```
-
-This inline highlighting is NOT working: `[dcbor] { "firstName": "Wolf", "lastName": "McNally" }`

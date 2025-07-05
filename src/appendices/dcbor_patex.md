@@ -1,4 +1,4 @@
-# dCBOR Pattern Expression Syntax (_patex_)
+# dCBOR Pattern Expressions (_patex_)
 
 This syntax is inspired by regular expressions but is specifically designed for dCBOR.
 
@@ -24,49 +24,49 @@ All value patterns match atomic CBOR values.
 - ByteString
     - `[patex] bstr`
         - Matches any byte string.
-    - `[patex] h'hex'`
-        - Matches a byte string with the specified hex value. Note that the `[patex] h'...'` syntax is used to denote hex strings in CBOR diagnostic notation, so we use it here for familiarity.
-    - `[patex] h'/regex/'`
+    - `[patex] h'<hex>'`
+        - Matches a byte string with the specified hex value.
+    - `[patex] h'/<regex>/'`
         - Matches a byte string that matches the specified binary regex.
 - Date
     - `[patex] date`
         - Matches any date value.
-    - `[patex] date'iso-8601'`
+    - `[patex] date'<iso-date>'`
         - Matches a date value with the specified ISO 8601 format.
-    - `[patex] date'iso-8601...iso-8601'`
+    - `[patex] date'<iso-date>...<iso-date>'`
         - Matches a date value within the specified range.
-    - `[patex] date'iso-8601...'`
+    - `[patex] date'<iso-date>...'`
         - Matches a date value greater than or equal to the specified ISO 8601 date.
-    - `[patex] date'...iso-8601'`
+    - `[patex] date'...<iso-date>'`
         - Matches a date value less than or equal to the specified ISO 8601 date.
-    - `[patex] date'/regex/'`
+    - `[patex] date'/<regex>/'`
         - Matches a date value that matches the specified regex.
 - Known Value
     - `[patex] known`
         - Matches any known value. (See the `known-values` crate for more information.)
-    - `[patex] 'value'`
+    - `[patex] '<value>'`
         - Matches the specified known value, which is a u64 value. dCBOR prints known values enclosed in single quotes, so we use that syntax here for familiarity. Note: This is a non-prefixed single-quoted pattern.
-    - `[patex] 'name'`
+    - `[patex] '<name>'`
         - Matches the known value with the specified name. Again we use single quotes here for familiarity. Note: This is a non-prefixed single-quoted pattern.
-    - `[patex] '/regex/'`
+    - `[patex] '/<regex>/'`
         - Matches a known value with a name that matches the specified regex. We do not use the single quotes here. Note: This is a non-prefixed single-quoted pattern.
 - Null
     - `[patex] null`
         - Matches the null value.
 - Number
     - `[patex] number`
-        - keyword `number` matches any number.
-    - `[patex] value`
+        - Matches any number.
+    - `[patex] <n>`
         - Bare numeric value matches the specified number.
-    - `[patex] value...value`
+    - `[patex] <n>...<m>`
         - Matches a number within the specified range.
-    - `[patex] >=value`
+    - `[patex] >= <n>`
         - Matches a number greater than or equal to the specified value.
-    - `[patex] <=value`
+    - `[patex] <= <n>`
         - Matches a number less than or equal to the specified value.
-    - `[patex] >value`
+    - `[patex] > <n>`
         - Matches a number greater than the specified value.
-    - `[patex] <value`
+    - `[patex] < <n>`
         - Matches a number less than the specified value.
     - `[patex] NaN`
         - Matches the NaN (Not a Number) value.
@@ -77,18 +77,18 @@ All value patterns match atomic CBOR values.
 - Text
     - `[patex] text`
         - Matches any text value.
-    - `[patex] "string"`
+    - `[patex] "<string>"`
         - Matches a text value with the specified string. dCBOR diagnostic notation uses double quotes for text strings, so we use that syntax here for familiarity.
-    - `[patex] /text-regex/`
+    - `[patex] /<regex>/`
         - Matches a text value that matches the specified regex. No double quotes are used here, as the regex is not a string but a pattern to match against the text value.
 - Digest
     - `[patex] digest`
         - Matches any digest value.
-    - `[patex] digest'hex'`
+    - `[patex] digest'<hex>'`
         - Matches a digest whose value starts with the specified hex prefix. Up to 32 bytes can be specified, which is the length of the full SHA-256 digest.
-    - `[patex] digest'ur:digest/value'`
+    - `[patex] digest'<ur:digest>'`
         - Matches the specified `ur:digest` value.
-    - `[patex] digest'/regex/'`
+    - `[patex] digest'/<regex>/'`
         - Matches a digest value that matches the specified binary regex.
 
 ## Structure Patterns
@@ -103,7 +103,7 @@ Structure patterns match parts of dCBOR items.
         - Matches an array with between `n` and `m` elements, inclusive.
     - `[patex] [{n,}]`
         - Matches an array with at least `n` elements.
-    - `[patex] [patex]`
+    - `[patex] [<patex>, <patex>, <patex>, ...]`
         - Matches an array where the elements match the specified pattern. The pattern can be a simple pattern, a sequence of patterns, or patterns with repeat quantifiers.
         - Examples:
             - `[patex] [42]` - Array containing exactly one element: the number 42
@@ -120,16 +120,16 @@ Structure patterns match parts of dCBOR items.
         - Matches a map with between `n` and `m` entries, inclusive.
     - `[patex] {{n,}}`
         - Matches a map with at least `n` entries.
-    - `[patex] {patex: patex, patex: patex, ...}`
+    - `[patex] {<patex>: <patex>, <patex>: <patex>, ...}`
         - Matches if the specified patterns match the map's keys and values (order isn't important).
 - Tagged
     - `[patex] tagged`
         - Matches any CBOR tagged value.
-    - `[patex] tagged ( value, patex )`
+    - `[patex] tagged ( <value>, <patex> )`
         - Matches the specified CBOR tagged value with content that matches the given pattern. The tag value is a u64 value, formatted as a bare integer with no delimiters apart from the enclosing parentheses.
-    - `[patex] tagged ( name, patex )`
+    - `[patex] tagged ( <name>, <patex> )`
         - Matches the CBOR tagged value with the specified name and content that matches the given patex. The tag name is formatted as a bare alphanumeric string (including hyphens and underscores) with no delimiters apart from the enclosing parentheses.
-    - `[patex] tagged ( /regex/, patex )`
+    - `[patex] tagged ( /<regex>/, <patex> )`
         - Matches a CBOR tagged value with a name that matches the specified regex and content that matches the given pattern.
 
 ## Meta Patterns
@@ -139,40 +139,40 @@ The following meta patterns are available to combine or modify other patterns.
 Precedence: Repeat has the highest precedence, followed by And, Not, Sequence, and then Or. Parentheses can be used to group patterns and change precedence.
 
 - And
-    - `[patex] patex & patex & patex`…
+    - `[patex] <patex> & <patex> & <patex>`…
         - Matches if all specified patterns match.
 - Any
     - `[patex] *`
         - A bare asterisk matches any value.
 - Capture
-    - `[patex] @name ( patex )`
+    - `[patex] @name ( <patex> )`
         - Matches the specified pattern and captures the match for later use with the given name.
 - Not
-    - `[patex] ! patex`
+    - `[patex] ! <patex>`
         - Matches if the specified pattern does not match.
             - The pattern `[patex] !*` matches no values.
 - Or
-    - `[patex] patex | patex | patex...`
+    - `[patex] <patex> | <patex> | <patex>...`
         - Matches if any of the specified patterns match.
 - Repeat
     - Greedy — grabs as many repetitions as possible, then backtracks if the rest of the pattern cannot match.
-        - `[patex] ( patex )` (exactly once, this is used to group patterns)
-        - `[patex] ( patex )*` (0 or more)
-        - `[patex] ( patex )?` (0 or 1)
-        - `[patex] ( patex )+` (1 or more)
-        - `[patex] ( patex ){ n , m }` (`n` to `m` repeats, inclusive)
+        - `[patex] ( <patex> )` (exactly once, this is used to group patterns)
+        - `[patex] ( <patex> )*` (0 or more)
+        - `[patex] ( <patex> )?` (0 or 1)
+        - `[patex] ( <patex> )+` (1 or more)
+        - `[patex] ( <patex> ){ n , m }` (`n` to `m` repeats, inclusive)
     - Lazy — starts with as few repetitions as possible, adding more only if the rest of the pattern cannot match.
-        - `[patex] ( patex )*?` (0 or more)
-        - `[patex] ( patex )??` (0 or 1)
-        - `[patex] ( patex )+?` (1 or more)
-        - `[patex] ( patex ){ n , m }?` (`n` to `m` repeats, inclusive)
+        - `[patex] ( <patex> )*?` (0 or more)
+        - `[patex] ( <patex> )??` (0 or 1)
+        - `[patex] ( <patex> )+?` (1 or more)
+        - `[patex] ( <patex> ){ n , m }?` (`n` to `m` repeats, inclusive)
     - Possessive — grabs as many repetitions as possible and never backtracks; if the rest of the pattern cannot match, the whole match fails.
-        - `[patex] ( patex )*+` (0 or more)
-        - `[patex] ( patex )?+` (0 or 1)
-        - `[patex] ( patex )++` (1 or more)
-        - `[patex] ( patex ){ n , m }+` (`n` to `m` repeats, inclusive)
+        - `[patex] ( <patex> )*+` (0 or more)
+        - `[patex] ( <patex> )?+` (0 or 1)
+        - `[patex] ( <patex> )++` (1 or more)
+        - `[patex] ( <patex> ){ n , m }+` (`n` to `m` repeats, inclusive)
 - Search
-    - `[patex] search ( patex )`
+    - `[patex] search ( <patex> )`
       - Visits every node in the CBOR tree, matching the specified pattern against each node.
 
 ## Example Composite Patterns
@@ -180,9 +180,9 @@ Precedence: Repeat has the highest precedence, followed by And, Not, Sequence, a
 The following patterns show examples of combining structure patterns with meta patterns to create complex matching expressions:
 
 - Nested Structure Patterns
-    - `[patex] tagged ( value , [ patex ] )`
-        - Matches a tagged value containing an array with the specified pattern. The pattern can be simple patterns, sequences, or patterns with repeat quantifiers.
-    - `[patex] {patex: [{{n,}}]}`
+    - `[patex] tagged ( <value> , [ <patex>, <patex>, ... ] )`
+        - Matches a tagged value containing an array with the specified patterns. The pattern can be simple patterns, sequences, or patterns with repeat quantifiers.
+    - `[patex] {<patex>: [{{n,}}]}`
         - Matches a map where the specified key pattern maps to an array with at least `n` elements.
-    - `[patex] [{patex: patex}, (patex)*]`
+    - `[patex] [{<patex>: <patex>}, (<patex>)*]`
         - Matches an array starting with a map that contains the specified key-value pattern, followed by any other elements.
