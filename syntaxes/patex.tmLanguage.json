@@ -61,8 +61,12 @@
           "comment": "Named captures (annotations) starting with @",
           "match": "(@)([a-zA-Z_][a-zA-Z0-9_]*)",
           "captures": {
-            "1": {"name": "punctuation.definition.annotation.patex"},
-            "2": {"name": "variable.annotation.patex"}
+            "1": {
+              "name": "punctuation.definition.annotation.patex"
+            },
+            "2": {
+              "name": "variable.annotation.patex"
+            }
           }
         }
       ]
@@ -88,13 +92,23 @@
           "begin": "\\b(leaf|bool|bstr|cbor|date|known|number|tagged|text|assert|assertpred|assertobj|digest|node|obj|obscured|elided|encrypted|compressed|pred|subj|wrapped|unwrap|search)(')(/)",
           "end": "(/[gimsuxy]*)(')",
           "beginCaptures": {
-            "1": {"name": "keyword.other.patex"},
-            "2": {"name": "punctuation.definition.string.begin.patex"},
-            "3": {"name": "string.regexp.patex"}
+            "1": {
+              "name": "keyword.other.patex"
+            },
+            "2": {
+              "name": "punctuation.definition.string.begin.patex"
+            },
+            "3": {
+              "name": "string.regexp.patex"
+            }
           },
           "endCaptures": {
-            "1": {"name": "string.regexp.patex"},
-            "2": {"name": "punctuation.definition.string.end.patex"}
+            "1": {
+              "name": "string.regexp.patex"
+            },
+            "2": {
+              "name": "punctuation.definition.string.end.patex"
+            }
           },
           "patterns": [
             {
@@ -119,13 +133,23 @@
           "begin": "([a-zA-Z_][a-zA-Z0-9_]*)(')(/)",
           "end": "(/[gimsuxy]*)(')",
           "beginCaptures": {
-            "1": {"name": "storage.type.string.patex"},
-            "2": {"name": "punctuation.definition.string.begin.patex"},
-            "3": {"name": "string.regexp.patex"}
+            "1": {
+              "name": "storage.type.string.patex"
+            },
+            "2": {
+              "name": "punctuation.definition.string.begin.patex"
+            },
+            "3": {
+              "name": "string.regexp.patex"
+            }
           },
           "endCaptures": {
-            "1": {"name": "string.regexp.patex"},
-            "2": {"name": "punctuation.definition.string.end.patex"}
+            "1": {
+              "name": "string.regexp.patex"
+            },
+            "2": {
+              "name": "punctuation.definition.string.end.patex"
+            }
           },
           "patterns": [
             {
@@ -154,11 +178,17 @@
           "begin": "\\b(leaf|bool|bstr|cbor|date|known|number|tagged|text|assert|assertpred|assertobj|digest|node|obj|obscured|elided|encrypted|compressed|pred|subj|wrapped|unwrap|search)(')",
           "end": "'",
           "beginCaptures": {
-            "1": {"name": "keyword.other.patex"},
-            "2": {"name": "punctuation.definition.string.begin.patex"}
+            "1": {
+              "name": "keyword.other.patex"
+            },
+            "2": {
+              "name": "punctuation.definition.string.begin.patex"
+            }
           },
           "endCaptures": {
-            "0": {"name": "punctuation.definition.string.end.patex"}
+            "0": {
+              "name": "punctuation.definition.string.end.patex"
+            }
           },
           "patterns": [
             {
@@ -183,11 +213,17 @@
           "begin": "([a-zA-Z_][a-zA-Z0-9_]*)(')",
           "end": "'",
           "beginCaptures": {
-            "1": {"name": "storage.type.string.patex"},
-            "2": {"name": "punctuation.definition.string.begin.patex"}
+            "1": {
+              "name": "storage.type.string.patex"
+            },
+            "2": {
+              "name": "punctuation.definition.string.begin.patex"
+            }
           },
           "endCaptures": {
-            "0": {"name": "punctuation.definition.string.end.patex"}
+            "0": {
+              "name": "punctuation.definition.string.end.patex"
+            }
           },
           "patterns": [
             {
@@ -217,10 +253,14 @@
           "end": "\"",
           "name": "string.quoted.double.dcbor",
           "beginCaptures": {
-            "0": {"name": "punctuation.definition.string.begin.dcbor"}
+            "0": {
+              "name": "punctuation.definition.string.begin.dcbor"
+            }
           },
           "endCaptures": {
-            "0": {"name": "punctuation.definition.string.end.dcbor"}
+            "0": {
+              "name": "punctuation.definition.string.end.dcbor"
+            }
           },
           "patterns": [
             {
@@ -244,10 +284,14 @@
           "begin": "/",
           "end": "/[gimsuxy]*",
           "beginCaptures": {
-            "0": {"name": "string.regexp.patex"}
+            "0": {
+              "name": "string.regexp.patex"
+            }
           },
           "endCaptures": {
-            "0": {"name": "string.regexp.patex"}
+            "0": {
+              "name": "string.regexp.patex"
+            }
           },
           "patterns": [
             {
@@ -276,12 +320,20 @@
           "begin": "(')(/)",
           "end": "(/[gimsuxy]*)(')",
           "beginCaptures": {
-            "1": {"name": "punctuation.definition.string.begin.patex"},
-            "2": {"name": "string.regexp.patex"}
+            "1": {
+              "name": "punctuation.definition.string.begin.patex"
+            },
+            "2": {
+              "name": "string.regexp.patex"
+            }
           },
           "endCaptures": {
-            "1": {"name": "string.regexp.patex"},
-            "2": {"name": "punctuation.definition.string.end.patex"}
+            "1": {
+              "name": "string.regexp.patex"
+            },
+            "2": {
+              "name": "punctuation.definition.string.end.patex"
+            }
           },
           "patterns": [
             {
@@ -310,10 +362,14 @@
           "begin": "\\(",
           "end": "\\)",
           "beginCaptures": {
-            "0": {"name": "punctuation.parenthesis.begin.patex"}
+            "0": {
+              "name": "punctuation.parenthesis.begin.patex"
+            }
           },
           "endCaptures": {
-            "0": {"name": "punctuation.parenthesis.end.patex"}
+            "0": {
+              "name": "punctuation.parenthesis.end.patex"
+            }
           },
           "patterns": [
             {
@@ -321,10 +377,14 @@
               "begin": "/",
               "end": "/[gimsuxy]*",
               "beginCaptures": {
-                "0": {"name": "string.regexp.patex"}
+                "0": {
+                  "name": "string.regexp.patex"
+                }
               },
               "endCaptures": {
-                "0": {"name": "string.regexp.patex"}
+                "0": {
+                  "name": "string.regexp.patex"
+                }
               },
               "patterns": [
                 {

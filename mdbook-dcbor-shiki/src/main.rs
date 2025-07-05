@@ -285,6 +285,9 @@ fn escape_brackets_in_html(html: &str) -> String {
             '_' if !in_tag => {
                 result.push_str("&#95;");
             }
+            '*' if !in_tag => {
+                result.push_str("&#42;");
+            }
             _ => {
                 result.push(ch);
             }

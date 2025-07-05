@@ -76,10 +76,10 @@ try {
   };
 
   const patexLanguage = {
+    ...patexLanguageGrammar,
     id: 'patex',
     name: 'patex',
-    scopeName: patexLanguageGrammar.scopeName,
-    ...patexLanguageGrammar
+    scopeName: patexLanguageGrammar.scopeName
   };
 
   const highlighter = await createHighlighter({
@@ -97,7 +97,7 @@ try {
     'envelope': 'dcbor-envelope',
     'dcbor': 'dcbor-envelope',
     'cbor': 'dcbor-envelope',
-    'patex': 'Patex'
+    'patex': 'patex'
   };
 
   const actualLang = langMap[lang] || lang;
