@@ -104,7 +104,16 @@
                 "string.regexp.patex"
             ],
             "settings": {
-                "foreground": "#b83838"
+                "foreground": "#bf2828"
+            }
+        },
+        {
+            "scope": [
+                "constant.character.escape.patex"
+            ],
+            "settings": {
+                "foreground": "#df9e1c",
+                "fontStyle": "bold"
             }
         },
         {

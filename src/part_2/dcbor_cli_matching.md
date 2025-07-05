@@ -92,14 +92,14 @@ CBOR2=6548656c6c6f
 You can use the `dcbor match` command to check whether either of these is a number:
 
 ```patex
-PATTERN=$(cat <<'EOF'
+NUMBER=$(cat <<'EOF'
 number
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN -i hex $CBOR1
+dcbor match $NUMBER -i hex $CBOR1
 ```
 
 ```dcbor
@@ -107,7 +107,7 @@ dcbor match $PATTERN -i hex $CBOR1
 ```
 
 ```bash
-dcbor match $PATTERN -i hex $CBOR2
+dcbor match $NUMBER -i hex $CBOR2
 ```
 
 ```dcbor
@@ -117,14 +117,14 @@ dcbor match $PATTERN -i hex $CBOR2
 We can see that `CBOR1` is the number `42`, and `CBOR2` is not a numeric value. So let's see whether it is a textual string by using the `TEXT` pattern:
 
 ```patex
-PATTERN=$(cat <<'EOF'
+TEXT=$(cat <<'EOF'
 text
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN -i hex $CBOR2
+dcbor match $TEXT -i hex $CBOR2
 ```
 
 ```dcbor
@@ -136,14 +136,14 @@ The pattern matches, and we can see it is the string `"Hello"`.
 The `number` pattern matches *any* numeric value, whether it's an integer or floating-point number:
 
 ```patex
-PATTERN=$(cat <<'EOF'
+NUMBER=$(cat <<'EOF'
 number
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN 42
+dcbor match $NUMBER 42
 ```
 
 ```dcbor
@@ -151,7 +151,7 @@ dcbor match $PATTERN 42
 ```
 
 ```bash
-dcbor match $PATTERN 3.14
+dcbor match $NUMBER 3.14
 ```
 
 ```dcbor
@@ -167,14 +167,14 @@ Numbers in CBOR can be positive or negative integers, or floating-point values.
 To avoid confusion with command-line flags, you can use `--` to separate the pattern from the input. `--` signals that there are no command-line flags following it, allowing you to pass values that might otherwise be interpreted as flags. This is especially useful for negative numbers or special values like `-Infinity`.
 
 ```patex
-PATTERN=$(cat <<'EOF'
+NUMBER=$(cat <<'EOF'
 number
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN -- -1
+dcbor match $NUMBER -- -1
 ```
 
 ```dcbor
@@ -187,14 +187,14 @@ dcbor match $PATTERN -- -1
 As we demonstrated above, the `text` pattern matches any text string:
 
 ```patex
-PATTERN=$(cat <<'EOF'
+TEXT=$(cat <<'EOF'
 text
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN '"hello"'
+dcbor match $TEXT '"hello"'
 ```
 
 ```dcbor
@@ -202,7 +202,7 @@ dcbor match $PATTERN '"hello"'
 ```
 
 ```bash
-dcbor match $PATTERN '"🌎"'
+dcbor match $TEXT '"🌎"'
 ```
 
 ```dcbor
@@ -216,14 +216,14 @@ Notice that when providing text strings as input to the CLI, you need to include
 The `bstr` pattern matches any byte string. Byte strings in CBOR are sequences of raw bytes, distinct from text strings which have UTF-8 character encoding semantics:
 
 ```patex
-PATTERN=$(cat <<'EOF'
+BSTR=$(cat <<'EOF'
 bstr
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN "h'68656c6c6f'"
+dcbor match $BSTR "h'68656c6c6f'"
 ```
 
 ```dcbor
@@ -233,7 +233,7 @@ dcbor match $PATTERN "h'68656c6c6f'"
 The empty byte string is perfectly legal:
 
 ```bash
-dcbor match $PATTERN "h''"
+dcbor match $BSTR "h''"
 ```
 
 ```dcbor
@@ -245,14 +245,14 @@ dcbor match $PATTERN "h''"
 The `bool` pattern matches both boolean values:
 
 ```patex
-PATTERN=$(cat <<'EOF'
+BOOL=$(cat <<'EOF'
 bool
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN true
+dcbor match $BOOL true
 ```
 
 ```dcbor
@@ -260,7 +260,7 @@ dcbor match $PATTERN true
 ```
 
 ```bash
-dcbor match $PATTERN false
+dcbor match $BOOL false
 ```
 
 ```dcbor
@@ -274,14 +274,14 @@ Don't confuse the response `[dcbor] false` here as meaning that the pattern didn
 The `[patex] null` pattern matches CBOR's `[dcbor] null` value:
 
 ```patex
-PATTERN=$(cat <<'EOF'
+NULL=$(cat <<'EOF'
 null
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN null
+dcbor match $NULL null
 ```
 
 ```dcbor
@@ -293,14 +293,14 @@ dcbor match $PATTERN null
 The `[patex] *` ("any") pattern matches any CBOR value whatsoever.
 
 ```patex
-PATTERN=$(cat <<'EOF'
+ANY=$(cat <<'EOF'
 *
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN 42
+dcbor match $ANY 42
 ```
 
 ```dcbor
@@ -308,7 +308,7 @@ dcbor match $PATTERN 42
 ```
 
 ```bash
-dcbor match $PATTERN '"hello"'
+dcbor match $ANY '"hello"'
 ```
 
 ```dcbor
@@ -316,7 +316,7 @@ dcbor match $PATTERN '"hello"'
 ```
 
 ```bash
-dcbor match $PATTERN "h'1234'"
+dcbor match $ANY "h'1234'"
 ```
 
 ```dcbor
@@ -332,23 +332,24 @@ Beyond matching types, you can match exact values by providing the specific valu
 ### Specific Numbers
 
 ```patex
-PATTERN=$(cat <<'EOF'
+FORTY_TWO=$(cat <<'EOF'
 42
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN 42
+dcbor match $FORTY_TWO 42
 ```
 
 ```dcbor
 │ 42
 ```
 
+This won't match because 43 ≠ 42:
+
 ```bash
-# This won't match because 43 ≠ 42
-dcbor match $PATTERN 43
+dcbor match $FORTY_TWO 43
 ```
 
 ```dcbor
@@ -358,23 +359,24 @@ dcbor match $PATTERN 43
 ### Specific Text Strings
 
 ```patex
-PATTERN=$(cat <<'EOF'
+HELLO=$(cat <<'EOF'
 "hello"
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN '"hello"'
+dcbor match $HELLO '"hello"'
 ```
 
 ```dcbor
 │ "hello"
 ```
 
+This won't match because the strings are different:
+
 ```bash
-# This won't match because the strings are different
-dcbor match $PATTERN '"world"'
+dcbor match $HELLO '"world"'
 ```
 
 ```dcbor
@@ -384,14 +386,14 @@ dcbor match $PATTERN '"world"'
 ### Specific Byte Strings
 
 ```patex
-PATTERN=$(cat <<'EOF'
+TWO_BYTES=$(cat <<'EOF'
 h'1234'
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN "h'1234'"
+dcbor match $TWO_BYTES "h'1234'"
 ```
 
 ```dcbor
@@ -401,23 +403,24 @@ dcbor match $PATTERN "h'1234'"
 ### Specific Boolean Values
 
 ```patex
-PATTERN=$(cat <<'EOF'
+BOOL_TRUE=$(cat <<'EOF'
 true
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN true
+dcbor match $BOOL_TRUE true
 ```
 
 ```dcbor
 │ true
 ```
 
+This won't match because false ≠ true:
+
 ```bash
-# This won't match because false ≠ true
-dcbor match $PATTERN false
+dcbor match $BOOL_TRUE false
 ```
 
 ```dcbor
@@ -437,14 +440,14 @@ Numbers can be matched using ranges and inequality operators, which is useful fo
 You can match numbers within a specific range using the `...` syntax:
 
 ```patex
-PATTERN=$(cat <<'EOF'
+ONE_TO_TEN=$(cat <<'EOF'
 1...10
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN 5
+dcbor match $ONE_TO_TEN 5
 ```
 
 ```dcbor
@@ -452,7 +455,7 @@ dcbor match $PATTERN 5
 ```
 
 ```bash
-dcbor match $PATTERN 15
+dcbor match $ONE_TO_TEN 15
 ```
 
 ```dcbor
@@ -465,14 +468,14 @@ The `...` syntax is shorthand for an _inclusive_, or _closed_ range, meaning it 
 The same range of numbers can also be specified with a more complex syntax using the `&` operator, which we'll cover later.
 
 ```patex
-PATTERN=$(cat <<'EOF'
+ONE_TO_TEN=$(cat <<'EOF'
 >=1 & <=10
 EOF
 )
 ```
 
 ```bash
-dcbor match $PATTERN 5
+dcbor match $ONE_TO_TEN 5
 ```
 
 ```dcbor
@@ -484,24 +487,19 @@ dcbor match $PATTERN 5
 
 Numbers support various inequality operators. Quoting is important here to ensure the shell doesn't misinterpret the operators as command-line directives:
 
-```patex
-PATTERN=$(cat <<'EOF'
->5
-EOF
-)
-```
+Greater than:
 
 ```bash
-# Greater than
-dcbor match $PATTERN 10
+dcbor match ">5" 10
 ```
 
 ```dcbor
 │ 10
 ```
 
+Greater than or equal to:
+
 ```bash
-# Greater than or equal to
 dcbor match ">=5" 5
 ```
 
@@ -509,8 +507,9 @@ dcbor match ">=5" 5
 │ 5
 ```
 
+Less than:
+
 ```bash
-# Less than
 dcbor match "<10" 8
 ```
 
@@ -518,14 +517,17 @@ dcbor match "<10" 8
 │ 8
 ```
 
+Less than or equal to:
+
 ```bash
-# Less than or equal to
 dcbor match "<=10" 10
 ```
 
 ```dcbor
 │ 10
 ```
+
+##### Half-Open Ranges
 
 Using the `&` operator allows you to construct patterns that match _half-open_ ranges (where one end is inclusive and the other is exclusive):
 
@@ -583,51 +585,71 @@ Regular expressions (or _regexes_) are powerful pattern matching tools for text,
 
 dCBOR patexes that this chapter describes are based on some of the same concepts as regexes, but they are not the same. The dCBOR pattern expression syntax is designed specifically for matching CBOR data structures and values, while regular expressions are specifically for processing text. Nonetheless, some of the types you can match with dCBOR patterns, such as text strings and byte strings, can be matched using regular expressions.
 
-Text strings can be matched using regular expressions, by using the a regex enclosed in forward slashes: `/regex/`:
+Text strings can be matched using regular expressions, by using the a regex enclosed in forward slashes: `[patex] /regex/`:
 
-```bash
-# Match any email-like pattern
-dcbor match '/^[^@]+@[^@]+\.[^@]+$/' '"user@example.com"'
+##### Match strings starting with "temp"
+
+```patex
+STARTS_WITH_TEMP=$(cat <<'EOF'
+/^temp/
+EOF
+)
 ```
 
-```dcbor
-│ "user@example.com"
-```
-
 ```bash
-# Match strings starting with "temp"
-dcbor match '/^temp/' '"temporary"'
+dcbor match $STARTS_WITH_TEMP '"temporary"'
 ```
 
 ```dcbor
 │ "temporary"
 ```
 
+This won't match because it doesn't start with "temp":
+
 ```bash
-# This won't match because it doesn't start with "temp"
-dcbor match '/^temp/' '"permanent"'
+dcbor match $STARTS_WITH_TEMP '"permanent"'
 ```
 
 ```dcbor
 │ Error: No match
 ```
 
-Regular expressions use standard Rust regex syntax, which is based on Perl-compatible regular expressions (PCRE). This allows for complex pattern matching including:
+##### Match any email-like pattern
 
-- Literal characters: `abc`, `123`
-- Any character: `.`
-- Character classes: `[plain] [a-z]`, `[plain] [0-9]`, `\d` (digit), `\w` (word character)
-- Quantifiers: `*` (zero or more), `+` (one or more), `?` (zero or one), `{n,m}` (between n and m times)
-- Anchors: `^` (start), `$` (end)
-- Groups and alternation: `(pattern)`, `pattern1|pattern2`
+```patex
+EMAIL_ADDRESS=$(cat <<'EOF'
+/^[^@]+@[^@]+\.[^@]+$/
+EOF
+)
+```
 
-Explaining the full syntax of regular expressions is beyond the scope of this book, but you can find more information in the [Rust regex documentation](https://docs.rs/regex/latest/regex/#syntax).
+```bash
+dcbor match $EMAIL_ADDRESS '"user@example.com"'
+```
+
+```dcbor
+│ "user@example.com"
+```
+
+```admonish note "About Regular Expressions"
+Regular expressions use standard Rust regex syntax, which is based on [Perl-compatible regular expressions (PCRE)](https://www.pcre.org/). This allows for complex pattern matching including:
+
+- Literal characters: `[patex] /abc/`, `[patex] /123/`
+- Any character: `[patex] /./`
+- Character classes: `[patex] /[a-z]/`, `[patex] /[0-9]/`, `[patex] /\\d/` (digit), `[patex] /\\w/` (word character)
+- Quantifiers: `[patex] /<pattern>*/` (zero or more), `[patex] /<pattern>+/` (one or more), `[patex] /<pattern>?/` (zero or one), `[patex] /<pattern>{n,m}/` (between n and m times)
+- Anchors: `[patex] /^<pattern>/` (start), `[patex] /<pattern>$/` (end)
+- Groups: `[patex] /(<pattern>)/`
+- Alternation: `[patex] /<pattern1>|<pattern2>/`
+
+Explaining the full syntax of regular expressions is beyond the scope of this book, but you can find more information on the specific Rust implementation in the [Rust regex documentation](https://docs.rs/regex/latest/regex/#syntax).
+```
 
 #### Byte String Regular Expressions
 
 Byte strings also support regular expression matching, useful for matching binary patterns or encoded data. Binary regexes operate on raw byte content, not on the hex string representation you see in diagnostic notation. The syntax is like `[dcbor] h'hex'` above, but for regexes its: `[dcbor] h'/regex/'`.
 
-```admonish note
+```admonish note "Flags for Binary Regexes"
 Binary regexes must start with the `(?s-u)` flags to work correctly:
 - `(?s)` enables "dot matches newline" mode, allowing `.` to match across newlines (like byte `0x0a`)
 - `(?-u)` disables Unicode mode, allowing `.` to match any byte value instead of just valid UTF-8 sequences
@@ -636,31 +658,71 @@ Binary regexes must start with the `(?s-u)` flags to work correctly:
 Without these flags, patterns may fail on byte strings containing newlines or invalid UTF-8 sequences.
 ```
 
-```bash
-# Match byte strings containing the byte 0xFF anywhere
-dcbor match " h'/(?s-u).*\xFF.*/' " "h'ff01020304'"
+##### Match byte strings containing the byte `[dcbor] 0xFF` anywhere
 
+```patex
+CONTAINS_FF=$(cat <<'EOF'
+h'/(?s-u).*\xFF.*/'
+EOF
+)
+```
+
+```bash
+dcbor match $CONTAINS_FF "h'ff01020304'"
+```
+
+```dcbor
 │ h'ff01020304'
 ```
 
-```bash
-# Match byte strings starting with specific bytes
-dcbor match " h'/(?s-u)^\x01\x02/' " "h'01020304'"
+##### Match byte strings starting with specific bytes `[dcbor] 0102`
 
-│ h'01020304'
+```patex
+STARTS_WITH_0102=$(cat <<'EOF'
+h'/(?s-u)^\x01\x02/'
+EOF
+)
 ```
 
 ```bash
-# Match byte strings ending with specific bytes
-dcbor match " h'/(?s-u)\x03\x04$/' " "h'01020304'"
+dcbor match $STARTS_WITH_0102 "h'01020304'"
+```
 
+```dcbor
 │ h'01020304'
 ```
 
-```bash
-# Match any 4-byte sequence
-dcbor match " h'/(?s-u)^.{4}$/' " "h'12345678'"
+##### Match byte strings ending with specific bytes
 
+```patex
+ENDS_WITH_0304=$(cat <<'EOF'
+h'/(?s-u)\x03\x04$/'
+EOF
+)
+```
+
+```bash
+dcbor match $ENDS_WITH_0304 "h'01020304'"
+```
+
+```dcbor
+│ h'01020304'
+```
+
+##### Match any 4-byte sequence
+
+```patex
+ANY_FOUR_BYTES=$(cat <<'EOF'
+h'/(?s-u)^.{4}$/'
+EOF
+)
+```
+
+```bash
+dcbor match $ANY_FOUR_BYTES "h'12345678'"
+```
+
+```dcbor
 │ h'12345678'
 ```
 
@@ -668,25 +730,57 @@ dcbor match " h'/(?s-u)^.{4}$/' " "h'12345678'"
 
 These advanced patterns are particularly useful for data validation and extraction:
 
+##### Validate that ages are reasonable (0-120)
+
 ```bash
-# Validate that ages are reasonable (0-120)
 dcbor match "0...120" 25
+```
 
+```dcbor
 │ 25
+```
 
-# Extract valid email addresses from text
-dcbor match " /^\w+@\w+\.\w+$/ " '"john@example.com"'
+##### Extract valid email addresses from text
 
+```patex
+EMAIL_ADDRESS=$(cat <<'EOF'
+/^\w+@\w+\.\w+$/
+EOF
+)
+```
+
+```bash
+dcbor match $EMAIL_ADDRESS '"john@example.com"'
+```
+
+```dcbor
 │ "john@example.com"
+```
 
-# Find numeric IDs above a threshold
+##### Find numeric IDs above a threshold
+
+```bash
 dcbor match ">1000" 1001
+```
 
+```dcbor
 │ 1001
+```
 
-# Match ISO date-like strings
-dcbor match ' /^\d{4}-\d{2}-\d{2}$/ ' '"2023-12-25"'
+##### Match ISO-8601 date-like strings
 
+```patex
+ISO_DATE=$(cat <<'EOF'
+/^\d{4}-\d{2}-\d{2}$/
+EOF
+)
+```
+
+```bash
+dcbor match $ISO_DATE '"2023-12-25"'
+```
+
+```dcbor
 │ "2023-12-25"
 ```
 
@@ -698,7 +792,9 @@ When a pattern matches, the default output shows the matched value. This seems s
 
 ```bash
 dcbor match number 42
+```
 
+```dcbor
 │ 42
 ```
 
@@ -710,7 +806,9 @@ When a pattern doesn't match, the CLI returns an error:
 
 ```bash
 dcbor match text 42
+```
 
+```dcbor
 │ Error: No match
 ```
 
@@ -720,13 +818,19 @@ Finally, here's are a couple of example of patterns that fail to parse:
 
 ```bash
 dcbor match tex '"Hello"'
+```
 
-│ Error: Failed to parse pattern at position 0..1: unrecognized token 'T'
-│ Pattern: TEX
+```dcbor
+│ Error: Failed to parse pattern at position 0..1: unrecognized token 't'
+│ Pattern: tex
 │          ^
+```
 
+```bash
 dcbor match '"Hello' '"Hello"'
+```
 
+```dcbor
 │ Error: Failed to parse pattern: Unterminated string literal at 0..1
 ```
 
@@ -738,23 +842,36 @@ Beyond matching individual values, dCBOR patterns support matching complex struc
 
 #### Basic Array Matching
 
-The `[patex] [*]` pattern matches any array structure:
+The `[patex] [*]` pattern matches any array structure
+
+```patex
+ANY_ARRAY=$(cat <<'EOF'
+[*]
+EOF
+)
+```
 
 ```bash
-dcbor match '[*]' '[1, 2, 3]'
+dcbor match $ANY_ARRAY '[1, 2, 3]'
+```
 
+```dcbor
 │ [1, 2, 3]
 ```
 
 ```bash
-dcbor match '[*]' '["hello", "world"]'
+dcbor match $ANY_ARRAY '["hello", "world"]'
+```
 
+```dcbor
 │ ["hello", "world"]
 ```
 
 ```bash
-dcbor match '[*]' '[]'
+dcbor match $ANY_ARRAY '[]'
+```
 
+```dcbor
 │ []
 ```
 
@@ -762,10 +879,20 @@ dcbor match '[*]' '[]'
 
 The array pattern can contain a comma-separated list of patterns, where each pattern matches zero or more elements in the array in sequence.
 
-```bash
-# Match an array with a number followed by text
-dcbor match '[number, text]' '[42, "hello"]'
+##### Match an array with a number followed by text
 
+```patex
+NUMBER_THEN_TEXT=$(cat <<'EOF'
+[number, text]
+EOF
+)
+```
+
+```bash
+dcbor match $NUMBER_THEN_TEXT '[42, "hello"]'
+```
+
+```dcbor
 │ [42, "hello"]
 ```
 
@@ -773,105 +900,173 @@ dcbor match '[number, text]' '[42, "hello"]'
 `[patex] [number, text]` means the first element must be a number, followed by a text string, and that's it: these must be the only elements and they must appear in that order, so adding another element would not match:
 
 ```bash
-dcbor match "[number, text]" '[42, "hello", 0]'
+dcbor match $NUMBER_THEN_TEXT '[42, "hello", 0]'
+```
 
+```dcbor
 │ Error: No match
 ```
 ````
 
 In this case the first element must be the exact number `42`, but the second element can be any text string:
 
-```bash
-dcbor match '[42, text]' '[42, "hello"]'
+```patex
+FORTY_TWO_THEN_TEXT=$(cat <<'EOF'
+[42, text]
+EOF
+)
+```
 
+```bash
+dcbor match $FORTY_TWO_THEN_TEXT '[42, "hello"]'
+```
+
+```dcbor
 │ [42, "hello"]
 ```
 
 This won't match because the elements are in wrong order:
 
 ```bash
-dcbor match '[number, text]' '["hello", 42]'
+dcbor match $FORTY_TWO_THEN_TEXT '["hello", 42]'
+```
 
+```dcbor
 │ Error: No match
 ```
 
-```bash
-# Match array starting with number, then text, then anything else
-dcbor match "[number, text, *]" '[42, "hello", true]'
+##### Match array starting with number, then text, then anything else
 
+```patex
+NUMBER_THEN_TEXT_THEN_ANY=$(cat <<'EOF'
+[number, text, *]
+EOF
+)
+```
+
+```bash
+dcbor match $NUMBER_THEN_TEXT_THEN_ANY '[42, "hello", true]'
+```
+
+```dcbor
 │ [42, "hello", true]
 ```
 
-```bash
-# Match array starting with a boolean, then a number, then text
-dcbor match "[bool, number, text]" '[true, 42, "world"]'
+````admonish note
+In the example above, the `[patex] *` operator by itself matches *exactly one* element. If you want to match zero or more of any elements from this point on, you can use the repeating pattern `[patex] (*)*`:
 
-│ [true, 42, "world"]
+```patex
+NUMBER_THEN_TEXT_THEN_REST=$(cat <<'EOF'
+[number, text, (*)*]
+EOF
+)
 ```
+
+```bash
+dcbor match $NUMBER_THEN_TEXT_THEN_REST '[42, "hello"]'
+dcbor match $NUMBER_THEN_TEXT_THEN_REST '[42, "hello", true]'
+dcbor match $NUMBER_THEN_TEXT_THEN_REST '[42, "hello", true, false]'
+```
+
+```dcbor
+│ [42, "hello"]
+│ [42, "hello", true]
+│ [42, "hello", true, false]
+```
+
+We'll cover repeating patterns more thoroughly later.
+````
 
 ### Map Patterns
 
-#### Key-Value Matching
+#### Key-Value Constraints
 
-Maps can be matched by specifying key-value patterns using `:` notation:
+Maps can be matched by specifying key-value constraints using `[patex] <key>: <value>` notation. For each constraint, the target map must have at least one key-value pair that satisfies the constraint.
+
+##### Match map with a specific key, and a text value
+
+```patex
+HAS_KEY_NAME=$(cat <<'EOF'
+{"name": text}
+EOF
+)
+```
 
 ```bash
-# Match map with a specific key, and a text value
-dcbor match '{"name": text}' '{"name": "Alice", "age": 30}'
+dcbor match $HAS_KEY_NAME '{"name": "Alice", "age": 30}'
+```
 
+```dcbor
 │ {"age": 30, "name": "Alice"}
 ```
 
 Notice that it is not necessary to match every key-value pair in the map; you can match just the ones you care about. The output will show the entire map.
 
-```bash
-# Match map with number key
-dcbor match '{1: text}' '{1: "first", 2: "second"}'
+##### Match map with number-valued key
 
+```patex
+HAS_KEY_1=$(cat <<'EOF'
+{1: text}
+EOF
+)
+```
+
+```bash
+dcbor match $HAS_KEY_1 '{1: "first", 2: "second"}'
+```
+
+```dcbor
 │ {1: "first", 2: "second"}
 ```
 
-If you want to match a map that *only* contains a specific key-value pair, you can specify the exact number of entries using the `&` operator:
+If you want to match a map that *only* contains a specific key-value pair, you can specify the exact number of entries using the `&` operator and a map pattern containing a quantifier:
+
+##### Match map with exactly one key-value pair, where key is 1 and value is any text
+
+```patex
+HAS_SINGLE_ENTRY_WITH_KEY_1=$(cat <<'EOF'
+{ {1} } & {1: text}
+EOF
+)
+```
+
+This will not match because it has two entries, and the patex specifies one:
 
 ```bash
-# Match map with exactly one key-value pair, where key is 1 and value is any text
-dcbor match '{ {1} } & {1: text}' '{1: "first", 2: "second"}'
+dcbor match $HAS_SINGLE_ENTRY_WITH_KEY_1 '{1: "first"}'
+```
 
+```dcbor
+│ {1: "first"}
+```
+
+There are two entries, so no match:
+
+```bash
+dcbor match $HAS_SINGLE_ENTRY_WITH_KEY_1 '{1: "first", 2: "second"}'
+```
+
+```dcbor
 │ Error: No match
-
-# Same thing, but specify there must be two entries
-dcbor match '{ {2} } & {1: text}' '{1: "first", 2: "second"}'
-
-│ {1: "first", 2: "second"}
 ```
 
-#### Specific Key Patterns
+##### Match map with multiple required entries
 
-You can match maps containing specific keys regardless of other content:
-
-```bash
-# Match any map that contains a "name" key with text value
-dcbor match '{"name": text}' '{"name": "Bob", "id": 42, "active": true}'
-
-│ {"id": 42, "name": "Bob", "active": true}
+```patex
+HAS_ID_AND_NAME=$(cat <<'EOF'
+{"id": number, "name": text}
+EOF
+)
 ```
 
-#### Multiple Entry Patterns
-
-Maps can specify multiple key-value requirements using comma-separated patterns:
+Both key-value pairs must exist, but other entries are allowed
 
 ```bash
-# Match map with multiple required key-value pairs
-dcbor match '{"id": number, "name": text}' '{"id": 1, "name": "Alice", "extra": "data"}'
-
-│ {"id": 1, "name": "Alice", "extra": "data"}
+dcbor match $HAS_ID_AND_NAME '{"id": 1, "name": "Alice", "age": 30}'
 ```
 
-```bash
-# Both key-value pairs must exist, but other entries are allowed
-dcbor match '{"id": 1, "name": "Alice"}' '{"id": 1, "name": "Alice", "age": 30}'
-
-│ {"id": 1, "name": "Alice", "age": 30}
+```dcbor
+│ {"id": 1, "age": 30, "name": "Alice"}
 ```
 
 ### Tagged Value Patterns
@@ -880,17 +1075,23 @@ CBOR tagged values apply semantic meaning to data. Patterns can match both the t
 
 #### Tag Number Matching
 
-```bash
-# Match any value with tag 1234 containing a number
-dcbor match "tagged(1234, number)" "1234(42)"
+##### Match any value with tag 1234 containing a number
 
+```bash
+dcbor match "tagged(1234, number)" "1234(42)"
+```
+
+```dcbor
 │ 1234(42)
 ```
 
-```bash
-# Match tag 12345 with any content
-dcbor match "tagged(12345, *)" '12345("tagged string")'
+##### Match tag 12345 with any content
 
+```bash
+dcbor match "tagged(12345, *)" '12345("tagged string")'
+```
+
+```dcbor
 │ 12345("tagged string")
 ```
 
@@ -898,17 +1099,23 @@ dcbor match "tagged(12345, *)" '12345("tagged string")'
 
 Tagged patterns specify both the tag value and required content patterns:
 
-```bash
-# Match tag 2 (bignum) with byte string content
-dcbor match "tagged(2, bstr)" "2(h'0102')"
+##### Match tag 2 (bignum) with byte string content
 
+```bash
+dcbor match "tagged(2, bstr)" "2(h'0102')"
+```
+
+```dcbor
 │ 2(h'0102')
 ```
 
-```bash
-# Match tag with array content having specific structure
-dcbor match "tagged(42, [number, text])" '42([1, "data"])'
+##### Match tag with array content having specific structure
 
+```bash
+dcbor match "tagged(42, [number, text])" '42([1, "data"])'
+```
+
+```dcbor
 │ 42([1, "data"])
 ```
 
@@ -920,13 +1127,17 @@ When a pattern matches, the default output shows the matching value. For structu
 
 ```bash
 dcbor match '[*]' '[1, 2, 3]'
+```
 
+```dcbor
 │ [1, 2, 3]
 ```
 
 ```bash
 dcbor match '{"key": *}' '{"key": "value", "other": 42}'
+```
 
+```dcbor
 │ {"key": "value", "other": 42}
 ```
 
@@ -934,7 +1145,9 @@ The output shows you what matched, which becomes more meaningful when working wi
 
 ```bash
 dcbor match 'search(number)' '[1, [2, 3]]'
+```
 
+```dcbor
 │ [1, [2, 3]]
 │     1
 │ [1, [2, 3]]
@@ -949,7 +1162,9 @@ You can choose to output the last item of each path using the `--last-only` opti
 
 ```bash
 dcbor match --last-only "search(number)" '[1, [2, 3]]'
+```
 
+```dcbor
 │ 1
 │ 2
 │ 3

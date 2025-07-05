@@ -109,6 +109,15 @@
         },
         {
             "scope": [
+                "constant.character.escape.patex"
+            ],
+            "settings": {
+                "foreground": "#d08401",
+                "fontStyle": "bold"
+            }
+        },
+        {
+            "scope": [
                 "storage.type.string.patex"
             ],
             "settings": {

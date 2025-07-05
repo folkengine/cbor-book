@@ -45,5 +45,4 @@ This works: `*`
 
 So does this: `[json] *`
 
-But this swallows the asterisk: `[patex] *`
-
+This works: `[patex] *`
