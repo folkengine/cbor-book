@@ -276,7 +276,9 @@ The output is "flat" diagnostic notation, entirely on one line. This is useful f
 
 ```bash
 dcbor --in hex --out diag --annotate $CBOR_SEED
+```
 
+```dcbor
 │ 40300(   / seed /
 │     {
 │         1:
@@ -297,7 +299,9 @@ The hex output format also supports the `--annotate` flag:
 
 ```bash
 dcbor --in hex --annotate $CBOR_SEED
+```
 
+```dcbor
 │ d9 9d6c                                 # tag(40300) seed
 │     a4                                  # map(4)
 │         01                              # unsigned(1)
@@ -418,7 +422,9 @@ To get this into a CBOR array, we can use the `array` subcommand of the `dcbor` 
 ```bash
 FIB_DIAG=`dcbor array --out diag "${FIB[@]}"`
 echo $FIB_DIAG
+```
 
+```dcbor
 │ [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
 ```
 
@@ -431,7 +437,9 @@ FIB_MAP=`dcbor map --annotate --out diag \
     '"name"' '"Fibonacci Numbers"' \
     '"value"' "$FIB_DIAG"`
 echo $FIB_MAP
+```
 
+```dcbor
 │ {
 │     "name":
 │     "Fibonacci Numbers",
@@ -446,6 +454,8 @@ When we've got our map composed the way we want it, we can serialize it to binar
 
 ```bash
 dcbor --in diag --out hex $FIB_MAP
+```
 
+```dcbor
 │ a2646e616d65714669626f6e61636369204e756d626572736576616c75658a0101020305080d1518221837
 ```

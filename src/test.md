@@ -26,4 +26,10 @@ Here is some dCBOR: `[dcbor] {"firstName": "Wolf", "lastName": "McNally"}`
 
 This highlights correctly: `[cbor] 1, "foo", true`
 
-But this doesn't highlight at all: `[cbor] [1, "foo", true]`
+This also works: `[cbor] [1, "foo", true]`
+
+- This looks good: `[_ "a", "b"]`
+
+- So does this: `[json] [_ "a", "b"]`
+
+- But this is not right: `[cbor] [_ "a", "b"]`

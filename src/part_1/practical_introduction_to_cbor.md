@@ -114,17 +114,17 @@ The same principle applies to the argument for negative integers.
 
 | JSON             | CBOR Diagnostic  | CBOR Hex      | MT  | AI  | Explanation                                         |
 | ---------------- | ---------------- | ------------- | --- | --- | --------------------------------------------------- |
-| `[json] 0`       | `[cbor] 0`       | `00`          | 0   | 0   | Value 0 directly encoded                            |
-| `[json] 10`      | `[cbor] 10`      | `0a`          | 0   | 10  | Value 10 directly encoded                           |
-| `[json] 23`      | `[cbor] 23`      | `17`          | 0   | 23  | Value 23 directly encoded                           |
-| `[json] 24`      | `[cbor] 24`      | `18 18`       | 0   | 24  | Value in next byte; `0x18` = 24                     |
-| `[json] 100`     | `[cbor] 100`     | `18 64`       | 0   | 24  | Value in next byte; `0x64` = 100                    |
-| `[json] 1000`    | `[cbor] 1000`    | `19 03e8`     | 0   | 25  | Value in next 2 bytes; `0x03e8` = 1000              |
-| `[json] 1000000` | `[cbor] 1000000` | `1a 000f4240` | 0   | 26  | Value in next 4 bytes; `0x000f4240` = 1,000,000     |
-| `[json] -1`      | `[cbor] -1`      | `20`          | 1   | 0   | -1 = -1 - 0                                         |
-| `[json] -10`     | `[cbor] -10`     | `29`          | 1   | 9   | -10 = -1 - 9                                        |
-| `[json] -100`    | `[cbor] -100`    | `38 63`       | 1   | 24  | Argument in next byte; `0x63` = 99 → -1 - 99 = -100 |
-| `[json] -1000`   | `[cbor] -1000`   | `39 03e7`     | 1   | 25  | Argument in next 2 bytes; `0x03e7` = 999 → -1000    |
+| `[json] 0`       | `[cbor] 0`       | `[cbor] 00`          | 0   | 0   | Value 0 directly encoded                            |
+| `[json] 10`      | `[cbor] 10`      | `[cbor] 0a`          | 0   | 10  | Value 10 directly encoded                           |
+| `[json] 23`      | `[cbor] 23`      | `[cbor] 17`          | 0   | 23  | Value 23 directly encoded                           |
+| `[json] 24`      | `[cbor] 24`      | `[cbor] 18 18`       | 0   | 24  | Value in next byte; `0x18` = 24                     |
+| `[json] 100`     | `[cbor] 100`     | `[cbor] 18 64`       | 0   | 24  | Value in next byte; `0x64` = 100                    |
+| `[json] 1000`    | `[cbor] 1000`    | `[cbor] 19 03e8`     | 0   | 25  | Value in next 2 bytes; `0x03e8` = 1000              |
+| `[json] 1000000` | `[cbor] 1000000` | `[cbor] 1a 000f4240` | 0   | 26  | Value in next 4 bytes; `0x000f4240` = 1,000,000     |
+| `[json] -1`      | `[cbor] -1`      | `[cbor] 20`          | 1   | 0   | -1 = -1 - 0                                         |
+| `[json] -10`     | `[cbor] -10`     | `[cbor] 29`          | 1   | 9   | -10 = -1 - 9                                        |
+| `[json] -100`    | `[cbor] -100`    | `[cbor] 38 63`       | 1   | 24  | Argument in next byte; `0x63` = 99 → -1 - 99 = -100 |
+| `[json] -1000`   | `[cbor] -1000`   | `[cbor] 39 03e7`     | 1   | 25  | Argument in next 2 bytes; `0x03e7` = 999 → -1000    |
 
 ### Booleans and Null (Major Type 7)
 
@@ -132,9 +132,9 @@ CBOR uses Major Type 7 for various simple values and floating-point numbers. The
 
 | JSON           | CBOR Diagnostic | CBOR Hex | MT  | AI  | Explanation           |
 | -------------- | --------------- | -------- | --- | --- | --------------------- |
-| `[json] false` | `[cbor] false`  | `f4`     | 7   | 20  | Simple value: `false` |
-| `[json] true`  | `[cbor] true`   | `f5`     | 7   | 21  | Simple value: `true`  |
-| `[json] null`  | `[cbor] null`   | `f6`     | 7   | 22  | Simple value: `null`  |
+| `[json] false` | `[cbor] false`  | `[cbor] f4`     | 7   | 20  | Simple value: `false` |
+| `[json] true`  | `[cbor] true`   | `[cbor] f5`     | 7   | 21  | Simple value: `true`  |
+| `[json] null`  | `[cbor] null`   | `[cbor] f6`     | 7   | 22  | Simple value: `null`  |
 
 CBOR also defines an `undefined` simple value (`f7`, MT 7, AI 23), which doesn't have a direct equivalent in standard JSON but may be useful in certain protocols.
 
@@ -152,9 +152,9 @@ In CBOR diagnostic notation, byte strings are represented using hexadecimal enco
 
 | Description                 | CBOR Diagnostic    | CBOR Hex    | MT  | AI  | Explanation                                            |
 | --------------------------- | ------------------ | ----------- | --- | --- | ------------------------------------------------------ |
-| Empty byte string           | `[cbor] h''`       | `40`        | 2   | 0   | Length 0 bytes                                         |
-| Bytes `0x01, 0x02, 0x03`    | `[cbor] h'010203'` | `43 010203` | 2   | 3   | Length 3 bytes; followed by `01 02 03`                 |
-| 24 bytes (e.g., all `0x00`) | `[cbor] h'…'`      | `58 18 …`   | 2   | 24  | Length in next byte; `0x18` = 24; followed by 24 bytes |
+| Empty byte string           | `[cbor] h''`       | `[cbor] 40`        | 2   | 0   | Length 0 bytes                                         |
+| Bytes `0x01, 0x02, 0x03`    | `[cbor] h'010203'` | `[cbor] 43 010203` | 2   | 3   | Length 3 bytes; followed by `01 02 03`                 |
+| 24 bytes (e.g., all `0x00`) | `[cbor] h'…'`      | `[cbor] 58 18 …`   | 2   | 24  | Length in next byte; `0x18` = 24; followed by 24 bytes |
 
 ### Examples: Definite Length Text Strings
 
@@ -162,17 +162,17 @@ Text strings use Major Type 3 and are explicitly defined as UTF-8 encoded Unicod
 
 | JSON             | CBOR Diagnostic  | CBOR Hex          | MT  | AI  | Explanation                                               |
 | ---------------- | ---------------- | ----------------- | --- | --- | --------------------------------------------------------- |
-| `[json] ""`      | `[cbor] ""`      | `60`              | 3   | 0   | Empty string; length 0                                    |
-| `[json] "a"`     | `[cbor] "a"`     | `61 61`           | 3   | 1   | Length 1 byte; `0x61` = `'a'`                             |
-| `[json] "hello"` | `[cbor] "hello"` | `65 68656c6c6f`   | 3   | 5   | Length 5 bytes; `68 65 6c 6c 6f` = `'hello'`              |
-| `[json] "IETF"`  | `[cbor] "IETF"`  | `64 49455446`     | 3   | 4   | Length 4 bytes; `49 45 54 46` = `'IETF'`                  |
-| `[json] "ü"`     | `[cbor] "ü"`     | `62 c3bc`         | 3   | 2   | Length 2 bytes; `c3 bc` is UTF-8 for `'ü'`                |
-| `[json] "你好"`  | `[cbor] "你好"`  | `66 e4bda0e5a5bd` | 3   | 6   | Length 6 bytes; `e4 bd a0 e5 a5 bd` is UTF-8 for `'你好'` |
+| `[json] ""`      | `[cbor] ""`      | `[cbor] 60`              | 3   | 0   | Empty string; length 0                                    |
+| `[json] "a"`     | `[cbor] "a"`     | `[cbor] 61 61`           | 3   | 1   | Length 1 byte; `0x61` = `'a'`                             |
+| `[json] "hello"` | `[cbor] "hello"` | `[cbor] 65 68656c6c6f`   | 3   | 5   | Length 5 bytes; `68 65 6c 6c 6f` = `'hello'`              |
+| `[json] "IETF"`  | `[cbor] "IETF"`  | `[cbor] 64 49455446`     | 3   | 4   | Length 4 bytes; `49 45 54 46` = `'IETF'`                  |
+| `[json] "ü"`     | `[cbor] "ü"`     | `[cbor] 62 c3bc`         | 3   | 2   | Length 2 bytes; `c3 bc` is UTF-8 for `'ü'`                |
+| `[json] "你好"`  | `[cbor] "你好"`  | `[cbor] 66 e4bda0e5a5bd` | 3   | 6   | Length 6 bytes; `e4 bd a0 e5 a5 bd` is UTF-8 for `'你好'` |
 
 ````admonish tip
 CBOR does not perform string escaping like JSON does (e.g., for quotes or backslashes). Since the length is provided upfront, the decoder knows exactly how many bytes constitute the string content. So the string `"Hello"`, *including* the quotes is seven bytes long, and the CBOR encoding would be eight bytes:
 
-```
+```cbor
 67               # Text(7 bytes)
   2248656C6C6F22 # "Hello"
 ```
@@ -202,10 +202,10 @@ Arrays in CBOR use Major Type 4. The Additional Information (AI) specifies the n
 
 | JSON                  | CBOR Diagnostic       | CBOR Hex         | MT  | AI  | Explanation                                                         |
 | --------------------- | --------------------- | ---------------- | --- | --- | ------------------------------------------------------------------- |
-| `[json] []`           | `[cbor] []`           | `80`             | 4   | 0   | Array with 0 elements                                               |
-| `[json] [1, 2, 3]`    | `[cbor] [1, 2, 3]`    | `83 01 02 03`    | 4   | 3   | Array with 3 elements; `01`, `02`, `03` encode integers 1, 2, and 3 |
-| `[json] [true, null]` | `[cbor] [true, null]` | `82 f5 f6`       | 4   | 2   | Array with 2 elements; `f5` = true, `f6` = null                     |
-| _no equivalent_       | `[cbor] ["a", h'01']` | `82 61 61 41 01` | 4   | 2   | Array with 2 elements; `61 61` = "a", `41 01` = byte string `h'01'` |
+| `[json] []`           | `[cbor] []`           | `[cbor] 80`             | 4   | 0   | Array with 0 elements                                               |
+| `[json] [1, 2, 3]`    | `[cbor] [1, 2, 3]`    | `[cbor] 83 01 02 03`    | 4   | 3   | Array with 3 elements; `01`, `02`, `03` encode integers 1, 2, and 3 |
+| `[json] [true, null]` | `[cbor] [true, null]` | `[cbor] 82 f5 f6`       | 4   | 2   | Array with 2 elements; `f5` = true, `f6` = null                     |
+| _no equivalent_       | `[cbor] ["a", h'01']` | `[cbor] 82 61 61 41 01` | 4   | 2   | Array with 2 elements; `61 61` = "a", `41 01` = byte string `h'01'` |
 
 ### Maps (Major Type 5)
 
@@ -219,10 +219,10 @@ CBOR maps use Major Type 5. The Additional Information (AI) specifies the number
 
 | JSON                      | CBOR Diagnostic               | CBOR Hex                       | MT  | AI  | Explanation                                                           |
 | ------------------------- | ----------------------------- | ------------------------------ | --- | --- | --------------------------------------------------------------------- |
-| `[json] {}`               | `[cbor] {}`                   | `a0`                           | 5   | 0   | Map with 0 key-value pairs                                            |
-| `[json] {"a": 1}`         | `[cbor] {"a": 1}`             | `a1 61 61 01`                  | 5   | 1   | 1 pair: key `"a"` (`61 61`), value `1` (`01`)                         |
-| `[json] {"a": 1, "b": 2}` | `[cbor] {"a": 1, "b": 2}`     | `a2 61 61 01 61 62 02`         | 5   | 2   | 2 pairs: `"a"`→`1`, `"b"`→`2`; encoded in sequence                    |
-| _no equivalent_           | `[cbor] {1: "one", 2: "two"}` | `a2 01 63 6f6e65 02 63 74776f` | 5   | 2   | 2 pairs: `1`→`"one"`, `2`→`"two"`; strings encoded as `63` (length 3) |
+| `[json] {}`               | `[cbor] {}`                   | `[cbor] a0`                           | 5   | 0   | Map with 0 key-value pairs                                            |
+| `[json] {"a": 1}`         | `[cbor] {"a": 1}`             | `[cbor] a1 61 61 01`                  | 5   | 1   | 1 pair: key `"a"` (`61 61`), value `1` (`01`)                         |
+| `[json] {"a": 1, "b": 2}` | `[cbor] {"a": 1, "b": 2}`     | `[cbor] a2 61 61 01 61 62 02`         | 5   | 2   | 2 pairs: `"a"`→`1`, `"b"`→`2`; encoded in sequence                    |
+| _no equivalent_           | `[cbor] {1: "one", 2: "two"}` | `[cbor] a2 01 63 6f6e65 02 63 74776f` | 5   | 2   | 2 pairs: `1`→`"one"`, `2`→`"two"`; strings encoded as `63` (length 3) |
 
 ```admonish note
 Although map keys have to be serialized in *some* order, CBOR maps are considered *orderless*. This means that CBOR encoders will typically not treat the order of pairs as significant, and neither should you. Similarly, nothing in the CBOR specification requires that map keys be *unique*. Theoretically you could have multiple pairs with the same key, but many implementations will simply choose to keep one of the pairs and throw away the other. You should therefore never rely on the behavior of particular implementations regarding the order of keys or duplicate keys. Deterministic encoding profiles we'll discuss later in this book address these ambiguities.
@@ -248,15 +248,15 @@ Similar to integers, preferred serialization for floating point values dictates 
 
 | Value      | CBOR Diagnostic   | CBOR Hex                     | MT  | AI  | Explanation                                                |
 | ---------- | ----------------- | ---------------------------- | --- | --- | ---------------------------------------------------------- |
-| `0.0`      | `[cbor] 0.0`      | `f9 00 00`                   | 7   | 25  | Half-precision (`float16`); zero                           |
-| `1.0`      | `[cbor] 1.0`      | `f9 3c 00`                   | 7   | 25  | Half-precision; `0x3c00` encodes `1.0`                     |
-| `-1.5`     | `[cbor] -1.5`     | `f9 be 00`                   | 7   | 25  | Half-precision; `0xbe00` encodes `-1.5`                    |
-| `10000.0`  | `[cbor] 10000.0`  | `fa 47 c3 50 00`             | 7   | 26  | Single-precision; `0x47c35000` encodes `10000.0`           |
-| `1.1`      | `[cbor] 1.1`      | `fb 3f f1 99 99 99 99 99 9a` | 7   | 27  | Double-precision; only this width exactly encodes `1.1`    |
-| `3.14159`  | `[cbor] 3.14159`  | `fb 40 09 21 f9 f0 1b 86 6e` | 7   | 27  | Double-precision; needed to preserve exact π approximation |
-| `1.0e+300` | `[cbor] 1.0e+300` | `fb 7e 37 e4 3c 88 00 75 9c` | 7   | 27  | Double-precision; high magnitude                           |
-| `Infinity` | `[cbor] Infinity` | `f9 7c 00`                   | 7   | 25  | Half-precision encoding for positive infinity              |
-| `NaN`      | `[cbor] NaN`      | `f9 7e 00`                   | 7   | 25  | Half-precision encoding for NaN (payload may vary)         |
+| `0.0`      | `[cbor] 0.0`      | `[cbor] f9 00 00`                   | 7   | 25  | Half-precision (`float16`); zero                           |
+| `1.0`      | `[cbor] 1.0`      | `[cbor] f9 3c 00`                   | 7   | 25  | Half-precision; `0x3c00` encodes `1.0`                     |
+| `-1.5`     | `[cbor] -1.5`     | `[cbor] f9 be 00`                   | 7   | 25  | Half-precision; `0xbe00` encodes `-1.5`                    |
+| `10000.0`  | `[cbor] 10000.0`  | `[cbor] fa 47 c3 50 00`             | 7   | 26  | Single-precision; `0x47c35000` encodes `10000.0`           |
+| `1.1`      | `[cbor] 1.1`      | `[cbor] fb 3f f1 99 99 99 99 99 9a` | 7   | 27  | Double-precision; only this width exactly encodes `1.1`    |
+| `3.14159`  | `[cbor] 3.14159`  | `[cbor] fb 40 09 21 f9 f0 1b 86 6e` | 7   | 27  | Double-precision; needed to preserve exact π approximation |
+| `1.0e+300` | `[cbor] 1.0e+300` | `[cbor] fb 7e 37 e4 3c 88 00 75 9c` | 7   | 27  | Double-precision; high magnitude                           |
+| `Infinity` | `[cbor] Infinity` | `[cbor] f9 7c 00`                   | 7   | 25  | Half-precision encoding for positive infinity              |
+| `NaN`      | `[cbor] NaN`      | `[cbor] f9 7e 00`                   | 7   | 25  | Half-precision encoding for NaN (payload may vary)         |
 
 ### Other Simple Values
 
@@ -335,7 +335,7 @@ Note that the `"data"` value in JSON is base64 encoded, representing the bytes `
 
 **CBOR Hexadecimal Encoding with Commentary:**
 
-```
+```cbor
 a5                     # map(5 pairs follow)
    64 6e616d65         # key 0: text (4 bytes, "name")
    66 476164676574     # value 0: text (6 bytes, "Gadget")

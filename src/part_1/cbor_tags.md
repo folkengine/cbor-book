@@ -231,7 +231,7 @@ Let's explore a few of the most fundamental and useful tags, many defined in the
 - **Diagnostic:** `[cbor] 0("2013-03-21T20:04:00Z")`
 - **Hex Example:**
 
-```
+```cbor
 C0                                      # tag(0)
    74                                   # text(20)
       323031332D30332D32315432303A30343A30305A # "2013-03-21T20:04:00Z"
@@ -244,7 +244,7 @@ C0                                      # tag(0)
 - **Diagnostic (Integer):** `[cbor] 1(1363896240)`
 - **Hex Example (Integer):**
 
-```
+```cbor
 C1             # tag(1)
    1A 514B67B0 # unsigned(1363896240)
 ```
@@ -252,7 +252,7 @@ C1             # tag(1)
 - **Diagnostic (Float):** `[cbor] 1(1698417015.123)`
 - **Hex Example (Float - double precision):**
 
-```
+```cbor
 C1                     # tag(1)
    FB 41D94EF25DC7DF3B # 1698417015.123
 ```
@@ -268,7 +268,7 @@ The choice between integer and float depends on the need for sub-second precisio
 - **Diagnostic (representing 18446744073709551616):** `[cbor] 2(h'010000000000000000')`
 - **Hex Example (representing 18446744073709551616):**
 
-```
+```cbor
 C2                         # Tag(2, non-negative bignum)
     49 010000000000000000  # Byte String (length 9 bytes, 18446744073709551616)
 ```
@@ -280,7 +280,7 @@ C2                         # Tag(2, non-negative bignum)
 - **Diagnostic:** `[cbor] 32("http://cbor.io/")`
 - **Hex Example:**
 
-```
+```cbor
 D8 20                                # tag(32)
    6F                                # text(15)
       687474703A2F2F63626F722E696F2F # "http://cbor.io/"
@@ -293,9 +293,9 @@ D8 20                                # tag(32)
 - **Diagnostic:** `[cbor] 37(h'f81d4fae7dec11d0a76500a0c91e6bf6')`
 - **Hex Example:**
 
-```
+```cbor
 D8 25                   # Tag(37) - uses 1+1 encoding (0xd8 0x25)
-    50                   # Byte String (length 16 bytes)
+    50                  # Byte String (length 16 bytes)
         f81d4fae7dec11d0a76500a0c91e6bf6
 ```
 
