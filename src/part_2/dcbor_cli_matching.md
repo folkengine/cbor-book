@@ -61,9 +61,10 @@ dcbor -o diag 42
 ```
 
 ````admonish note
-For clarity, in the examples in this chapter, the actual patex used is shown in its own block, and referred to in the command lines that follow it as `[bash] $PATTERN`. So when you see a block like this:
+In the examples in this chapter, the actual patex used is shown in its own block, and referred to in the command lines that follow it as `[bash] $PATTERN`. So when you see a block like this:
 
 ```patex
+PATTERN=
 number
 ```
 
@@ -75,6 +76,10 @@ number
 EOF
 )
 ```
+
+This little bit of _heredoc_ awkwardness is the most reliable way to make sure everything in a pattern is assigned to a shell variable verbatim. For many patterns you won't need to use it yourself.
+
+But if you do, now you know.
 ````
 
 What if you have two pieces of CBOR data, and you want to check whether one of them is a number?
@@ -285,7 +290,7 @@ dcbor match $PATTERN null
 
 ### The Universal Pattern
 
-The `*` ("any") pattern matches any CBOR value whatsoever.
+The `[patex] *` ("any") pattern matches any CBOR value whatsoever.
 
 ```patex
 PATTERN=$(cat <<'EOF'
@@ -318,7 +323,7 @@ dcbor match $PATTERN "h'1234'"
 │ h'1234'
 ```
 
-`*` is useful when you want to match any value in a particular position within a larger structure.
+`[patex] *` is useful when you want to match any value in a particular position within a larger structure.
 
 ## Specific Value Matching
 

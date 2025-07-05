@@ -40,3 +40,10 @@ h'/regex/'
 Works here: `[patex] /regex/`
 
 And here: `[patex] h'/regex/'`
+
+This works: `*`
+
+So does this: `[json] *`
+
+But this swallows the asterisk: `[patex] *`
+

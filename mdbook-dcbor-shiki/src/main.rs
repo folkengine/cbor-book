@@ -134,25 +134,27 @@ fn process_inline_syntax(md: &str) -> StdResult<String> {
 /// )
 /// ```
 ///
-/// And extracts just the heredoc content: `"hello"`
-fn extract_heredoc_content(code: &str) -> Option<String> {
+/// And returns the variable name and heredoc content: `("PATTERN", "\"hello\"")`
+fn extract_heredoc_content(code: &str) -> Option<(String, String)> {
     let lines: Vec<&str> = code.lines().collect();
 
     // Look for the heredoc pattern
     let mut heredoc_start = None;
     let mut heredoc_end = None;
     let mut delimiter = None;
+    let mut variable_name = None;
 
     for (i, line) in lines.iter().enumerate() {
         let trimmed = line.trim();
 
         // Look for HEREDOC start pattern: VARIABLE=$(cat <<'DELIMITER'
         if let Some(captures) =
-            Regex::new(r"^\w+\s*=\s*\$\(cat\s+<<'([^']+)'\s*$")
+            Regex::new(r"^(\w+)\s*=\s*\$\(cat\s+<<'([^']+)'\s*$")
                 .ok()?
                 .captures(trimmed)
         {
-            delimiter = Some(captures.get(1)?.as_str());
+            variable_name = Some(captures.get(1)?.as_str());
+            delimiter = Some(captures.get(2)?.as_str());
             heredoc_start = Some(i + 1);
             continue;
         }
@@ -167,11 +169,13 @@ fn extract_heredoc_content(code: &str) -> Option<String> {
     }
 
     // Extract the content between start and end
-    if let (Some(start), Some(end)) = (heredoc_start, heredoc_end) {
+    if let (Some(start), Some(end), Some(var_name)) =
+        (heredoc_start, heredoc_end, variable_name)
+    {
         if start < end {
             let content_lines = &lines[start..end];
             let content = content_lines.join("\n");
-            return Some(content.trim().to_string());
+            return Some((var_name.to_string(), content.trim().to_string()));
         }
     }
 
@@ -181,7 +185,11 @@ fn extract_heredoc_content(code: &str) -> Option<String> {
 fn shiki_html(code: &str, lang: &str) -> StdResult<String> {
     // Special handling for patex blocks with HEREDOC assignments
     let processed_code = if lang == "patex" {
-        extract_heredoc_content(code).unwrap_or_else(|| code.to_string())
+        if let Some((var_name, content)) = extract_heredoc_content(code) {
+            format!("{}=\n{}", var_name, content)
+        } else {
+            code.to_string()
+        }
     } else {
         code.to_string()
     };
