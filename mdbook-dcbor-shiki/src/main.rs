@@ -64,7 +64,6 @@ fn process_inline_syntax(md: &str) -> StdResult<String> {
         Regex::new(r"`\[(envelope|dcbor|cbor|patex)\]\s+([^`\[\]]+)`")?;
 
     let matches: Vec<_> = inline_re.captures_iter(md).collect();
-    eprintln!("Found {} inline syntax matches", matches.len());
 
     // If no matches, return original
     if matches.is_empty() {
@@ -91,10 +90,9 @@ fn process_inline_syntax(md: &str) -> StdResult<String> {
     let highlighted_results = if !unique_snippets.is_empty() {
         match shiki_batch_inline_html(&unique_snippets) {
             Ok(results) => results,
-            Err(e) => {
-                eprintln!("Failed to batch highlight inline code: {}", e);
+            Err(_e) => {
                 // Fallback to simple code tags for all
-                unique_snippets.iter().map(|(key, (id, lang, code))| {
+                unique_snippets.iter().map(|(key, (_id, lang, code))| {
                     (key.clone(), format!("<code class=\"dcbor-inline {} hljs\">{}</code>", lang, code))
                 }).collect()
             }
@@ -123,23 +121,6 @@ fn shiki_html(code: &str, lang: &str) -> StdResult<String> {
     let mut child = Command::new("node")
         .arg("scripts/highlight.mjs")
         .arg(lang)
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .context("Cannot spawn Node (is it installed and on PATH?)")?;
-    child.stdin.as_mut().unwrap().write_all(code.as_bytes())?;
-    let output = child.wait_with_output()?;
-    if !output.status.success() {
-        anyhow::bail!("Shiki exited with error: {}", output.status);
-    }
-    Ok(String::from_utf8(output.stdout)?)
-}
-
-fn shiki_inline_html(code: &str, lang: &str) -> StdResult<String> {
-    let mut child = Command::new("node")
-        .arg("scripts/highlight.mjs")
-        .arg(lang)
-        .arg("--inline")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()

@@ -111,12 +111,33 @@ try {
 
     for (const snippet of snippets) {
       const snippetLang = langMap[snippet.lang] || snippet.lang;
-      const html = highlighter.codeToHtml(snippet.code, { lang: snippetLang, theme: lightTheme.name });
+
+      // Generate HTML for both themes like fenced code blocks
+      const lightHtml = highlighter.codeToHtml(snippet.code, { lang: snippetLang, theme: lightTheme.name });
+      const darkHtml = highlighter.codeToHtml(snippet.code, { lang: snippetLang, theme: darkTheme.name });
 
       // Extract just the inner content without the <pre> wrapper for inline use
-      const match = html.match(/<code[^>]*>(.*?)<\/code>/s);
-      if (match) {
-        results[snippet.key] = `<code class="hljs dcbor-inline">${match[1]}</code>`;
+      const lightMatch = lightHtml.match(/<code[^>]*>(.*?)<\/code>/s);
+      const darkMatch = darkHtml.match(/<code[^>]*>(.*?)<\/code>/s);
+
+      if (lightMatch && darkMatch) {
+        // Flatten the content for inline use - remove line spans and just keep the styled content
+        const lightContent = lightMatch[1]
+          .replace(/<span class="line">/g, '')
+          .replace(/<\/span>\s*<span class="line">/g, '')
+          .replace(/<\/span>\s*$/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        const darkContent = darkMatch[1]
+          .replace(/<span class="line">/g, '')
+          .replace(/<\/span>\s*<span class="line">/g, '')
+          .replace(/<\/span>\s*$/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        // Create dual-theme inline code using proper CSS classes without overriding display
+        results[snippet.key] = `<code class="hljs dcbor-inline"><span class="light-theme-only">${lightContent}</span><span class="dark-theme-only">${darkContent}</span></code>`;
       } else {
         results[snippet.key] = `<code class="hljs dcbor-inline">${snippet.code}</code>`;
       }
@@ -124,13 +145,32 @@ try {
 
     console.log(JSON.stringify(results));
   } else if (isInlineMode) {
-    // For inline mode, generate simple HTML without theme switching
-    const html = highlighter.codeToHtml(code, { lang: actualLang, theme: lightTheme.name });
+    // For inline mode, generate HTML for both themes like fenced blocks
+    const lightHtml = highlighter.codeToHtml(code, { lang: actualLang, theme: lightTheme.name });
+    const darkHtml = highlighter.codeToHtml(code, { lang: actualLang, theme: darkTheme.name });
 
     // Extract just the inner content without the <pre> wrapper for inline use
-    const match = html.match(/<code[^>]*>(.*?)<\/code>/s);
-    if (match) {
-      console.log(`<code class="hljs dcbor-inline">${match[1]}</code>`);
+    const lightMatch = lightHtml.match(/<code[^>]*>(.*?)<\/code>/s);
+    const darkMatch = darkHtml.match(/<code[^>]*>(.*?)<\/code>/s);
+
+    if (lightMatch && darkMatch) {
+      // Flatten the content for inline use - remove line spans and just keep the styled content
+      const lightContent = lightMatch[1]
+        .replace(/<span class="line">/g, '')
+        .replace(/<\/span>\s*<span class="line">/g, '')
+        .replace(/<\/span>\s*$/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const darkContent = darkMatch[1]
+        .replace(/<span class="line">/g, '')
+        .replace(/<\/span>\s*<span class="line">/g, '')
+        .replace(/<\/span>\s*$/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      // Create dual-theme inline code using proper CSS classes without overriding display
+      console.log(`<code class="hljs dcbor-inline"><span class="light-theme-only">${lightContent}</span><span class="dark-theme-only">${darkContent}</span></code>`);
     } else {
       console.log(`<code class="hljs dcbor-inline">${code}</code>`);
     }

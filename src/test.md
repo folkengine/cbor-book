@@ -1,4 +1,4 @@
-This works:
+Block JSON Highlighting:
 
 ```json
 {
@@ -7,11 +7,11 @@ This works:
 }
 ```
 
-The inline highlighting using `mdbook-inline-highlighting` also works:
+Inline highlighting using `mdbook-inline-highlighting`:
 
 Here is some JSON: `[json] {"firstName": "Wolf", "lastName": "McNally"}`
 
-Our custom syntax also works:
+Our custom syntax in a block:
 
 ```dcbor
 {
@@ -20,6 +20,10 @@ Our custom syntax also works:
 }
 ```
 
-But it doesn't work for our custom syntax:
+Out custom syntax inline:
 
 Here is some dCBOR: `[dcbor] {"firstName": "Wolf", "lastName": "McNally"}`
+
+This highlights correctly: `[cbor] 1, "foo", true`
+
+But this doesn't highlight at all: `[cbor] [1, "foo", true]`
