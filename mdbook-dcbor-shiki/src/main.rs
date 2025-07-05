@@ -60,8 +60,8 @@ fn highlight_chapter(md: &str) -> StdResult<String> {
 fn process_inline_syntax(md: &str) -> StdResult<String> {
     // Pattern for our custom inline syntax: `[lang] code`
     // Very specific pattern to avoid matching markdown links
-    let inline_re =
-        Regex::new(r"`\[(envelope|dcbor|cbor|patex)\]\s+([^`\[\]]+)`")?;
+    // Allow brackets in the code content but ensure we don't match nested backticks
+    let inline_re = Regex::new(r"`\[(envelope|dcbor|cbor|patex)\]\s+([^`]+)`")?;
 
     let matches: Vec<_> = inline_re.captures_iter(md).collect();
 
@@ -106,12 +106,17 @@ fn process_inline_syntax(md: &str) -> StdResult<String> {
         let code = &caps[2];
         let key = format!("{}:{}", lang, code);
 
-        highlighted_results.get(&key).cloned().unwrap_or_else(|| {
-            format!(
-                "<code class=\"dcbor-inline {} hljs\">{}</code>",
-                lang, code
-            )
-        })
+        let html =
+            highlighted_results.get(&key).cloned().unwrap_or_else(|| {
+                format!(
+                    "<code class=\"dcbor-inline {} hljs\">{}</code>",
+                    lang, code
+                )
+            });
+
+        // Escape square brackets in the HTML to prevent link checker false positives
+        // Only escape brackets that are not part of HTML tags
+        escape_brackets_in_html(&html)
     });
 
     Ok(result.to_string())
@@ -175,6 +180,38 @@ fn shiki_batch_inline_html(
         serde_json::from_str(&output_str)?;
 
     Ok(results)
+}
+
+fn escape_brackets_in_html(html: &str) -> String {
+    // Replace square brackets with HTML entities to prevent link checker false positives
+    // We need to be careful not to break HTML tags, so we only escape brackets in text content
+    let mut result = String::with_capacity(html.len() + html.len() / 4);
+    let mut in_tag = false;
+    let mut chars = html.chars().peekable();
+
+    while let Some(ch) = chars.next() {
+        match ch {
+            '<' => {
+                in_tag = true;
+                result.push(ch);
+            }
+            '>' => {
+                in_tag = false;
+                result.push(ch);
+            }
+            '[' if !in_tag => {
+                result.push_str("&#91;");
+            }
+            ']' if !in_tag => {
+                result.push_str("&#93;");
+            }
+            _ => {
+                result.push(ch);
+            }
+        }
+    }
+
+    result
 }
 
 fn main() {
