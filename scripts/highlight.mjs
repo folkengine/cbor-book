@@ -56,12 +56,14 @@ try {
 
   // Create the language objects with proper structure
   const dcborLanguage = {
+    id: 'dcbor-envelope',
     name: 'dcbor-envelope',
     scopeName: dcborLanguageGrammar.scopeName,
     ...dcborLanguageGrammar
   };
 
   const patexLanguage = {
+    id: 'patex',
     name: 'patex',
     scopeName: patexLanguageGrammar.scopeName,
     ...patexLanguageGrammar
@@ -82,7 +84,7 @@ try {
     'envelope': 'dcbor-envelope',
     'dcbor': 'dcbor-envelope',
     'cbor': 'dcbor-envelope',
-    'patex': 'patex'
+    'patex': 'Patex'
   };
 
   const actualLang = langMap[lang] || lang;

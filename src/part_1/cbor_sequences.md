@@ -49,10 +49,10 @@ Let's illustrate this with hexadecimal examples:
 
 - Example 2: Sequence Containing Structured Items
 
-    Consider encoding the sequence: `[10, false]`, then `{"a": -1}`.
+    Consider encoding the sequence: `[cbor] [10, false]`, then `[cbor] {"a": -1}`.
 
-    1. The array `[10, false]` (Array, Major Type 4, Additional Information 2 indicates 2 elements) encodes as: `82` (header) followed by `0a` (encoding for 10) and `f4` (encoding for false): `82 0a f4`.
-    2. The map `{"a": -1}` (Map, Major Type 5, Additional Information 1 indicates 1 pair) encodes as: `a1` (header) followed by `61 61` (encoding for key "a") and `20` (encoding for value -1): `a1 61 61 20`. The resulting CBOR Sequence is the concatenation: `82 0a f4 a1 61 61 20`.
+    1. The array `[cbor] [10, false]` (Array, Major Type 4, Additional Information 2 indicates 2 elements) encodes as: `82` (header) followed by `0a` (encoding for 10) and `f4` (encoding for false): `82 0a f4`.
+    2. The map `[cbor] {"a": -1}` (Map, Major Type 5, Additional Information 1 indicates 1 pair) encodes as: `a1` (header) followed by `61 61` (encoding for key "a") and `20` (encoding for value -1): `a1 61 61 20`. The resulting CBOR Sequence is the concatenation: `82 0a f4 a1 61 61 20`.
 
 - Example 3: Empty Sequence
 
@@ -60,17 +60,17 @@ Let's illustrate this with hexadecimal examples:
 
 It is instructive to contrast the CBOR Sequence encoding with CBOR array encodings for the same logical list of items. Taking the data from Example 1 (`1`, `"foo"`, `true`):
 
-- **As a Definite-Length Array `[1, "foo", true]`:** Encoded as `83 01 63 666f6f f5`. The initial byte `83` signifies Major Type 4 (Array) with Additional Information 3 (three elements follow).
-- **As an Indefinite-Length Array `[1, "foo", true]`:** Encoded as `9f 01 63 666f6f f5 ff`. This starts with `9f` (Major Type 4, AI 31 - indefinite-length array), includes the encoded elements, and ends with the `ff` (Major Type 7, AI 31 - break code) marker.
+- **As a Definite-Length Array `[cbor] [1, "foo", true]`:** Encoded as `83 01 63 666f6f f5`. The initial byte `83` signifies Major Type 4 (Array) with Additional Information 3 (three elements follow).
+- **As an Indefinite-Length Array `[cbor] [1, "foo", true]`:** Encoded as `9f 01 63 666f6f f5 ff`. This starts with `9f` (Major Type 4, AI 31 - indefinite-length array), includes the encoded elements, and ends with the `ff` (Major Type 7, AI 31 - break code) marker.
 
 The following table summarizes these differences visually, including a comparison to JSON:
 
-|Data Model|Representation|Hexadecimal Encoding|Overhead Bytes|Framing Mechanism|
-|---|---|---|---|---|
-|`[1, "foo", true]`|JSON|`[31, 2c, 22 66 6f 6f 22, 2c, 74 72 75 65]` (ASCII)|Variable|Text delimiters (`[`, `,`, `]`)|
-|`[1, "foo", true]`|CBOR Definite Array|`83 01 63 666f6f f5`|1 (`83`)|Initial byte (Type 4 + Count 3)|
-|`[1, "foo", true]`|CBOR Indefinite Array|`9f 01 63 666f6f f5 ff`|2 (`9f`, `ff`)|Start marker (`9f`) + Break (`ff`)|
-|`1, "foo", true`|CBOR Sequence|`01 63 666f6f f5`|0|None (Self-delimiting items)|
+| Data Model                | Representation        | Hexadecimal Encoding                                       | Overhead Bytes | Framing Mechanism                                    |
+| ------------------------- | --------------------- | ---------------------------------------------------------- | -------------- | ---------------------------------------------------- |
+| `[cbor] [1, "foo", true]` | JSON                  | `[json] [31, 2c, 22 66 6f 6f 22, 2c, 74 72 75 65]` (ASCII) | Variable       | Text delimiters (`[json] [`, `[json] ,`, `[json] ]`) |
+| `[cbor] [1, "foo", true]` | CBOR Definite Array   | `83 01 63 666f6f f5`                                       | 1 (`83`)       | Initial byte (Type 4 + Count 3)                      |
+| `[cbor] [1, "foo", true]` | CBOR Indefinite Array | `9f 01 63 666f6f f5 ff`                                    | 2 (`9f`, `ff`) | Start marker (`9f`) + Break (`ff`)                   |
+| `[cbor] 1, "foo", true`   | CBOR Sequence         | `01 63 666f6f f5`                                          | 0              | None (Self-delimiting items)                         |
 
 This comparison clearly shows that CBOR Sequences eliminate the structural overhead associated with arrays by relying entirely on the self-delimiting nature of the constituent CBOR items. This byte-level difference underscores the efficiency motivation, especially for streams of numerous small items.
 
@@ -96,7 +96,7 @@ The fragility in the face of malformed items is a direct consequence of the desi
 
 ## CBOR Sequences in Diagnostic Notation
 
-The current draft for [CBOR Extended Diagnostic Notation](https://www.ietf.org/archive/id/draft-ietf-cbor-edn-literals-16.html) (EDN) proposes a way to represent CBOR Sequences in a human-readable format using `<<` and `>>` as delimiters, with the items separated by commas:
+The current draft for [CBOR Extended Diagnostic Notation](https://www.ietf.org/archive/id/draft-ietf-cbor-edn-literals-16.html) (EDN) proposes a way to represent CBOR Sequences in a human-readable format using `[cbor] <<` and `[cbor] >>` as delimiters, with the items separated by commas:
 
 ```cbor
 << item1, item2, item3, ... >>
@@ -115,7 +115,7 @@ If you enter this into the [CBOR Playground](https://cbor.me) and convert it to 
    0163666F6FF5
 ```
 
-If we manually parse this out, we can see that the first byte `0x46` indicates a byte string of length 6, followed by the bytes for the integer `1`, the string `"foo"`, and the boolean `true` with no other delimiters or framing:
+If we manually parse this out, we can see that the first byte `0x46` indicates a byte string of length 6, followed by the bytes for the integer `1`, the string `[cbor] "foo"`, and the boolean `[cbor] true` with no other delimiters or framing:
 
 ```
 46              # bytes(6)
@@ -176,17 +176,17 @@ Choosing the right data representation format involves understanding the trade-o
 
 The following table summarizes the key characteristics of these alternatives:
 
-| Feature               | CBOR Sequence                   | CBOR Indefinite Array          | NDJSON / JSON Lines           |
-|-----------------------|---------------------------------|--------------------------------|-------------------------------|
-| **Encoding**          | Binary                          | Binary                         | Text (JSON per line)          |
-| **Structure**         | Concatenated items (multi-root) | Single array item (single root) | Concatenated lines (multi-root) |
-| **Item Delimitation** | Implicit (self-delimiting)      | Explicit (`0xFF` break marker) | Explicit (newline `\n`)      |
-| **Overhead**          | None (beyond items)             | 2 bytes (`0x9F`/`0xBF` + `0xFF`) | 1 byte per item (`\n`)       |
-| **Processing**        | Item-by-item (native streaming) | Element-by-element streaming  | Line-by-line (native streaming) |
-| **Readability**       | Low (requires tools)            | Low (requires tools)          | High (text editor-friendly)  |
-| **Binary Data**       | Native (byte strings)           | Native (byte strings)         | Requires Base64 encoding     |
-| **Error Recovery**    | Difficult (malformed item breaks stream) | Difficult (malformed element) | Easier (can skip bad lines)  |
-| **Standard**          | RFC 8742                        | RFC 8949                      | Informal spec (ndjson.org)   |
+| Feature               | CBOR Sequence                            | CBOR Indefinite Array            | NDJSON / JSON Lines             |
+| --------------------- | ---------------------------------------- | -------------------------------- | ------------------------------- |
+| **Encoding**          | Binary                                   | Binary                           | Text (JSON per line)            |
+| **Structure**         | Concatenated items (multi-root)          | Single array item (single root)  | Concatenated lines (multi-root) |
+| **Item Delimitation** | Implicit (self-delimiting)               | Explicit (`0xFF` break marker)   | Explicit (newline `\n`)         |
+| **Overhead**          | None (beyond items)                      | 2 bytes (`0x9F`/`0xBF` + `0xFF`) | 1 byte per item (`\n`)          |
+| **Processing**        | Item-by-item (native streaming)          | Element-by-element streaming     | Line-by-line (native streaming) |
+| **Readability**       | Low (requires tools)                     | Low (requires tools)             | High (text editor-friendly)     |
+| **Binary Data**       | Native (byte strings)                    | Native (byte strings)            | Requires Base64 encoding        |
+| **Error Recovery**    | Difficult (malformed item breaks stream) | Difficult (malformed element)    | Easier (can skip bad lines)     |
+| **Standard**          | RFC 8742                                 | RFC 8949                         | Informal spec (ndjson.org)      |
 
 This comparison highlights that CBOR Sequences offer a high-performance, low-overhead binary format for streaming independent items, trading off some error recovery robustness and human readability compared to text-based alternatives like NDJSON, and differing structurally from CBOR arrays.
 

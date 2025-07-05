@@ -105,14 +105,14 @@ Despite originating from JavaScript, JSON's success wasn't confined to browsers.
 
 JSON's syntax is deliberately minimal, built on just a few structural elements from JavaScript:
 
-- **Objects**: Unordered key-value pairs in curly braces `{}`. Keys must be double-quoted strings, followed by a colon `:`, with comma-separated pairs. Example: `{ "name": "Alice", "age": 30 }`.
-- **Arrays**: Ordered value sequences in square brackets `[]`, separated by commas. Example: `[ "apple", "banana", "cherry" ]`.
+- **Objects**: Unordered key-value pairs in curly braces `[json] {}`. Keys must be double-quoted strings, followed by a colon `[json] :`, with comma-separated pairs. Example: `[json] { "name": "Alice", "age": 30 }`.
+- **Arrays**: Ordered value sequences in square brackets `[json] []`, separated by commas. Example: `[json] [ "apple", "banana", "cherry" ]`.
 
 Values can only be:
 - **String**: Double-quoted Unicode characters
 - **Number**: Numeric values (without type distinction)
-- **Boolean**: `true` or `false` (lowercase)
-- **Null**: `null` (lowercase)
+- **Boolean**: `[json] true` or `[json] false` (lowercase)
+- **Null**: `[json] null` (lowercase)
 - **Object**: Nested JSON object
 - **Array**: Nested JSON array
 

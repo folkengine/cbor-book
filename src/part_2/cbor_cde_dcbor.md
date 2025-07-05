@@ -95,8 +95,8 @@ The key differences introduced at each level, representing progressively tighter
     - **Number Encoding:** Preferred/shortest forms become mandatory, with specific canonical rules for floats (including NaN) and large integers (tags 2/3 without leading zeros). Mixing integer/float types for mathematically equivalent values is prohibited.
     - **Basic Validity:** Explicitly required (no duplicate map keys, valid UTF-8).
 - **CDE → dCBOR:**
-    - **Numeric Reduction:** Mandatory; floating-point numbers that are numerically equal to integers within the range `[−2⁶³,2⁶⁴−1]` MUST be encoded as integers. All `NaN` values MUST be reduced to a single canonical half-precision quiet NaN (`0xf97e00`).
-    - **Simple Values:** Restricted; only `false`, `true`, `null`, and floating-point values (major type 7, subtypes 20-27) are permitted. Other simple values (subtypes 0-19, 28-255) are disallowed.
+    - **Numeric Reduction:** Mandatory; floating-point numbers that are numerically equal to integers within the range `[plain] [−2⁶³,2⁶⁴−1]` MUST be encoded as integers. All `[dcbor] NaN` values MUST be reduced to a single canonical half-precision quiet NaN (`0xf97e00`).
+    - **Simple Values:** Restricted; only `[dcbor] false`, `[dcbor] true`, `[dcbor] null`, and floating-point values (major type 7, subtypes 20-27) are permitted. Other simple values (subtypes 0-19, 28-255) are disallowed.
     - **String Normalization:** Mandatory; all text strings MUST be encoded in [Unicode Normalization Form C (NFC)](https://unicode.org/reports/tr15/).
     - **Duplicate Map Keys:** Explicitly rejected by decoders (building on CDE's requirement for encoders not to emit them).
     - **Validity Checking by Decoders:** Decoders MUST reject any data that does not conform to dCBOR rules, including CDE rules.
@@ -110,7 +110,7 @@ The following table provides a comparative overview of how key sources of non-de
 |**Float Encoding**|Preferred (shortest IEEE 754) mandatory; No indefinite length|Preferred mandatory; Canonical NaN; No int/float mixing|Inherits CDE rules; Canonical NaN reduced to `0xf97e00`|
 |**Numeric Reduction**|Not applicable|Not specified (handled by ALDR if needed)|Mandatory: Float-to-int reduction; Canonical NaN reduction|
 |**Indefinite Lengths**|Disallowed (for strings, arrays, maps)|Disallowed|Disallowed|
-|**Allowed Simple Values**|All simple values (0-255) potentially allowed|All simple values potentially allowed|Restricted: Only `false`, `true`, `null`, floats allowed|
+|**Allowed Simple Values**|All simple values (0-255) potentially allowed|All simple values potentially allowed|Restricted: Only `[dcbor] false`, `[dcbor] true`, `[dcbor] null`, floats allowed|
 |**String Normalization**|Not specified|Not specified|Mandatory: Unicode NFC|
 |**Duplicate Map Keys**|Invalid CBOR (handling not mandated)|Encoder MUST NOT emit; Decoder MUST check basic validity|Encoder MUST NOT emit; Decoder MUST reject|
 |**Validity Checking by Decoders**|Not specified|Decoder MUST check basic validity|Decoder MUST reject any data that does not conform to dCBOR rules|

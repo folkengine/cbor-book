@@ -53,7 +53,7 @@ The encoding follows the standard CBOR pattern. The initial byte has its high-or
 
 Immediately following the initial byte(s) that encode the tag number comes the complete encoding of the single data item that serves as the tag's content.
 
-**Example:** Tag 2 (unsigned bignum) applied to the byte string `h'0102'`
+**Example:** Tag 2 (unsigned bignum) applied to the byte string `[cbor] h'0102'`
 
 | CBOR Hex | MT | AI | Explanation                                      |
 |----------|----|----|--------------------------------------------------|
@@ -61,7 +61,7 @@ Immediately following the initial byte(s) that encode the tag number comes the c
 | `42`     | 2  | 2  | Byte String (Major Type 2), length = 2 bytes     |
 | `0102`   | –  | –  | Tag Content: raw bytes `0x01`, `0x02`            |
 
-**CBOR Diagnostic Notation:** `2(h'0102')`
+**CBOR Diagnostic Notation:** `[cbor] 2(h'0102')`
 
 ```admonish info
 If you put this diagnostic notation into the [CBOR playground](https://cbor.me/), convert it to its hexadecimal representation and back, you will get the value `258`! This is because the playground understands that byte strings tagged with **Tag 2** (unsigned bignum) are interpreted as a single integer value. In this case, the first byte `0x01` is the most significant byte, and the second byte `0x02` is the least significant byte, leading to the calculation: `(1 * 256 + 2) = 258`. This is the playground enforcing *preferred serialization* of numbers, which is a feature of the playground, not a requirement of CBOR itself.
@@ -228,7 +228,7 @@ Let's explore a few of the most fundamental and useful tags, many defined in the
 
 - **Content:** UTF-8 string
 - **Semantics:** Represents a date and time expressed as a string, following the standard format defined in [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) (a profile of ISO 8601). This is a human-readable format.
-- **Diagnostic:** `0("2013-03-21T20:04:00Z")`
+- **Diagnostic:** `[cbor] 0("2013-03-21T20:04:00Z")`
 - **Hex Example:**
 
 ```
@@ -241,7 +241,7 @@ C0                                      # tag(0)
 
 - **Content:** Integer or Floating-point number
 - **Semantics:** Represents a point in time as a numeric offset (in seconds, with optional fractional part for floats) from the standard Unix epoch (1970-01-01T00:00:00Z UTC). More compact and suitable for computation than Tag 0.
-- **Diagnostic (Integer):** `1(1363896240)`
+- **Diagnostic (Integer):** `[cbor] 1(1363896240)`
 - **Hex Example (Integer):**
 
 ```
@@ -249,7 +249,7 @@ C1             # tag(1)
    1A 514B67B0 # unsigned(1363896240)
 ```
 
-- **Diagnostic (Float):** `1(1698417015.123)`
+- **Diagnostic (Float):** `[cbor] 1(1698417015.123)`
 - **Hex Example (Float - double precision):**
 
 ```
@@ -265,7 +265,7 @@ The choice between integer and float depends on the need for sub-second precisio
 
 - **Content:** Byte string
 - **Semantics:** Represents an arbitrarily large non-negative integer (Tag 2) or negative integer (Tag 3) that does not have to fit into the 64-bit unsigned integer (Major Type 0). The byte string contains the magnitude of the integer in network byte order (big-endian), with no leading zero bytes permitted in preferred/deterministic encoding.
-- **Diagnostic (representing 18446744073709551616):** `2(h'010000000000000000')`
+- **Diagnostic (representing 18446744073709551616):** `[cbor] 2(h'010000000000000000')`
 - **Hex Example (representing 18446744073709551616):**
 
 ```
@@ -277,7 +277,7 @@ C2                         # Tag(2, non-negative bignum)
 
 - **Content:** UTF-8 string
 - **Semantics:** Identifies the text string content as a Uniform Resource Identifier according to([RFC-3986](https://datatracker.ietf.org/doc/html/rfc3986)).
-- **Diagnostic:** `32("http://cbor.io/")`
+- **Diagnostic:** `[cbor] 32("http://cbor.io/")`
 - **Hex Example:**
 
 ```
@@ -290,7 +290,7 @@ D8 20                                # tag(32)
 
 - **Content:** Byte string (must be 16 bytes long)
 - **Semantics:** Identifies the byte string content as a Universally Unique Identifier, as defined in([RFC-9562](https://datatracker.ietf.org/doc/html/rfc9562)).
-- **Diagnostic:** `37(h'f81d4fae7dec11d0a76500a0c91e6bf6')`
+- **Diagnostic:** `[cbor] 37(h'f81d4fae7dec11d0a76500a0c91e6bf6')`
 - **Hex Example:**
 
 ```

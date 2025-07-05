@@ -143,9 +143,9 @@ Literal values are often used as discriminators in choices or as fixed keys in m
 
 Beyond simple scalar types, CDDL provides syntax for defining the structure of CBOR arrays (Major Type 4) and maps (Major Type 5). Crucially, it also introduces the concept of _groups_ delimited by parentheses (`()`) to define sequences of items that are _not_ enclosed within a CBOR array or map structure. Understanding the distinction between these is vital for correctly modeling CBOR data.
 
-### Arrays (`[]`)
+### Arrays (`[plain] []`)
 
-CDDL uses square brackets `[]` to define CBOR arrays. Inside the brackets, you specify the type(s) of the elements that the array should contain.
+CDDL uses square brackets `[plain] []` to define CBOR arrays. Inside the brackets, you specify the type(s) of the elements that the array should contain.
 
 CDDL:
 ```cddl
@@ -224,7 +224,7 @@ point-2d = (float, float)
 
 At first glance, `point-2d = (float, float)` might look similar to `point-array = [float, float]`. However, they define fundamentally different structures:
 
-- `point-array` defines a CBOR **array** (e.g., `[1.0, 2.5]`, encoded starting with `0x82`) containing two floats.
+- `point-array` defines a CBOR **array** (e.g., `[cbor] [1.0, 2.5]`, encoded starting with `0x82`) containing two floats.
 - `point-2d` defines a **sequence** of two CBOR floats (e.g., `1.0` followed by `2.5`, encoded as `0xf93c00` followed by `0xfa40200000`, assuming preferred serialization).
 
 **Why are groups useful?**
@@ -577,7 +577,7 @@ The availability of these tools enables a _schema-driven development_ workflow. 
 
 This chapter has introduced the Concise Data Definition Language (CDDL) as the standard way to define the structure of CBOR data. We've moved from understanding _how_ individual CBOR items are encoded to specifying _what_ overall structure those items should form in a given application or protocol.
 
-We covered the core concepts: rules defined using assignments (`=`, `/=`, `//=`), the use of standard types from the prelude (`uint`, `tstr`, `bool`, etc.), and the specification of literal values. We explored how CDDL defines CBOR arrays (`[]`) and maps (`{}`), noting the flexibility of map keys in CBOR. Crucially, we delved into CDDL groups (`()`) and their role in defining sequences of items without explicit CBOR delimiters, highlighting how this feature directly maps to CBOR's sequential encoding and distinguishes CDDL from JSON-centric schema languages. We also learned how to control structure using occurrence indicators (`?`, `*`, `+`, `n*m`), define choices (`/`, `//`), and apply constraints using value ranges (`..`) and practical control operators like `.size`, `.regexp`, and `.cbor`. Finally, we saw how rule referencing enables modular, readable, and reusable schema design, and how the existence of validation tools makes CDDL a practical asset for development.
+We covered the core concepts: rules defined using assignments (`=`, `/=`, `//=`), the use of standard types from the prelude (`uint`, `tstr`, `bool`, etc.), and the specification of literal values. We explored how CDDL defines CBOR arrays (`[cbor] []`) and maps (`[cbor] {}`), noting the flexibility of map keys in CBOR. Crucially, we delved into CDDL groups (`()`) and their role in defining sequences of items without explicit CBOR delimiters, highlighting how this feature directly maps to CBOR's sequential encoding and distinguishes CDDL from JSON-centric schema languages. We also learned how to control structure using occurrence indicators (`?`, `*`, `+`, `n*m`), define choices (`/`, `//`), and apply constraints using value ranges (`..`) and practical control operators like `.size`, `.regexp`, and `.cbor`. Finally, we saw how rule referencing enables modular, readable, and reusable schema design, and how the existence of validation tools makes CDDL a practical asset for development.
 
 **Best Practices for Writing CDDL:**
 
@@ -587,6 +587,6 @@ As you start defining your own CBOR structures with CDDL, keep these practices i
 - **Meaningful Names**: Choose descriptive names for rules that reflect their purpose.
 - **Modularity**: Break down complex structures into smaller, well-named rules. This improves readability, maintainability, and reuse.
 - **Start Specific, Generalize Carefully**: Define the expected structure as precisely as possible initially. Use broad types like `any` or wide occurrence ranges (`*`) only when truly necessary, as overly permissive schemas offer less validation value.
-- **Consider the CBOR Data Model**: Think about how your CDDL definition maps to the underlying CBOR types and encoding, especially regarding the distinction between groups (`()`) and container types like arrays (`[]`) and maps (`{}`).
+- **Consider the CBOR Data Model**: Think about how your CDDL definition maps to the underlying CBOR types and encoding, especially regarding the distinction between groups (`()`) and container types like arrays (`[cbor] []`) and maps (`[cbor] {}`).
 
 With the fundamentals covered here, you are equipped to use CDDL to bring clarity and rigor to your CBOR-based data formats. This foundation is essential as we move forward to explore more advanced CBOR topics. CDDL schemas are instrumental in understanding and validating the structures used within CBOR Tags, ensuring the correctness of data before applying deterministic encoding rules (dCBOR), and understanding the precise layout of nested structures like Gordian Envelope.

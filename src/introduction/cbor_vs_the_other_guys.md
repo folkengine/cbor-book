@@ -135,7 +135,7 @@ Apache Avro emerged from Apache Hadoop around 2009, designed specifically to add
 
 Avro is **schema-based**, with schemas typically defined in JSON (though an alternative C-like IDL is available). A fundamental aspect of Avro is that the schema used to _write_ data is always required to _read_ that data. The binary encoding contains no field names or type identifiers—just concatenated field values in schema-defined order. This creates compact data that depends entirely on the schema for interpretation. Writer schemas typically accompany the data in file headers or through schema registry services. Avro also supports JSON encoding for debugging purposes.
 
-Avro includes primitive types (`null`, `boolean`, `int`, `long`, `float`, `double`, `bytes`, `string`) and complex types (`record`, `enum`, `array`, `map`, `union`, `fixed`). Records contain named fields, arrays hold sequences, maps store key-value pairs (string keys only), and unions allow values of several specified types—commonly used for optional fields by including `null` (e.g., `["null", "string"]`).
+Avro includes primitive types (`null`, `boolean`, `int`, `long`, `float`, `double`, `bytes`, `string`) and complex types (`record`, `enum`, `array`, `map`, `union`, `fixed`). Records contain named fields, arrays hold sequences, maps store key-value pairs (string keys only), and unions allow values of several specified types—commonly used for optional fields by including `null` (e.g., `[plain] ["null", "string"]`).
 
 Avro's strength lies in its well-defined **schema evolution rules**:
 

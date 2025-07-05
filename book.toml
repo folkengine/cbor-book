@@ -24,6 +24,8 @@ color = "#d0da14"
 
 [preprocessor.dcbor-shiki]
 
+[preprocessor.inline-highlighting]
+
 [output]
 
 [output.html]

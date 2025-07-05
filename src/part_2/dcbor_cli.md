@@ -175,22 +175,22 @@ CBOR diagnostic notation looks a lot like JSON, but as its name suggests, it is 
 
 The `dcbor` tool parses a variety of data types, including the primitives defined in the CBOR specification. It also supports specialized types like Uniform Resources (URs) and Known Values that can be quite useful when working with Gordian Envelope, which we'll discuss in Part III. Here is a summary of the supported data types:
 
-| Type                | Example                                                     |
-| ------------------- | ----------------------------------------------------------- |
-| Boolean             | `true`<br>`false`                                           |
-| Null                | `null`                                                      |
-| Integers            | `0`<br>`1`<br>`-1`<br>`42`                                  |
-| Floats              | `3.14`<br>`-2.5`<br>`Infinity`<br>`-Infinity`<br>`NaN`      |
-| Strings             | `"hello"`<br>`"🌎"`                                          |
-| Hex Byte Strings    | `h'68656c6c6f'`                                             |
-| Base64 Byte Strings | `b64'AQIDBAUGBwgJCg=='`                                     |
-| Tagged Values       | `1234("hello")`<br>`5678(3.14)`                             |
-| Name-Tagged Values  | `tag-name("hello")`<br>`tag-name(3.14)`                     |
-| Known Values        | `'1'`<br>`'isA'`                                            |
-| Unit Known Value    | `Unit`<br>`''`<br>`'0'`                                     |
-| URs                 | `ur:date/cyisdadmlasgtapttl`                                |
-| Arrays              | `[1, 2, 3]`<br>`["hello", "world"]`<br>`[1, [2, 3]]`        |
-| Maps                | `{1: 2, 3: 4}`<br>`{"key": "value"}`<br>`{1: [2, 3], 4: 5}` |
+| Type                | Example                                                                                        |
+| ------------------- | ---------------------------------------------------------------------------------------------- |
+| Boolean             | `[dcbor] true`<br>`[dcbor] false`                                                              |
+| Null                | `[dcbor] null`                                                                                 |
+| Integers            | `[dcbor] 0`<br>`[dcbor] 1`<br>`[dcbor] -1`<br>`[dcbor] 42`                                     |
+| Floats              | `[dcbor] 3.14`<br>`[dcbor] -2.5`<br>`[dcbor] Infinity`<br>`[dcbor] -Infinity`<br>`[dcbor] NaN` |
+| Strings             | `[dcbor] "hello"`<br>`[dcbor] "🌎"`                                                             |
+| Hex Byte Strings    | `[dcbor] h'68656c6c6f'`                                                                        |
+| Base64 Byte Strings | `[dcbor] b64'AQIDBAUGBwgJCg=='`                                                                |
+| Tagged Values       | `[dcbor] 1234("hello")`<br>`[dcbor] 5678(3.14)`                                                |
+| Name-Tagged Values  | `[dcbor] tag-name("hello")`<br>`[dcbor] tag-name(3.14)`                                        |
+| Known Values        | `[dcbor] '1'`<br>`[dcbor] 'isA'`                                                               |
+| Unit Known Value    | `[dcbor] Unit`<br>`[dcbor] ''`<br>`[dcbor] '0'`                                                |
+| URs                 | `[dcbor] ur:date/cyisdadmlasgtapttl`                                                           |
+| Arrays              | `[dcbor] [1, 2, 3]`<br>`[dcbor] ["hello", "world"]`<br>`[dcbor] [1, [2, 3]]`                   |
+| Maps                | `[dcbor] {1: 2, 3: 4}`<br>`[dcbor] {"key": "value"}`<br>`[dcbor] {1: [2, 3], 4: 5}`            |
 
 Note these are _input formats_, and not all of them will round-trip to the same output format. For example, the `b64` format can be used to convert existing Base64-encoded data to CBOR, but when output back to diagnostic notation, it will be converted to a `h` format hex byte string.
 

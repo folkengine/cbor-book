@@ -24,9 +24,9 @@ dcbor match <PATTERN> [INPUT] [OPTIONS]
 ```
 
 Where:
-- `<PATTERN>` is a pattern expression (AKA _"patex"_) written in dcbor-pattern expression syntax we'll explore in detail
-- `[INPUT]` is the dCBOR data to match against (or read from stdin)
-- `[OPTIONS]` control input/output formats and matching behavior
+- `[bash] <PATTERN>` is a pattern expression (AKA _"patex"_) written in dcbor-pattern expression syntax we'll explore in detail
+- `[bash] [INPUT]` is the dCBOR data to match against (or read from stdin)
+- `[bash] [OPTIONS]` control input/output formats and matching behavior
 
 ### Pattern Syntax Reference
 
@@ -369,21 +369,13 @@ Note the use of `--` to signal the end of command-line options, allowing you to 
 
 #### Text Regular Expressions
 
-Regular expressions (or _regexes_) are powerful pattern matching tools for text, allowing you to search for specific patterns rather than exact text. They use special characters and syntax to define search patterns. For instance, `\d+` matches one or more digits, `[A-Z]+` matches one or more uppercase letters, and `^` and `$` anchor patterns to the beginning and end of a string respectively. With regular expressions, you can validate formats, extract information, and perform sophisticated text processing operations.
+Regular expressions (or _regexes_) are powerful pattern matching tools for text, allowing you to search for specific patterns rather than exact text. They use special characters and syntax to define search patterns. For instance, `\d+` matches one or more digits, `[plain] [A-Z]+` matches one or more uppercase letters, and `^` and `$` anchor patterns to the beginning and end of a string respectively. With regular expressions, you can validate formats, extract information, and perform sophisticated text processing operations.
 
 dCBOR patexes that this chapter describes are based on some of the same concepts as regexes, but they are not the same. The dCBOR pattern expression syntax is designed specifically for matching CBOR data structures and values, while regular expressions are specifically for processing text. Nonetheless, some of the types you can match with dCBOR patterns, such as text strings and byte strings, can be matched using regular expressions.
 
 Text strings can be matched using regular expressions, by using the a regex enclosed in forward slashes: `/regex/`:
 
-```envelope
-"Alice" [
-    'knows': "Bob"
-]
-```
-
-```patex
-/^[^@]+@[^@]+\.[^@]+$/
-```
+`[patex] /^[^@]+@[^@]+\.[^@]+$/`
 
 ```bash
 # Match any email-like pattern
@@ -410,7 +402,7 @@ Regular expressions use standard Rust regex syntax, which is based on Perl-compa
 
 - Literal characters: `abc`, `123`
 - Any character: `.`
-- Character classes: `[a-z]`, `[0-9]`, `\d` (digit), `\w` (word character)
+- Character classes: `[plain] [a-z]`, `[plain] [0-9]`, `\d` (digit), `\w` (word character)
 - Quantifiers: `*` (zero or more), `+` (one or more), `?` (zero or one), `{n,m}` (between n and m times)
 - Anchors: `^` (start), `$` (end)
 - Groups and alternation: `(pattern)`, `pattern1|pattern2`
@@ -532,7 +524,7 @@ Beyond matching individual values, dCBOR patterns support matching complex struc
 
 #### Basic Array Matching
 
-The `[*]` pattern matches any array structure:
+The `[patex] [*]` pattern matches any array structure:
 
 ```bash
 dcbor match '[*]' '[1, 2, 3]'
@@ -564,7 +556,7 @@ dcbor match '[number, text]' '[42, "hello"]'
 ```
 
 ````admonish note
-`[number, text]` means the first element must be a number, followed by a text string, and that's it: these must be the only elements and they must appear in that order, so adding another element would not match:
+`[patex] [number, text]` means the first element must be a number, followed by a text string, and that's it: these must be the only elements and they must appear in that order, so adding another element would not match:
 
 ```bash
 dcbor match "[number, text]" '[42, "hello", 0]'

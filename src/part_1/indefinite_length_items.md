@@ -79,7 +79,7 @@ The logical value of the complete string is obtained by concatenating the _conte
 5f [chunk1][chunk2]... ff
 ```
 
-- **Chunk Structure:** Each `[chunkN]` must be a complete, definite-length byte string data item (Major Type 2, AI 0-27). For example, `43 010203` represents a chunk containing the 3 bytes `0x01`, `0x02`, `0x03`. An empty chunk, encoded as `40`, is also valid and contributes nothing to the concatenated value.
+- **Chunk Structure:** Each `[plain] [chunkN]` must be a complete, definite-length byte string data item (Major Type 2, AI 0-27). For example, `43 010203` represents a chunk containing the 3 bytes `0x01`, `0x02`, `0x03`. An empty chunk, encoded as `40`, is also valid and contributes nothing to the concatenated value.
 - **Examples:**
     - An empty byte string encoded using indefinite length:
         - CBOR Diagnostic: `_ h''`
@@ -108,7 +108,7 @@ Notice that the same logical byte sequence (`0102030405`) can be represented in 
 7f [chunk1][chunk2]... ff
 ```
 
-- **Chunk Structure:** Each `[chunkN]` must be a complete, definite-length _text_ string data item (Major Type 3, AI 0-27), meaning it must contain a sequence of bytes that constitutes valid UTF-8 encoding. For example, `63 666f6f` represents a chunk containing the 3 bytes for the UTF-8 string "foo".
+- **Chunk Structure:** Each `[plain] [chunkN]` must be a complete, definite-length _text_ string data item (Major Type 3, AI 0-27), meaning it must contain a sequence of bytes that constitutes valid UTF-8 encoding. For example, `63 666f6f` represents a chunk containing the 3 bytes for the UTF-8 string "foo".
 - **UTF-8 Integrity Constraint:** This is a critical rule specific to indefinite-length _text_ strings: chunk boundaries **must not** occur in the middle of a multi-byte UTF-8 character sequence. Each individual chunk, when decoded, must result in a valid UTF-8 string. The concatenation of these valid chunks naturally forms the final, valid UTF-8 string. This constraint implies that an encoder generating indefinite-length text strings must be UTF-8 aware. When deciding where to split the text into chunks during streaming, it cannot simply cut after an arbitrary number of bytes; it must ensure the cut occurs only at a character boundary. This adds a layer of complexity compared to encoding indefinite-length byte strings, where chunks can be split arbitrarily.
 - **Examples:**
     - An empty text string encoded using indefinite length:
@@ -148,22 +148,22 @@ The principle is straightforward:
 9f [item1][item2][item3]... ff
 ```
 
-- **Element Structure:** Each `[itemN]` can be _any_ valid CBOR data item, including integers, strings (definite or indefinite), floats, booleans, null, tags, or even other arrays and maps (definite or indefinite).
+- **Element Structure:** Each `[plain] [itemN]` can be _any_ valid CBOR data item, including integers, strings (definite or indefinite), floats, booleans, null, tags, or even other arrays and maps (definite or indefinite).
 - **Nesting:** Indefinite-length arrays can freely contain other indefinite-length items, allowing for complex, nested structures to be streamed.
 - **Examples:**
     - An empty array encoded using indefinite length:
-        - CBOR Diagnostic: `[_]`
+        - CBOR Diagnostic: `[cbor] [_]`
         - CBOR Hex: `9f ff`
-    - The array `[1, "two", true]` encoded indefinitely:
-        - CBOR Diagnostic: `[_ 1, "two", true]`
+    - The array `[cbor] [1, "two", true]` encoded indefinitely:
+        - CBOR Diagnostic: `[cbor] [_ 1, "two", true]`
         - CBOR Hex: `9f 01 63 74776f f5 ff`
             - `9f`: Start indefinite array
             - `01`: Element 1 (integer 1)
             - `63 74776f`: Element 2 (text string "two")
             - `f5`: Element 3 (true)
             - `ff`: Break code
-    - A nested indefinite array `[_ "a", "b"]`:
-        - CBOR Diagnostic: `[_ "a", "b"]`
+    - A nested indefinite array `[cbor] [_ "a", "b"]`:
+        - CBOR Diagnostic: `[cbor] [_ "a", "b"]`
         - CBOR Hex: `9f 01 9f 61 61 61 62 ff 03 ff`
             - `9f`: Start outer indefinite array
             - `01`: Outer element 1 (integer 1)
@@ -188,8 +188,8 @@ bf [key1][value1][key2][value2]... ff
     - An empty map encoded using indefinite length:
         - CBOR Diagnostic: `_ {}`
         - CBOR Hex: `bf ff`
-    - The map `{"a": 1, "b": false}` encoded indefinitely:
-        - CBOR Diagnostic: `_ {"a": 1, "b": false}`
+    - The map `[cbor] {"a": 1, "b": false}` encoded indefinitely:
+        - CBOR Diagnostic: `[cbor] _ {"a": 1, "b": false}`
         - CBOR Hex: `bf 61 61 01 61 62 f4 ff`
             - `bf`: Start indefinite map
             - `61 61`: Key 1 ("a")
@@ -197,8 +197,8 @@ bf [key1][value1][key2][value2]... ff
             - `61 62`: Key 2 ("b")
             - `f4`: Value 2 (false)
             - `ff`: Break code
-    - A map containing an indefinite-length byte string as a value `{"data": _ h'01' h'02'}`:
-        - CBOR Diagnostic: `_ {"data": _ h'01' h'02'}`
+    - A map containing an indefinite-length byte string as a value `[cbor] {"data": _ h'01' h'02'}`:
+        - CBOR Diagnostic: `[cbor] _ {"data": _ h'01' h'02'}`
         - CBOR Hex: `bf 64 64617461 5f 41 01 41 02 ff ff`
             - `bf`: Start indefinite map
             - `64 64617461`: Key ("data")
@@ -246,7 +246,7 @@ One of the most significant implications of indefinite-length encoding is its in
 
 **The Ambiguity of Indefinite-Length:** Indefinite-length encoding fundamentally breaks the canonical requirement because it allows the same logical data (a specific string, array, or map) to be encoded into multiple, different byte sequences based solely on how the sender chooses to chunk the data (for strings) or simply by virtue of using the indefinite markers instead of definite ones.
 
-Consider the simple byte string `h'01020304'`:
+Consider the simple byte string `[cbor] h'01020304'`:
 
 - **Definite-Length Encoding (Canonical):** `44 01020304` (1 initial byte + 4 content bytes = 5 bytes total)
 - **Indefinite-Length (1 chunk):** `5f 44 01020304 ff` (1 start byte + 1 chunk header byte + 4 content bytes + 1 break byte = 7 bytes total)

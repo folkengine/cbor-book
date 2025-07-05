@@ -99,7 +99,7 @@ Notice that recovering the byte string is also different. Since a byte string is
 
 ## Simple Values: `false`, `true`, and `null`
 
-dCBOR supports three *simple values*— `false`, `true`, and `null`— and the `dcbor` library provides a set of conveniences for working with them. In the example below we create a CBOR array containing `[true, false, null]`, and then test its CBOR diagnostic notation and annotated hex serialization:
+dCBOR supports three *simple values*— `false`, `true`, and `null`— and the `dcbor` library provides a set of conveniences for working with them. In the example below we create a CBOR array containing `[dcbor] [true, false, null]`, and then test its CBOR diagnostic notation and annotated hex serialization:
 
 ```rust
 {{#rustdoc_include ../../tests/using_dcbor.rs:test_9}}
