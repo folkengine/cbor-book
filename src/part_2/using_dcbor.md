@@ -7,7 +7,7 @@ So after all that discussion of the motivation for dCBOR, let's just recap its r
 - **No NaNs with Payloads**: Did you even know NaN has “payloads”?
 - **Map Keys**: No duplicates. Must be serialized sorted lexicographically by the serialized key.
 - **Indefinite Lengths**: Indefinite length arrays, maps, bytestrings, and strings are not allowed.
-- **Simple Values**: Only `false`, `true`, and `null` are allowed.
+- **Simple Values**: Only `[dcbor] false`, `[dcbor] true`, and `[dcbor] null` are allowed.
 - **Strings**: Must be encoded in Unicode Normalization Form C (NFC).
 - **Decoders**: Must check all the rules above and reject any serialization that doesn't conform to them.
 
@@ -83,7 +83,7 @@ The last example raises an interesting question: is our `Vec<u8>` being serializ
 {{#rustdoc_include ../../tests/using_dcbor.rs:test_7}}
 ```
 
-As you can see, the header byte specifies an array of five elements, followed by five CBOR data items for the integers `1`, `2`, `3`, `4`, and `5`. So the `Vec<u8>` is being serialized as a CBOR array, not a byte string.
+As you can see, the header byte specifies an array of five elements, followed by five CBOR data items for the integers `[dcbor] 1`, `[dcbor] 2`, `[dcbor] 3`, `[dcbor] 4`, and `[dcbor] 5`. So the `Vec<u8>` is being serialized as a CBOR array, not a byte string.
 
 In Rust, `Vec<u8>` is often used to represent a string or buffer of bytes, but in CBOR, a byte string is a different type distinct from a vector or an array. The `CBOR` type provides a static method `CBOR::to_byte_string` that converts a `Vec<u8>` into a CBOR byte string:
 
@@ -91,25 +91,25 @@ In Rust, `Vec<u8>` is often used to represent a string or buffer of bytes, but i
 {{#rustdoc_include ../../tests/using_dcbor.rs:test_8}}
 ```
 
-Everything in the serialization in this example is the same as the last, _except_ the header byte, which was `0x85` for a 5-element array, and `0x45` for a byte string of length 5.
+Everything in the serialization in this example is the same as the last, _except_ the header byte, which was `[dcbor] 0x85` for a 5-element array, and `[dcbor] 0x45` for a byte string of length 5.
 
 Notice that recovering the byte string is also different. Since a byte string is not an array, we can't extract it as a `Vec<u8>`. Instead, we extract it as the type `ByteString`, and then convert _that_ to a `Vec<u8>` using `.into()`.
 
 `ByteString` is just a wrapper around `Vec<u8>`, and it has most of the same capabilities, but the `dcbor` library treats it as a CBOR byte string, not a CBOR array.
 
-## Simple Values: `false`, `true`, and `null`
+## Simple Values: `[dcbor] false`, `[dcbor] true`, and `[dcbor] null`
 
-dCBOR supports three *simple values*— `false`, `true`, and `null`— and the `dcbor` library provides a set of conveniences for working with them. In the example below we create a CBOR array containing `[dcbor] [true, false, null]`, and then test its CBOR diagnostic notation and annotated hex serialization:
+dCBOR supports three *simple values*— `[dcbor] false`, `[dcbor] true`, and `[dcbor] null`— and the `dcbor` library provides a set of conveniences for working with them. In the example below we create a CBOR array containing `[dcbor] [true, false, null]`, and then test its CBOR diagnostic notation and annotated hex serialization:
 
 ```rust
 {{#rustdoc_include ../../tests/using_dcbor.rs:test_9}}
 ```
 
-Something interesting is going on here: our array has three values, two of which are booleans and the third is its own type: `null`. CBOR is designed to handle such _heterogeneous arrays_ with no problem. But Rust (unlike some languages like JavaScript) doesn't have a `null` value (preferring `Option<T>` for values which may not be present). Rust also doesn't natively support `Vec`s containing mixed types. So how does the `dcbor` library handle this?
+Something interesting is going on here: our array has three values, two of which are booleans and the third is its own type: `[dcbor] null`. CBOR is designed to handle such _heterogeneous arrays_ with no problem. But Rust (unlike some languages like JavaScript) doesn't have a `[dcbor] null` value (preferring `Option<T>` for values which may not be present). Rust also doesn't natively support `Vec`s containing mixed types. So how does the `dcbor` library handle this?
 
 First, note that our array is not declared as a `Vec<bool>` but as a `Vec<CBOR>`. The CBOR type can hold *any* CBOR value, including complex values like nested arrays and maps. In the context of the `vec!` macro composing a `Vec<CBOR>`, the Rust boolean values `true` and `false` can just be converted directly using `.into()`, and that's what we're doing here.
 
-Rust has no `null` value, so the `dcbor` library provides a `CBOR::null()` method that returns a `CBOR` instance representing the `null` value.
+Rust has no `[dcbor] null` value, so the `dcbor` library provides a `CBOR::null()` method that returns a `CBOR` instance representing the `[dcbor] null` value.
 
 And since all three elements of the array are being converted directly into CBOR, there is no problem constructing the heterogeneous array.
 
@@ -119,7 +119,7 @@ Of course, dCBOR doesn't support CBOR `undefined` or any of the other simple val
 
 ## Extracting from a Heterogeneous Array
 
-So now that we've gotten ourselves into this situation, how do we get the values back out? The `dcbor` library provides a set of methods for testing and extracting the CBOR major types, as well as unique values like `true`, `false`, and `null`:
+So now that we've gotten ourselves into this situation, how do we get the values back out? The `dcbor` library provides a set of methods for testing and extracting the CBOR major types, as well as unique values like `[dcbor] true`, `[dcbor] false`, and `[dcbor] null`:
 
 In the example below we first begin by extracting our CBOR array from the composed `CBOR` instance. We then demonstrate several methods to either extract values or test them against expected values.
 

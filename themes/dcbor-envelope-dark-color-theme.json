@@ -77,6 +77,7 @@
         {
             "scope": [
                 "string.quoted.double.dcbor",
+                "string.quoted.double.patex",
                 "meta.embedded.block.envelope string.quoted.double",
                 "meta.embedded.block.dcbor string.quoted.double",
                 "meta.embedded.block.cbor string.quoted.double"

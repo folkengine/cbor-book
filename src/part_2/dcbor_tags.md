@@ -6,7 +6,7 @@ Let's say we wanted to define a tag that identifies a string as holding an ISO 4
 
 As long as you are the only one using that tag, you can choose any integer you want. But if you want your structure to interoperate with other systems, you should use a tag that is registered with IANA, discussed previously [here](../part_1/cbor_tags.md#how-to-register-your-own-fcfs-tags).
 
-For our demonstration we'll use the tag `33000`, which as of this writing is unassigned by IANA.
+For our demonstration we'll use the tag `[dcbor] 33000`, which as of this writing is unassigned by IANA.
 
 How would we tag a string as a currency type? Let's start by defining a constant for our tag:
 

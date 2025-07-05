@@ -34,12 +34,12 @@ While AI values 0 through 27 are used to encode literal values or definite lengt
 
 **Applicable Major Types:** It is crucial to remember that indefinite-length encoding is _only_ defined for the following Major Types:
 
-| Major Type | Description  |
-|------------|--------------|
-| 2          | Byte String  |
-| 3          | Text String  |
-| 4          | Array        |
-| 5          | Map          |
+| Major Type | Description |
+| ---------- | ----------- |
+| 2          | Byte String |
+| 3          | Text String |
+| 4          | Array       |
+| 5          | Map         |
 
 Other Major Types (0, 1, 6, 7) do not have an indefinite-length encoding mechanism defined via AI 31 in this manner.
 
@@ -49,15 +49,15 @@ The encoding of the break code itself is Major Type 7 (Simple Values / Floating-
 
 The following table summarizes the specific initial bytes used to start indefinite-length items and the universal break code:
 
-| Type                   | MT | AI | Encoding   | Description                       |
-|------------------------|----|----|------------|-----------------------------------|
-| Indefinite Byte String | 2  | 31 | `5f`       | Start of indefinite byte string   |
-| Indefinite Text String | 3  | 31 | `7f`       | Start of indefinite text string   |
-| Indefinite Array       | 4  | 31 | `9f`       | Start of indefinite array         |
-| Indefinite Map         | 5  | 31 | `bf`       | Start of indefinite map           |
-| Break Code             | 7  | 31 | `ff`       | End of any indefinite-length item |
+| Type                   | MT  | AI  | Encoding    | Description                       |
+| ---------------------- | --- | --- | ----------- | --------------------------------- |
+| Indefinite Byte String | 2   | 31  | `[cbor] 5f` | Start of indefinite byte string   |
+| Indefinite Text String | 3   | 31  | `[cbor] 7f` | Start of indefinite text string   |
+| Indefinite Array       | 4   | 31  | `[cbor] 9f` | Start of indefinite array         |
+| Indefinite Map         | 5   | 31  | `[cbor] bf` | Start of indefinite map           |
+| Break Code             | 7   | 31  | `[cbor] ff` | End of any indefinite-length item |
 
-Understanding these specific byte values (`5f`, `7f`, `9f`, `bf` for starting, `ff` for stopping) is key to recognizing and parsing indefinite-length CBOR data streams.
+Understanding these specific byte values (`[cbor] 5f`, `[cbor] 7f`, `[cbor] 9f`, `[cbor] bf` for starting, `[cbor] ff` for stopping) is key to recognizing and parsing indefinite-length CBOR data streams.
 
 ## Streaming Data: Indefinite-Length Strings
 
@@ -65,68 +65,68 @@ Indefinite-length strings provide a way to encode byte sequences or UTF-8 text w
 
 The fundamental concept is that an indefinite-length string is represented as:
 
-1. The specific start marker (`5f` for byte strings, `7f` for text strings).
+1. The specific start marker (`[cbor] 5f` for byte strings, `[cbor] 7f` for text strings).
 2. A sequence of zero or more _definite-length_ string chunks of the _same_ major type.
-3. The `0xff` break code.
+3. The `[cbor] ff` break code.
 
 The logical value of the complete string is obtained by concatenating the _content_ (the raw bytes or UTF-8 text, excluding the definite-length headers) of these chunks in the order they appear.
 
 ### Indefinite-Length Byte Strings (Major Type 2, AI 31)
 
-- **Encoding Structure:** An indefinite-length byte string starts with `5f`, followed by zero or more definite-length byte string chunks, and terminates with `ff`.
+- **Encoding Structure:** An indefinite-length byte string starts with `[cbor] 5f`, followed by zero or more definite-length byte string chunks, and terminates with `[cbor] ff`.
 
-```
+```cbor
 5f [chunk1][chunk2]... ff
 ```
 
-- **Chunk Structure:** Each `[plain] [chunkN]` must be a complete, definite-length byte string data item (Major Type 2, AI 0-27). For example, `43 010203` represents a chunk containing the 3 bytes `0x01`, `0x02`, `0x03`. An empty chunk, encoded as `40`, is also valid and contributes nothing to the concatenated value.
+- **Chunk Structure:** Each `[cbor] [chunkN]` must be a complete, definite-length byte string data item (Major Type 2, AI 0-27). For example, `43 010203` represents a chunk containing the 3 bytes `0x01`, `0x02`, `0x03`. An empty chunk, encoded as `40`, is also valid and contributes nothing to the concatenated value.
 - **Examples:**
     - An empty byte string encoded using indefinite length:
-        - CBOR Diagnostic: `_ h''`
-        - CBOR Hex: `5f ff`
+        - CBOR Diagnostic: `[cbor] _ h''`
+        - CBOR Hex: `[cbor] 5f ff`
     - The byte sequence `0x01, 0x02, 0x03, 0x04, 0x05` encoded indefinitely with two chunks:
-        - CBOR Diagnostic: `_ h'010203' h'0405'`
-        - CBOR Hex: `5f 43 010203 42 0405 ff`
-            - `5f`: Start indefinite byte string
-            - `43 010203`: Chunk 1 (definite length 3, bytes `01 02 03`)
-            - `42 0405`: Chunk 2 (definite length 2, bytes `04 05`)
-            - `ff`: Break code
+        - CBOR Diagnostic: `[cbor] _ h'010203' h'0405'`
+        - CBOR Hex: `[cbor] 5f 43 010203 42 0405 ff`
+            - `[cbor] 5f`: Start indefinite byte string
+            - `[cbor] 43 010203`: Chunk 1 (definite length 3, bytes `[cbor] 01 02 03`)
+            - `[cbor] 42 0405`: Chunk 2 (definite length 2, bytes `[cbor] 04 05`)
+            - `[cbor] ff`: Break code
     - The same byte sequence encoded indefinitely with a single chunk:
-        - CBOR Diagnostic: `_ h'0102030405'`
-        - CBOR Hex: `5f 45 0102030405 ff`
-            - `5f`: Start indefinite byte string
-            - `45 0102030405`: Chunk 1 (definite length 5, bytes `01 02 03 04 05`)
-            - `ff`: Break code
+        - CBOR Diagnostic: `[cbor] _ h'0102030405'`
+        - CBOR Hex: `[cbor] 5f 45 0102030405 ff`
+            - `[cbor] 5f`: Start indefinite byte string
+            - `[cbor] 45 0102030405`: Chunk 1 (definite length 5, bytes `[cbor] 01 02 03 04 05`)
+            - `[cbor] ff`: Break code
 
-Notice that the same logical byte sequence (`0102030405`) can be represented in multiple ways using indefinite-length encoding, depending on the chunking strategy. This flexibility is the core benefit for streaming, but it also introduces non-canonical representations. Furthermore, compared to the definite-length encoding (`45 0102030405`), the indefinite-length versions carry an overhead of at least two bytes (the `5f` start marker and the `ff` break code), plus the header bytes for each chunk. This trade-off between flexibility, overhead, and canonicality is central to understanding indefinite-length encoding.
+Notice that the same logical byte sequence (`[cbor] 0102030405`) can be represented in multiple ways using indefinite-length encoding, depending on the chunking strategy. This flexibility is the core benefit for streaming, but it also introduces non-canonical representations. Furthermore, compared to the definite-length encoding (`[cbor] 45 0102030405`), the indefinite-length versions carry an overhead of at least two bytes (the `[cbor] 5f` start marker and the `[cbor] ff` break code), plus the header bytes for each chunk. This trade-off between flexibility, overhead, and canonicality is central to understanding indefinite-length encoding.
 
 ### Indefinite-Length Text Strings (Major Type 3, AI 31)
 
-- **Encoding Structure:** An indefinite-length text string starts with `7f`, followed by zero or more definite-length text string chunks, and terminates with `ff`.
+- **Encoding Structure:** An indefinite-length text string starts with `[cbor] 7f`, followed by zero or more definite-length text string chunks, and terminates with `[cbor] ff`.
 
-```
+```cbor
 7f [chunk1][chunk2]... ff
 ```
 
-- **Chunk Structure:** Each `[plain] [chunkN]` must be a complete, definite-length _text_ string data item (Major Type 3, AI 0-27), meaning it must contain a sequence of bytes that constitutes valid UTF-8 encoding. For example, `63 666f6f` represents a chunk containing the 3 bytes for the UTF-8 string "foo".
+- **Chunk Structure:** Each `[cbor] [chunkN]` must be a complete, definite-length _text_ string data item (Major Type 3, AI 0-27), meaning it must contain a sequence of bytes that constitutes valid UTF-8 encoding. For example, `63 666f6f` represents a chunk containing the 3 bytes for the UTF-8 string "foo".
 - **UTF-8 Integrity Constraint:** This is a critical rule specific to indefinite-length _text_ strings: chunk boundaries **must not** occur in the middle of a multi-byte UTF-8 character sequence. Each individual chunk, when decoded, must result in a valid UTF-8 string. The concatenation of these valid chunks naturally forms the final, valid UTF-8 string. This constraint implies that an encoder generating indefinite-length text strings must be UTF-8 aware. When deciding where to split the text into chunks during streaming, it cannot simply cut after an arbitrary number of bytes; it must ensure the cut occurs only at a character boundary. This adds a layer of complexity compared to encoding indefinite-length byte strings, where chunks can be split arbitrarily.
 - **Examples:**
     - An empty text string encoded using indefinite length:
-        - CBOR Diagnostic: `_ ""`
-        - CBOR Hex: `7f ff`
-    - The text string `"Hello World"` encoded indefinitely with three chunks:
-        - CBOR Diagnostic: `_ "Hello" " " "World"`
-        - CBOR Hex: `7f 65 48656c6c6f 61 20 65 576f726c64 ff`
-            - `7f`: Start indefinite text string
-            - `65 48656c6c6f`: Chunk 1 ("Hello", definite length 5)
-            - `61 20`: Chunk 2 (" ", definite length 1)
-            - `65 576f726c64`: Chunk 3 ("World", definite length 5)
-            - `ff`: Break code
-    - The text string `"你好"` (UTF-8 bytes: `e4 bda0 e5 a5bd`) encoded indefinitely:
+        - CBOR Diagnostic: `[cbor] _ ""`
+        - CBOR Hex: `[cbor] 7f ff`
+    - The text string `[cbor] "Hello World"` encoded indefinitely with three chunks:
+        - CBOR Diagnostic: `[cbor] _ "Hello" " " "World"`
+        - CBOR Hex: `[cbor] 7f 65 48656c6c6f 61 20 65 576f726c64 ff`
+            - `[cbor] 7f`: Start indefinite text string
+            - `[cbor] 65 48656c6c6f`: Chunk 1 ("Hello", definite length 5)
+            - `[cbor] 61 20`: Chunk 2 (" ", definite length 1)
+            - `[cbor] 65 576f726c64`: Chunk 3 ("World", definite length 5)
+            - `[cbor] ff`: Break code
+    - The text string `[cbor] "你好"` (UTF-8 bytes: `[cbor] e4 bda0 e5 a5bd`) encoded indefinitely:
         - _Valid_ Chunking (split between characters):
-            - CBOR Diagnostic: `_ "你" "好"`
-            - CBOR Hex: `7f 63 e4bda0 63 e5a5bd ff` (Chunk 1: "你", length 3; Chunk 2: "好", length 3)
-        - _Invalid_ Chunking (attempting to split within a character): An encoder must not produce, for example, a chunk ending in `e4 bd` followed by a chunk starting with `a0`. Each chunk's byte sequence must stand alone as valid UTF-8.
+            - CBOR Diagnostic: `[cbor] _ "你" "好"`
+            - CBOR Hex: `[cbor] 7f 63 e4bda0 63 e5a5bd ff` (Chunk 1: "你", length 3; Chunk 2: "好", length 3)
+        - _Invalid_ Chunking (attempting to split within a character): An encoder must not produce, for example, a chunk ending in `[cbor] e4 bd` followed by a chunk starting with `[cbor] a0`. Each chunk's byte sequence must stand alone as valid UTF-8.
 
 Similar to byte strings, indefinite-length text strings offer streaming flexibility at the cost of overhead and non-canonical representation, with the added requirement of maintaining UTF-8 validity within each chunk.
 
@@ -136,79 +136,79 @@ Just as strings can be streamed chunk by chunk, CBOR allows arrays and maps to b
 
 The principle is straightforward:
 
-1. Start with the specific indefinite-length marker (`9f` for arrays, `bf` for maps).
+1. Start with the specific indefinite-length marker (`[cbor] 9f` for arrays, `[cbor] bf` for maps).
 2. Encode the elements (for arrays) or key-value pairs (for maps) sequentially, one after another.
-3. Terminate the sequence with the `0xff` break code.
+3. Terminate the sequence with the `[cbor] ff` break code.
 
 ### Indefinite-Length Arrays (Major Type 4, AI 31)
 
-- **Encoding Structure:** An indefinite-length array starts with `9f`, followed by zero or more encoded data items (its elements), and terminates with `ff`.
+- **Encoding Structure:** An indefinite-length array starts with `[cbor] 9f`, followed by zero or more encoded data items (its elements), and terminates with `[cbor] ff`.
 
-```
+```cbor
 9f [item1][item2][item3]... ff
 ```
 
-- **Element Structure:** Each `[plain] [itemN]` can be _any_ valid CBOR data item, including integers, strings (definite or indefinite), floats, booleans, null, tags, or even other arrays and maps (definite or indefinite).
+- **Element Structure:** Each `[cbor] [itemN]` can be _any_ valid CBOR data item, including integers, strings (definite or indefinite), floats, booleans, null, tags, or even other arrays and maps (definite or indefinite).
 - **Nesting:** Indefinite-length arrays can freely contain other indefinite-length items, allowing for complex, nested structures to be streamed.
 - **Examples:**
     - An empty array encoded using indefinite length:
         - CBOR Diagnostic: `[cbor] [_]`
-        - CBOR Hex: `9f ff`
+        - CBOR Hex: `[cbor] 9f ff`
     - The array `[cbor] [1, "two", true]` encoded indefinitely:
         - CBOR Diagnostic: `[cbor] [_ 1, "two", true]`
-        - CBOR Hex: `9f 01 63 74776f f5 ff`
-            - `9f`: Start indefinite array
-            - `01`: Element 1 (integer 1)
-            - `63 74776f`: Element 2 (text string "two")
-            - `f5`: Element 3 (true)
-            - `ff`: Break code
+        - CBOR Hex: `[cbor] 9f 01 63 74776f f5 ff`
+            - `[cbor] 9f`: Start indefinite array
+            - `[cbor] 01`: Element 1 (integer `[cbor] 1`)
+            - `[cbor] 63 74776f`: Element 2 (text string `[cbor] "two"`)
+            - `[cbor] f5`: Element 3 (`[cbor] true`)
+            - `[cbor] ff`: Break code
     - A nested indefinite array `[cbor] [_ "a", "b"]`:
         - CBOR Diagnostic: `[cbor] [_ "a", "b"]`
-        - CBOR Hex: `9f 01 9f 61 61 61 62 ff 03 ff`
-            - `9f`: Start outer indefinite array
-            - `01`: Outer element 1 (integer 1)
-            - `9f`: Start inner indefinite array (Outer element 2)
-            - `61 61`: Inner element 1 ("a")
-            - `61 62`: Inner element 2 ("b")
-            - `ff`: Break code for inner array
-            - `03`: Outer element 3 (integer 3)
-            - `ff`: Break code for outer array
+        - CBOR Hex: `[cbor] 9f 01 9f 61 61 61 62 ff 03 ff`
+            - `[cbor] 9f`: Start outer indefinite array
+            - `[cbor] 01`: Outer element 1 (integer `[cbor] 1`)
+            - `[cbor] 9f`: Start inner indefinite array (Outer element 2)
+            - `[cbor] 61 61`: Inner element 1 (`[cbor] "a"`)
+            - `[cbor] 61 62`: Inner element 2 (`[cbor] "b"`)
+            - `[cbor] ff`: Break code for inner array
+            - `[cbor] 03`: Outer element 3 (integer `[cbor] 3`)
+            - `[cbor] ff`: Break code for outer array
 
 ### Indefinite-Length Maps (Major Type 5, AI 31)
 
-- **Encoding Structure:** An indefinite-length map starts with `bf`, followed by zero or more key-value pairs encoded sequentially (key1, value1, key2, value2,...), and terminates with `ff`.
+- **Encoding Structure:** An indefinite-length map starts with `[cbor] bf`, followed by zero or more key-value pairs encoded sequentially (key1, value1, key2, value2,...), and terminates with `[cbor] ff`.
 
-```
+```cbor
 bf [key1][value1][key2][value2]... ff
 ```
 
-- **Pair Structure:** Each key and each value can be _any_ valid CBOR data item. Crucially, the data items between the `bf` marker and the `ff` break code must come in pairs. A map must contain an even number of data items following the initial `bf`.
+- **Pair Structure:** Each key and each value can be _any_ valid CBOR data item. Crucially, the data items between the `[cbor] bf` marker and the `[cbor] ff` break code must come in pairs. A map must contain an even number of data items following the initial `[cbor] bf`.
 - **Nesting:** Indefinite-length maps can contain indefinite-length items as either keys or values.
 - **Examples:**
     - An empty map encoded using indefinite length:
-        - CBOR Diagnostic: `_ {}`
-        - CBOR Hex: `bf ff`
+        - CBOR Diagnostic: `[cbor] _ {}`
+        - CBOR Hex: `[cbor] bf ff`
     - The map `[cbor] {"a": 1, "b": false}` encoded indefinitely:
         - CBOR Diagnostic: `[cbor] _ {"a": 1, "b": false}`
-        - CBOR Hex: `bf 61 61 01 61 62 f4 ff`
-            - `bf`: Start indefinite map
-            - `61 61`: Key 1 ("a")
-            - `01`: Value 1 (integer 1)
-            - `61 62`: Key 2 ("b")
-            - `f4`: Value 2 (false)
-            - `ff`: Break code
+        - CBOR Hex: `[cbor] bf 61 61 01 61 62 f4 ff`
+            - `[cbor] bf`: Start indefinite map
+            - `[cbor] 61 61`: Key 1 (`[cbor] "a"`)
+            - `[cbor] 01`: Value 1 (integer `[cbor] 1`)
+            - `[cbor] 61 62`: Key 2 (`[cbor] "b"`)
+            - `[cbor] f4`: Value 2 (`[cbor] false`)
+            - `[cbor] ff`: Break code
     - A map containing an indefinite-length byte string as a value `[cbor] {"data": _ h'01' h'02'}`:
         - CBOR Diagnostic: `[cbor] _ {"data": _ h'01' h'02'}`
-        - CBOR Hex: `bf 64 64617461 5f 41 01 41 02 ff ff`
-            - `bf`: Start indefinite map
-            - `64 64617461`: Key ("data")
-            - `5f`: Start indefinite byte string (Value)
-            - `41 01`: Chunk 1 (`h'01'`)
-            - `41 02`: Chunk 2 (`h'02'`)
-            - `ff`: Break code for byte string
-            - `ff`: Break code for map
+        - CBOR Hex: `[cbor] bf 64 64617461 5f 41 01 41 02 ff ff`
+            - `[cbor] bf`: Start indefinite map
+            - `[cbor] 64 64617461`: Key (`[cbor] "data"`)
+            - `[cbor] 5f`: Start indefinite byte string (Value)
+            - `[cbor] 41 01`: Chunk 1 (`[cbor] h'01'`)
+            - `[cbor] 41 02`: Chunk 2 (`[cbor] h'02'`)
+            - `[cbor] ff`: Break code for byte string
+            - `[cbor] ff`: Break code for map
 
-The requirement for an even number of items between `bf` and `ff` is an important validation check for parsers. If a parser encounters the `ff` break code immediately after reading a key but before reading its corresponding value, it indicates a malformed indefinite-length map. This adds a slight amount of state tracking (ensuring pairs are complete) compared to parsing indefinite-length arrays.
+The requirement for an even number of items between `[cbor] bf` and `[cbor] ff` is an important validation check for parsers. If a parser encounters the `[cbor] ff` break code immediately after reading a key but before reading its corresponding value, it indicates a malformed indefinite-length map. This adds a slight amount of state tracking (ensuring pairs are complete) compared to parsing indefinite-length arrays.
 
 ## Use Cases and Practical Considerations
 
@@ -220,9 +220,9 @@ The primary motivation for indefinite-length encoding is to support streaming sc
 
 However, using indefinite-length items introduces practical considerations for implementation:
 
-- **Parser Implementation:** Parsing definite-length items is often simpler. The parser reads the length L, potentially allocates memory for L bytes or L items, and then reads exactly that amount of data. Parsing indefinite-length items requires a different logic: the parser reads the start marker (`5f`/`7f`/`9f`/`bf`), then enters a loop, reading one complete data item (a chunk, an element, or a key-value pair) at a time. After each item, it must check if the next byte is the `0xff` break code. If not, it continues the loop; if it is, the indefinite item is complete. This typically involves more state management within the parser.
-- **Buffering Considerations:** While indefinite-length encoding allows the _sender_ to stream data without knowing the total size, it doesn't automatically eliminate the need for buffering on the _receiver's_ side. If the receiving application needs the entire concatenated string value, or needs access to all array elements simultaneously, before it can perform its processing, it will still have to accumulate the incoming chunks or elements in memory until the `0xff` break code is received. The primary benefit of streaming often accrues to the sender by reducing memory requirements and latency-to-first-byte, but the receiver's processing model dictates whether it can also process the data incrementally or must buffer.
-- **Nesting Complexity:** Parsing nested indefinite-length items requires careful management. When a parser encounters an indefinite-length start marker while already parsing another indefinite-length item, it must correctly associate the eventual `0xff` break codes with their corresponding start markers. This is typically handled using a stack internally within the parser to keep track of the nesting depth and the type of indefinite item currently being parsed.
+- **Parser Implementation:** Parsing definite-length items is often simpler. The parser reads the length L, potentially allocates memory for L bytes or L items, and then reads exactly that amount of data. Parsing indefinite-length items requires a different logic: the parser reads the start marker (`[cbor] 5f`/`[cbor] 7f`/`[cbor] 9f`/`[cbor] bf`), then enters a loop, reading one complete data item (a chunk, an element, or a key-value pair) at a time. After each item, it must check if the next byte is the `[cbor] ff` break code. If not, it continues the loop; if it is, the indefinite item is complete. This typically involves more state management within the parser.
+- **Buffering Considerations:** While indefinite-length encoding allows the _sender_ to stream data without knowing the total size, it doesn't automatically eliminate the need for buffering on the _receiver's_ side. If the receiving application needs the entire concatenated string value, or needs access to all array elements simultaneously, before it can perform its processing, it will still have to accumulate the incoming chunks or elements in memory until the `[cbor] ff` break code is received. The primary benefit of streaming often accrues to the sender by reducing memory requirements and latency-to-first-byte, but the receiver's processing model dictates whether it can also process the data incrementally or must buffer.
+- **Nesting Complexity:** Parsing nested indefinite-length items requires careful management. When a parser encounters an indefinite-length start marker while already parsing another indefinite-length item, it must correctly associate the eventual `[cbor] ff` break codes with their corresponding start markers. This is typically handled using a stack internally within the parser to keep track of the nesting depth and the type of indefinite item currently being parsed.
 
 ## Indefinite-Length Items in the Wild
 
@@ -248,20 +248,20 @@ One of the most significant implications of indefinite-length encoding is its in
 
 Consider the simple byte string `[cbor] h'01020304'`:
 
-- **Definite-Length Encoding (Canonical):** `44 01020304` (1 initial byte + 4 content bytes = 5 bytes total)
-- **Indefinite-Length (1 chunk):** `5f 44 01020304 ff` (1 start byte + 1 chunk header byte + 4 content bytes + 1 break byte = 7 bytes total)
-- **Indefinite-Length (2 chunks):** `5f 42 0102 42 0304 ff` (1 start + 1+2 chunk1 + 1+2 chunk2 + 1 break = 8 bytes total)
-- **Indefinite-Length (4 chunks):** `5f 41 01 41 02 41 03 41 04 ff` (1 start + 4*(1+1) chunks + 1 break = 10 bytes total)
+- **Definite-Length Encoding (Canonical):** `[cbor] 44 01020304` (1 initial byte + 4 content bytes = 5 bytes total)
+- **Indefinite-Length (1 chunk):** `[cbor] 5f 44 01020304 ff` (1 start byte + 1 chunk header byte + 4 content bytes + 1 break byte = 7 bytes total)
+- **Indefinite-Length (2 chunks):** `[cbor] 5f 42 0102 42 0304 ff` (1 start + 1+2 chunk1 + 1+2 chunk2 + 1 break = 8 bytes total)
+- **Indefinite-Length (4 chunks):** `[cbor] 5f 41 01 41 02 41 03 41 04 ff` (1 start + 4*(1+1) chunks + 1 break = 10 bytes total)
 
-All four representations above correspond to the same logical sequence of four bytes. However, they result in distinct binary encodings (`44...`, `5f 44...`, `5f 42...`, `5f 41...`).
+All four representations above correspond to the same logical sequence of four bytes. However, they result in distinct binary encodings (`[cbor] 44...`, `[cbor] 5f 44...`, `[cbor] 5f 42...`, `[cbor] 5f 41...`).
 
 **Violation of Canonical Requirement:** This inherent possibility of multiple valid byte sequences for identical data directly violates the core principle of deterministic, canonical encoding. There is no single "preferred" way to chunk an indefinite-length string, making the representation inherently ambiguous from a byte-sequence perspective.
 
-**Exclusion from Deterministic Profiles:** Consequently, specifications defining deterministic CBOR encoding, such as RFC 8949 Section 4.2.2 ("Length-Determinism"), explicitly **forbid** the use of indefinite-length encoding. Any data item whose initial byte is `5f`, `7f`, `9f`, or `bf` is disallowed in contexts requiring Core Deterministic Encoding or similar canonical profiles. This exclusion is not arbitrary; it is a necessary consequence of prioritizing byte-for-byte reproducibility over the flexibility offered by indefinite-length streaming. Applications requiring canonical forms _must_ use definite-length encoding, which necessitates knowing the size of strings and the counts for collections before serialization.
+**Exclusion from Deterministic Profiles:** Consequently, specifications defining deterministic CBOR encoding, such as RFC 8949 Section 4.2.2 ("Length-Determinism"), explicitly **forbid** the use of indefinite-length encoding. Any data item whose initial byte is `[cbor] 5f`, `[cbor] 7f`, `[cbor] 9f`, or `[cbor] bf` is disallowed in contexts requiring Core Deterministic Encoding or similar canonical profiles. This exclusion is not arbitrary; it is a necessary consequence of prioritizing byte-for-byte reproducibility over the flexibility offered by indefinite-length streaming. Applications requiring canonical forms _must_ use definite-length encoding, which necessitates knowing the size of strings and the counts for collections before serialization.
 
 ## Conclusion: Flexibility vs. Predictability
 
-Indefinite-length encoding stands as a specialized feature within the CBOR standard, designed to address the practical challenge of serializing data whose size is unknown when encoding begins. By using dedicated start markers (`5f`, `7f`, `9f`, `bf`) based on Major Type combined with Additional Information 31, and a universal `0xff` break code, CBOR allows byte strings, text strings, arrays, and maps to be constructed incrementally. For strings, this involves concatenating definite-length chunks; for collections, it involves appending elements or key-value pairs sequentially until the break code is encountered.
+Indefinite-length encoding stands as a specialized feature within the CBOR standard, designed to address the practical challenge of serializing data whose size is unknown when encoding begins. By using dedicated start markers (`[cbor] 5f`, `[cbor] 7f`, `[cbor] 9f`, `[cbor] bf`) based on Major Type combined with Additional Information 31, and a universal `[cbor] 0xff` break code, CBOR allows byte strings, text strings, arrays, and maps to be constructed incrementally. For strings, this involves concatenating definite-length chunks; for collections, it involves appending elements or key-value pairs sequentially until the break code is encountered.
 
 The primary advantage of this mechanism is its ability to support streaming applications, enabling senders (especially those with limited memory or needing low latency) to transmit data without first buffering the entire object to calculate its size.
 

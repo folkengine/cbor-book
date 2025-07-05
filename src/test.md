@@ -30,4 +30,13 @@ This also works: `[cbor] [1, "foo", true]`
 
 This looks good: `[json] [_, "a", "b"]`
 
-But this is not right: `[cbor] [_ "a", "b"]`
+This also looks good: `[cbor] [_, "a", "b"]`
+
+```patex
+/regex/
+h'/regex/'
+```
+
+Works here: `[patex] /regex/`
+
+And here: `[patex] h'/regex/'`

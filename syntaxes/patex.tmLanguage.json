@@ -215,11 +215,12 @@
           "comment": "Double-quoted strings with syntactic placeholders",
           "begin": "\"",
           "end": "\"",
+          "name": "string.quoted.double.dcbor",
           "beginCaptures": {
-            "0": {"name": "punctuation.definition.string.begin.patex"}
+            "0": {"name": "punctuation.definition.string.begin.dcbor"}
           },
           "endCaptures": {
-            "0": {"name": "punctuation.definition.string.end.patex"}
+            "0": {"name": "punctuation.definition.string.end.dcbor"}
           },
           "patterns": [
             {
@@ -228,14 +229,9 @@
               "name": "keyword.placeholder.patex"
             },
             {
-              "comment": "Regular string content",
-              "match": "[^\"<\\\\]+",
-              "name": "string.quoted.double.patex"
-            },
-            {
               "comment": "Escaped characters",
               "match": "\\\\.",
-              "name": "constant.character.escape.patex"
+              "name": "constant.character.escape.dcbor"
             }
           ]
         }
@@ -245,8 +241,31 @@
       "patterns": [
         {
           "comment": "Bare regex patterns",
-          "match": "/([^/\\\\\\n]|\\\\.)+/[gimsuxy]*",
-          "name": "string.regexp.patex"
+          "begin": "/",
+          "end": "/[gimsuxy]*",
+          "beginCaptures": {
+            "0": {"name": "string.regexp.patex"}
+          },
+          "endCaptures": {
+            "0": {"name": "string.regexp.patex"}
+          },
+          "patterns": [
+            {
+              "comment": "Syntactic placeholders within regex",
+              "match": "<[a-zA-Z0-9_/:-]+>",
+              "name": "keyword.placeholder.patex"
+            },
+            {
+              "comment": "Regex content",
+              "match": "[^/<\\\\]+",
+              "name": "string.regexp.patex"
+            },
+            {
+              "comment": "Escaped characters in regex",
+              "match": "\\\\.",
+              "name": "constant.character.escape.patex"
+            }
+          ]
         }
       ]
     },
@@ -254,12 +273,33 @@
       "patterns": [
         {
           "comment": "Bare single-quoted strings containing regex patterns",
-          "match": "(')(/[^/\\\\\\n]*(?:\\\\.[^/\\\\\\n]*)*/[gimsuxy]*)(')",
-          "captures": {
+          "begin": "(')(/)",
+          "end": "(/[gimsuxy]*)(')",
+          "beginCaptures": {
             "1": {"name": "punctuation.definition.string.begin.patex"},
-            "2": {"name": "string.regexp.patex"},
-            "3": {"name": "punctuation.definition.string.end.patex"}
-          }
+            "2": {"name": "string.regexp.patex"}
+          },
+          "endCaptures": {
+            "1": {"name": "string.regexp.patex"},
+            "2": {"name": "punctuation.definition.string.end.patex"}
+          },
+          "patterns": [
+            {
+              "comment": "Syntactic placeholders within regex",
+              "match": "<[a-zA-Z0-9_/:-]+>",
+              "name": "keyword.placeholder.patex"
+            },
+            {
+              "comment": "Regex content",
+              "match": "[^/<\\\\]+",
+              "name": "string.regexp.patex"
+            },
+            {
+              "comment": "Escaped characters in regex",
+              "match": "\\\\.",
+              "name": "constant.character.escape.patex"
+            }
+          ]
         }
       ]
     },
@@ -278,8 +318,31 @@
           "patterns": [
             {
               "comment": "Regex patterns with optional flags inside parentheses",
-              "match": "/([^/\\\\\\n]|\\\\.)+/[gimsuxy]*",
-              "name": "string.regexp.patex"
+              "begin": "/",
+              "end": "/[gimsuxy]*",
+              "beginCaptures": {
+                "0": {"name": "string.regexp.patex"}
+              },
+              "endCaptures": {
+                "0": {"name": "string.regexp.patex"}
+              },
+              "patterns": [
+                {
+                  "comment": "Syntactic placeholders within regex",
+                  "match": "<[a-zA-Z0-9_/:-]+>",
+                  "name": "keyword.placeholder.patex"
+                },
+                {
+                  "comment": "Regex content",
+                  "match": "[^/<\\\\]+",
+                  "name": "string.regexp.patex"
+                },
+                {
+                  "comment": "Escaped characters in regex",
+                  "match": "\\\\.",
+                  "name": "constant.character.escape.patex"
+                }
+              ]
             },
             {
               "include": "$self"

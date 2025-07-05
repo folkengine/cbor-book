@@ -52,7 +52,9 @@ The default input format is `diag`, and the default output format is `hex`. The 
 
 ```bash
 dcbor 42
+```
 
+```dcbor
 │ 182a
 ```
 
@@ -62,7 +64,9 @@ Here's an example with a floating-point number:
 
 ```bash
 dcbor 3.14
+```
 
+```dcbor
 │ fb40091eb851eb851f
 ```
 
@@ -97,7 +101,9 @@ This is because the shell is interpreting the double quotes as its own argument 
 
 ```bash
 dcbor '"Hello"'
+```
 
+```dcbor
 │ 6548656c6c6f
 ```
 
@@ -107,7 +113,9 @@ Another option is to escape the inner double quotes with a backslash:
 
 ```bash
 dcbor "\"Hello\""
+```
 
+```dcbor
 │ 6548656c6c6f
 ```
 
@@ -117,7 +125,9 @@ But the most general and flexible way is to use the _here document_ ("_heredoc_"
 dcbor <<EOF
 "Hello"
 EOF
+```
 
+```dcbor
 │ 6548656c6c6f
 ```
 
@@ -130,7 +140,9 @@ dcbor <<EOF
   "World"
 ]
 EOF
+```
 
+```dcbor
 │ 826548656c6c6f65576f726c64
 ```
 
@@ -146,7 +158,9 @@ dcbor <<EOF
   / Second element / "World"
 ] # End of array
 EOF
+```
 
+```dcbor
 │ 826548656c6c6f65576f726c64
 ```
 
@@ -159,7 +173,9 @@ Now that we have an example of hex-encoded CBOR, let's see how to convert it bac
 
 ```bash
 dcbor -i hex -o diag 826548656c6c6f65576f726c64
+```
 
+```dcbor
 │ ["Hello", "World"]
 ```
 
@@ -225,7 +241,9 @@ This error message indicates that the input expected a third array element, but 
 
 ```bash
 dcbor -i hex -o diag 836548656c6c6f65576f726c6400
+```
 
+```dcbor
 │ ["Hello", "World", 0]
 ```
 
@@ -268,7 +286,9 @@ Now we can pass this variable to the `dcbor` by just referring to it as `$CBOR_S
 
 ```bash
 dcbor --in hex --out diag $CBOR_SEED
+```
 
+```dcbor
 │ 40300({1: h'59f2293a5bce7d4de59e71b4207ac5d2', 2: 1(1614124800), 3: "Dark Purple Aqua Love", 4: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."})
 ```
 
@@ -333,26 +353,42 @@ dcbor --in hex --out bin $CBOR_SEED >test.bin
 
 # Show the first 48 bytes of the binary file.
 hexdump -C test.bin | head -n 3
+```
 
+```
 │ 00000000  d9 9d 6c a4 01 50 59 f2  29 3a 5b ce 7d 4d e5 9e  |..l..PY.):[.}M..|
 │ 00000010  71 b4 20 7a c5 d2 02 c1  1a 60 35 97 00 03 75 44  |q. z.....`5...uD|
 │ 00000020  61 72 6b 20 50 75 72 70  6c 65 20 41 71 75 61 20  |ark Purple Aqua |
+```
 
+```bash
 # The file is exactly 178 bytes long.
 wc -c < test.bin | xargs
+```
 
+```
 │ 178
+```
 
+```bash
 # Read it back in from the file.
 dcbor --in bin <test.bin
+```
 
+```dcbor
 │ d99d6ca4015059f2293a5bce7d4de59e71b4207ac5d202c11a6035970003754461726b20507572706c652041717561204c6f766504787b4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e
+```
 
+```bash
 # Read it in again, but with output in diagnostic notation.
 dcbor --in bin --out diag <test.bin
+```
 
+```dcbor
 │ 40300({1: h'59f2293a5bce7d4de59e71b4207ac5d2', 2: 1(1614124800), 3: "Dark Purple Aqua Love", 4: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."})
+```
 
+```bash
 # Clean up the test file.
 rm test.bin
 ```
@@ -372,7 +408,9 @@ dcbor <<EOF
   "alertPayload": h'01020304'                             # Direct byte string
 }
 EOF
+```
 
+```dcbor
 │ a56772656164696e67c482223930386873656e736f724944d82550f81d4fae7dec11d0a76500a0c91e6bf66973746174757355524cd820782368747470733a2f2f6578616d706c652e636f6d2f7374617475732f66383164346661656b6361707475726554696d65c07818323032332d31302d32375431343a33303a31352e3132335a6c616c6572745061796c6f61644401020304
 ```
 
@@ -386,14 +424,20 @@ We've seen how to compose arrays and maps in CBOR diagnostic notation:
 dcbor <<EOF
 [ "Hello", "World" ]
 EOF
+```
 
+```dcbor
 │ 826548656c6c6f65576f726c64
+```
 
+```bash
 # Compose a map with string keys and values:
 dcbor <<EOF
 { "Hello": "World" }
 EOF
+```
 
+```dcbor
 │ a16548656c6c6f65576f726c64
 ```
 
@@ -404,7 +448,9 @@ HELLO="Hello"
 dcbor <<EOF
 [ "$HELLO", "World" ]
 EOF
+```
 
+```dcbor
 │ 826548656c6c6f65576f726c64
 ```
 

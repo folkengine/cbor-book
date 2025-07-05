@@ -123,10 +123,10 @@ any-value = any ; Allows any CBOR item including `null`.
 
 CDDL allows you to specify that a data item must be a specific literal value:
 
-- **Integers**: `10`, `0`, `-1`, `42`.
-- **Floats**: `1.5`, `-0.0`, `3.14159`.
-- **Text Strings**: `"hello"`, `""`, `"a specific key"`. Text strings are enclosed in double quotes. Escaping rules similar to JSON apply within the CDDL source (e.g., `"\"quoted\""`) but the resulting CBOR string itself contains the literal characters without CDDL escapes.
-- **Byte Strings**: `h'010203'`, `h''`. Byte strings are represented using hexadecimal notation prefixed with `h` and enclosed in single quotes.
+- **Integers**: `[cbor] 10`, `[cbor] 0`, `[cbor] -1`, `[cbor] 42`.
+- **Floats**: `[cbor] 1.5`, `[cbor] -0.0`, `[cbor] 3.14159`.
+- **Text Strings**: `[cbor] "hello"`, `[cbor] ""`, `[cbor] "a specific key"`. Text strings are enclosed in double quotes. Escaping rules similar to JSON apply within the CDDL source (e.g., `[cbor] "\\"quoted\\""`) but the resulting CBOR string itself contains the literal characters without CDDL escapes.
+- **Byte Strings**: `[cbor] h'010203'`, `[cbor] h''`. Byte strings are represented using hexadecimal notation prefixed with `h` and enclosed in single quotes.
 
 CDDL:
 ```cddl
@@ -143,7 +143,7 @@ Literal values are often used as discriminators in choices or as fixed keys in m
 
 Beyond simple scalar types, CDDL provides syntax for defining the structure of CBOR arrays (Major Type 4) and maps (Major Type 5). Crucially, it also introduces the concept of _groups_ delimited by parentheses (`()`) to define sequences of items that are _not_ enclosed within a CBOR array or map structure. Understanding the distinction between these is vital for correctly modeling CBOR data.
 
-### Arrays (`[plain] []`)
+### Arrays (`[cbor] []`)
 
 CDDL uses square brackets `[plain] []` to define CBOR arrays. Inside the brackets, you specify the type(s) of the elements that the array should contain.
 
@@ -164,7 +164,7 @@ mixed-array = [bool, int / null]
 
 Occurrence indicators (covered later) can be used to specify variable numbers of elements. The definition within the brackets describes the sequence of CBOR items expected _within_ the CBOR array structure itself.
 
-### Maps (`{}`)
+### Maps (`[cbor] {}`)
 
 CDDL uses curly braces `{}` to define CBOR maps. Inside the braces, you define the expected key-value pairs. A key difference from JSON is that CBOR map keys can be _any_ CBOR data type, not just strings. CDDL reflects this flexibility.  
 
@@ -207,7 +207,7 @@ empty-map = {}
 
 - **Uniqueness**: The core CBOR specification doesn't strictly require map keys to be unique. However, most applications assume unique keys, and CDDL validation tools often enforce uniqueness by default or provide options to control this behavior. Relying on duplicate keys is generally discouraged.
 
-### Groups (`()`) - Defining Sequences
+### Groups (`[cbor] ()`) - Defining Sequences
 
 Perhaps the most distinctive structural element in CDDL compared to JSON-centric schema languages is the _group_, denoted by parentheses `()`. A group defines an ordered sequence of one or more CBOR data items _without_ implying an enclosing CBOR array or map structure.
 
@@ -224,8 +224,8 @@ point-2d = (float, float)
 
 At first glance, `point-2d = (float, float)` might look similar to `point-array = [float, float]`. However, they define fundamentally different structures:
 
-- `point-array` defines a CBOR **array** (e.g., `[cbor] [1.0, 2.5]`, encoded starting with `0x82`) containing two floats.
-- `point-2d` defines a **sequence** of two CBOR floats (e.g., `1.0` followed by `2.5`, encoded as `0xf93c00` followed by `0xfa40200000`, assuming preferred serialization).
+- `point-array` defines a CBOR **array** (e.g., `[cbor] [1.0, 2.5]`, encoded starting with `[cbor] 0x82`) containing two floats.
+- `point-2d` defines a **sequence** of two CBOR floats (e.g., `[cbor] 1.0` followed by `[cbor] 2.5`, encoded as `[cbor] 0xf93c00` followed by `[cbor] 0xfa40200000`, assuming preferred serialization).
 
 **Why are groups useful?**
 

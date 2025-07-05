@@ -46,7 +46,7 @@ dcbor 42
 
 You get back the hex representation of the CBOR number 42:
 
-```bash
+```dcbor
 │ 182a
 ```
 
@@ -54,7 +54,9 @@ If you want the CBOR diagnostic notation, you can use the `--diag` option:
 
 ```bash
 dcbor -o diag 42
+```
 
+```dcbor
 │ 42
 ```
 
@@ -67,21 +69,37 @@ CBOR2=6548656c6c6f
 
 You can use the `dcbor match` command to check whether either of these is a number:
 
+```patex
+PATTERN=number
+```
+
 ```bash
-dcbor match number -i hex $CBOR1
+dcbor match "$PATTERN" -i hex $CBOR1
+```
 
+```dcbor
 │ 42
+```
 
-dcbor match number -i hex $CBOR2
+```bash
+dcbor match $NUMBER -i hex $CBOR2
+```
 
+```dcbor
 │ Error: No Match
 ```
 
 We can see that `CBOR1` is the number `42`, and `CBOR2` is not a numeric value. So let's see whether it is a textual string by using the `TEXT` pattern:
 
-```bash
-dcbor match text -i hex $CBOR2
+```patex
+PATTERN=text
+```
 
+```bash
+dcbor match "$PATTERN" -i hex $CBOR2
+```
+
+```dcbor
 │ "Hello"
 ```
 
@@ -89,15 +107,23 @@ The pattern matches, and we can see it is the string `"Hello"`.
 
 The `number` pattern matches *any* numeric value, whether it's an integer or floating-point number:
 
-```bash
-dcbor match number 42
+```patex
+PATTERN=number
+```
 
+```bash
+dcbor match "$PATTERN" 42
+```
+
+```dcbor
 │ 42
 ```
 
 ```bash
-dcbor match number 3.14
+dcbor match "$PATTERN" 3.14
+```
 
+```dcbor
 │ 3.14
 ```
 
@@ -109,9 +135,15 @@ Numbers in CBOR can be positive or negative integers, or floating-point values.
 ````admonish tip
 To avoid confusion with command-line flags, you can use `--` to separate the pattern from the input. `--` signals that there are no command-line flags following it, allowing you to pass values that might otherwise be interpreted as flags. This is especially useful for negative numbers or special values like `-Infinity`.
 
-```bash
-dcbor match number -- -1
+```patex
+PATTERN=number
+```
 
+```bash
+dcbor match "$PATTERN" -- -1
+```
+
+```dcbor
 │ -1
 ```
 ````
@@ -120,15 +152,23 @@ dcbor match number -- -1
 
 As we demonstrated above, the `text` pattern matches any text string:
 
-```bash
-dcbor match text '"hello"'
+```patex
+PATTERN=text
+```
 
+```bash
+dcbor match "$PATTERN" '"hello"'
+```
+
+```dcbor
 │ "hello"
 ```
 
 ```bash
-dcbor match text '"🌎"'
+dcbor match "$PATTERN" '"🌎"'
+```
 
+```dcbor
 │ "🌎"
 ```
 
@@ -138,17 +178,25 @@ Notice that when providing text strings as input to the CLI, you need to include
 
 The `bstr` pattern matches any byte string. Byte strings in CBOR are sequences of raw bytes, distinct from text strings which have UTF-8 character encoding semantics:
 
-```bash
-dcbor match bstr "h'68656c6c6f'"
+```patex
+PATTERN=bstr
+```
 
+```bash
+dcbor match "$PATTERN" "h'68656c6c6f'"
+```
+
+```dcbor
 │ h'68656c6c6f'
 ```
 
 The empty byte string is perfectly legal:
 
 ```bash
-dcbor match bstr "h''"
+dcbor match "$PATTERN" "h''"
+```
 
+```dcbor
 │ h''
 ```
 
@@ -156,49 +204,73 @@ dcbor match bstr "h''"
 
 The `bool` pattern matches both boolean values:
 
-```bash
-dcbor match bool true
+```patex
+PATTERN=bool
+```
 
+```bash
+dcbor match "$PATTERN" true
+```
+
+```dcbor
 │ true
 ```
 
 ```bash
-dcbor match bool false
+dcbor match "$PATTERN" false
+```
 
+```dcbor
 │ false
 ```
 
 ```admonish note
-Don't confuse the response `false` here as meaning that the pattern didn't match; it means that the input value was `false`, which is a valid match for the `bool` pattern.
+Don't confuse the response `[dcbor] false` here as meaning that the pattern didn't match; it means that the input value was `[dcbor] false`, which is a valid match for the `bool` pattern.
 ```
 
-The `null` pattern matches CBOR's `null` value:
+The `[patex] null` pattern matches CBOR's `[dcbor] null` value:
+
+```patex
+PATTERN=null
+```
 
 ```bash
-dcbor match null null
+dcbor match "$PATTERN" null
+```
 
+```dcbor
 │ null
 ```
 
 ### The Universal Pattern
 
-The `*` ("any") pattern matches any CBOR value whatsoever. Notice that this pattern also needs to be quoted to keep the shell from interpreting it as a file name wildcard:
+The `*` ("any") pattern matches any CBOR value whatsoever.
+
+```patex
+PATTERN=*
+```
 
 ```bash
-dcbor match '*' 42
+dcbor match "$PATTERN" 42
+```
 
+```dcbor
 │ 42
 ```
 
 ```bash
-dcbor match '*' '"hello"'
+dcbor match "$PATTERN" '"hello"'
+```
 
+```dcbor
 │ "hello"
 ```
 
 ```bash
-dcbor match '*' "h'1234'"
+dcbor match "$PATTERN" "h'1234'"
+```
 
+```dcbor
 │ h'1234'
 ```
 
@@ -210,31 +282,50 @@ Beyond matching types, you can match exact values by providing the specific valu
 
 ### Specific Numbers
 
-```bash
-dcbor match 42 42
+```patex
+PATTERN=42
+```
 
+```bash
+dcbor match "$PATTERN" 42
+```
+
+```dcbor
 │ 42
 ```
 
 ```bash
 # This won't match because 43 ≠ 42
-dcbor match 42 43
+dcbor match "$PATTERN" 43
+```
 
+```dcbor
 │ Error: No match
 ```
 
 ### Specific Text Strings
 
-```bash
-dcbor match '"hello"' '"hello"'
+```patex
+PATTERN=$(cat <<'EOF'
+"hello"
+EOF
+)
+```
 
+```bash
+dcbor match $PATTERN '"hello"'
+```
+
+```dcbor
 │ "hello"
 ```
 
 ```bash
 # This won't match because the strings are different
 dcbor match '"hello"' '"world"'
+```
 
+```dcbor
 │ Error: No match
 ```
 
@@ -242,7 +333,9 @@ dcbor match '"hello"' '"world"'
 
 ```bash
 dcbor match "h'1234'" "h'1234'"
+```
 
+```dcbor
 │ h'1234'
 ```
 
@@ -250,14 +343,18 @@ dcbor match "h'1234'" "h'1234'"
 
 ```bash
 dcbor match true true
+```
 
+```dcbor
 │ true
 ```
 
 ```bash
 # This won't match because false ≠ true
 dcbor match true false
+```
 
+```dcbor
 │ Error: No match
 ```
 
@@ -275,13 +372,17 @@ You can match numbers within a specific range using the `...` syntax:
 
 ```bash
 dcbor match "1...10" 5
+```
 
+```dcbor
 │ 5
 ```
 
 ```bash
 dcbor match "1...10" 15
+```
 
+```dcbor
 │ Error: No match
 ```
 
@@ -292,7 +393,9 @@ The same range of numbers can also be specified with a more complex syntax using
 
 ```bash
 dcbor match ">=1 & <=10" 5
+```
 
+```dcbor
 │ 5
 ```
 ````
@@ -304,28 +407,36 @@ Numbers support various inequality operators. Quoting is important here to ensur
 ```bash
 # Greater than
 dcbor match ">5" 10
+```
 
+```dcbor
 │ 10
 ```
 
 ```bash
 # Greater than or equal to
 dcbor match ">=5" 5
+```
 
+```dcbor
 │ 5
 ```
 
 ```bash
 # Less than
 dcbor match "<10" 8
+```
 
+```dcbor
 │ 8
 ```
 
 ```bash
 # Less than or equal to
 dcbor match "<=10" 10
+```
 
+```dcbor
 │ 10
 ```
 
@@ -333,11 +444,17 @@ Using the `&` operator allows you to construct patterns that match _half-open_ r
 
 ```bash
 dcbor match ">1 & <=10" 10
+```
 
+```dcbor
 │ 10
+```
 
+```bash
 dcbor match ">1 & <=10" 1
+```
 
+```dcbor
 │ Error: No match
 ```
 
@@ -347,19 +464,25 @@ You can also match three special floating-point values: `NaN` ("not a number"), 
 
 ```bash
 dcbor match "NaN" NaN
+```
 
+```dcbor
 │ NaN
 ```
 
 ```bash
 dcbor match "Infinity" Infinity
+```
 
+```dcbor
 │ Infinity
 ```
 
 ```bash
 dcbor match -- "-Infinity" -Infinity
+```
 
+```dcbor
 │ -Infinity
 ```
 
@@ -378,21 +501,27 @@ Text strings can be matched using regular expressions, by using the a regex encl
 ```bash
 # Match any email-like pattern
 dcbor match '/^[^@]+@[^@]+\.[^@]+$/' '"user@example.com"'
+```
 
+```dcbor
 │ "user@example.com"
 ```
 
 ```bash
 # Match strings starting with "temp"
 dcbor match '/^temp/' '"temporary"'
+```
 
+```dcbor
 │ "temporary"
 ```
 
 ```bash
 # This won't match because it doesn't start with "temp"
 dcbor match '/^temp/' '"permanent"'
+```
 
+```dcbor
 │ Error: No match
 ```
 
@@ -409,7 +538,7 @@ Explaining the full syntax of regular expressions is beyond the scope of this bo
 
 #### Byte String Regular Expressions
 
-Byte strings also support regular expression matching, useful for matching binary patterns or encoded data. Binary regexes operate on raw byte content, not on the hex string representation you see in diagnostic notation. The syntax is like `h'hex'` above, but for regexes its: `h'/regex/'`.
+Byte strings also support regular expression matching, useful for matching binary patterns or encoded data. Binary regexes operate on raw byte content, not on the hex string representation you see in diagnostic notation. The syntax is like `[dcbor] h'hex'` above, but for regexes its: `[dcbor] h'/regex/'`.
 
 ```admonish note
 Binary regexes must start with the `(?s-u)` flags to work correctly:
