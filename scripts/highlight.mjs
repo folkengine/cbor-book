@@ -8,7 +8,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.dirname(__dirname);
 
-const [, , lang = 'envelope'] = process.argv;
+const args = process.argv.slice(2);
+let lang = 'envelope';
+let isInlineMode = false;
+let isBatchMode = false;
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--inline') {
+    isInlineMode = true;
+  } else if (args[i] === '--batch-inline') {
+    isBatchMode = true;
+  } else {
+    lang = args[i];
+  }
+}
 
 // Function to strip JSON comments (JSONC -> JSON) and normalize whitespace
 function stripJsonComments(jsonString) {
@@ -91,16 +104,48 @@ try {
 
   const code = fs.readFileSync(0, 'utf8');
 
-  // Generate HTML for both themes with proper CSS classes for mdbook theme switching
-  const darkHtml = highlighter.codeToHtml(code, { lang: actualLang, theme: darkTheme.name });
-  const lightHtml = highlighter.codeToHtml(code, { lang: actualLang, theme: lightTheme.name });
+  if (isBatchMode) {
+    // Batch processing mode for multiple inline snippets
+    const snippets = JSON.parse(code);
+    const results = {};
 
-  // Wrap each theme in appropriate CSS classes that mdbook uses for theme switching
-  const dualThemeHtml = `
+    for (const snippet of snippets) {
+      const snippetLang = langMap[snippet.lang] || snippet.lang;
+      const html = highlighter.codeToHtml(snippet.code, { lang: snippetLang, theme: lightTheme.name });
+
+      // Extract just the inner content without the <pre> wrapper for inline use
+      const match = html.match(/<code[^>]*>(.*?)<\/code>/s);
+      if (match) {
+        results[snippet.key] = `<code class="hljs dcbor-inline">${match[1]}</code>`;
+      } else {
+        results[snippet.key] = `<code class="hljs dcbor-inline">${snippet.code}</code>`;
+      }
+    }
+
+    console.log(JSON.stringify(results));
+  } else if (isInlineMode) {
+    // For inline mode, generate simple HTML without theme switching
+    const html = highlighter.codeToHtml(code, { lang: actualLang, theme: lightTheme.name });
+
+    // Extract just the inner content without the <pre> wrapper for inline use
+    const match = html.match(/<code[^>]*>(.*?)<\/code>/s);
+    if (match) {
+      console.log(`<code class="hljs dcbor-inline">${match[1]}</code>`);
+    } else {
+      console.log(`<code class="hljs dcbor-inline">${code}</code>`);
+    }
+  } else {
+    // Generate HTML for both themes with proper CSS classes for mdbook theme switching
+    const darkHtml = highlighter.codeToHtml(code, { lang: actualLang, theme: darkTheme.name });
+    const lightHtml = highlighter.codeToHtml(code, { lang: actualLang, theme: lightTheme.name });
+
+    // Wrap each theme in appropriate CSS classes that mdbook uses for theme switching
+    const dualThemeHtml = `
 <div class="light-theme-only">${lightHtml}</div>
 <div class="dark-theme-only">${darkHtml}</div>`;
 
-  console.log(dualThemeHtml);
+    console.log(dualThemeHtml);
+  }
 } catch (error) {
   console.error(`Error during initialization: ${error.message}`);
   console.error(`Stack: ${error.stack}`);
