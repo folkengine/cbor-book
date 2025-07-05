@@ -28,8 +28,6 @@ This highlights correctly: `[cbor] 1, "foo", true`
 
 This also works: `[cbor] [1, "foo", true]`
 
-- This looks good: `[_ "a", "b"]`
+This looks good: `[json] [_, "a", "b"]`
 
-- So does this: `[json] [_ "a", "b"]`
-
-- But this is not right: `[cbor] [_ "a", "b"]`
+But this is not right: `[cbor] [_ "a", "b"]`

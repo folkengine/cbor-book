@@ -32,7 +32,7 @@ impl Preprocessor for DcborShiki {
 type StdResult<T> = std::result::Result<T, anyhow::Error>;
 
 fn highlight_chapter(md: &str) -> StdResult<String> {
-    // First, process inline syntax to avoid conflicts with mdbook-inline-highlighting
+    // Process inline syntax to avoid conflicts with mdbook-inline-highlighting
     let md_with_inline = process_inline_syntax(md)?;
 
     // Then process code blocks
@@ -77,6 +77,7 @@ fn process_inline_syntax(md: &str) -> StdResult<String> {
     for caps in &matches {
         let lang = &caps[1];
         let code = &caps[2];
+
         let key = format!("{}:{}", lang, code);
 
         if !unique_snippets.contains_key(&key) {
@@ -104,6 +105,7 @@ fn process_inline_syntax(md: &str) -> StdResult<String> {
     let result = inline_re.replace_all(md, |caps: &regex::Captures| {
         let lang = &caps[1];
         let code = &caps[2];
+
         let key = format!("{}:{}", lang, code);
 
         let html =
@@ -183,8 +185,10 @@ fn shiki_batch_inline_html(
 }
 
 fn escape_brackets_in_html(html: &str) -> String {
-    // Replace square brackets with HTML entities to prevent link checker false positives
-    // We need to be careful not to break HTML tags, so we only escape brackets in text content
+    // Replace square brackets and underscores with HTML entities
+    // Square brackets to prevent link checker false positives
+    // Underscores to prevent markdown italic processing
+    // We need to be careful not to break HTML tags, so we only escape characters in text content
     let mut result = String::with_capacity(html.len() + html.len() / 4);
     let mut in_tag = false;
     let mut chars = html.chars().peekable();
@@ -204,6 +208,9 @@ fn escape_brackets_in_html(html: &str) -> String {
             }
             ']' if !in_tag => {
                 result.push_str("&#93;");
+            }
+            '_' if !in_tag => {
+                result.push_str("&#95;");
             }
             _ => {
                 result.push(ch);
