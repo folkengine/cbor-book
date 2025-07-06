@@ -1257,4 +1257,6 @@ The `dcbor match` command provides several options for controlling output format
 
 ```admonish wip "Work in Progress"
 The next chapter will cover advanced matching techniques.
+
+The appendices include a [dCBOR Patex Reference](../appendices/dcbor_patex.md).
 ```
