@@ -26,17 +26,14 @@
 - [dCBOR Tags](./part_2/dcbor_tags.md)
 - [The `dcbor` Command Line Tool](./part_2/dcbor_cli.md)
 - [Matching using the `dcbor` CLI](./part_2/dcbor_cli_matching.md)
-- [Advanced Pattern Matching with `dcbor`](./part_2/dcbor_cli_advanced_matching.md)
+<!-- - [Advanced Pattern Matching with `dcbor`](./part_2/dcbor_cli_advanced_matching.md) -->
 <!-- - [Determinism with dCBOR](./part_2/determinism_with_dcbor.md) -->
 
 # Part III: Gordian Envelope
 
 - [Introducing Gordian Envelope](./part_3/introducing_gordian_envelope.md)
-- [Envelope Semantics and Structure](./part_3/envelope_semantics_and_structure.md)
-- [Envelope Encoding and Processing](./part_3/envelope_encoding_and_processing.md)
-- [Practical Applications and Patterns](./part_3/practical_applications_and_patterns.md)
-- [Tooling and Libraries](./part_3/tooling_and_libraries.md)
-- [Advanced Topics](./part_3/advanced_topics.md)
+- [The `envelope` Command Line Tool](./part_3/envelope_cli.md)
+- [Matching using the `envelope` CLI](./part_3/envelope_cli_matching.md)
 
 # Appendices
 

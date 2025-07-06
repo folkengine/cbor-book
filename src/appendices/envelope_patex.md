@@ -92,17 +92,8 @@ All leaf patterns match Envelope leaves, which are CBOR values.
         - Matches the specified `ur:digest` value.
     - `[patex] digest'/<regex>/'`
         - Matches a digest value that matches the specified binary regex.
-- Digest
-    - `[patex] digest`
-        - Matches any digest value.
-    - `[patex] digest'<hex>'`
-        - Matches a digest whose value starts with the specified hex prefix. Up to 32 bytes can be specified, which is the length of the full SHA-256 digest.
-    - `[patex] digest'<ur:digest>'`
-        - Matches the specified `ur:digest` value.
-    - `[patex] digest'/<regex>/'`
-        - Matches a digest value that matches the specified binary regex.
 - Array
-    - `[patex] [*]`
+    - `[patex] array`
         - Matches any array.
     - `[patex] [{n}]`
         - Matches an array with exactly `n` elements.
@@ -113,13 +104,14 @@ All leaf patterns match Envelope leaves, which are CBOR values.
     - `[patex] [<patex>, <patex>, ...]`
         - Matches an array where the elements match the specified pattern. The pattern can be a simple pattern, a sequence of patterns, or patterns with repeat quantifiers.
         - Examples:
+            - `[patex] [*]` - Array containing exactly one element of any type
             - `[patex] [42]` - Array containing exactly one element: the number 42
             - `[patex] ["a", "b", "c"]` - Array containing exactly `[dcbor] ["a", "b", "c"]` in sequence
             - `[patex] [(*)*, 42, (*)*]` - Array containing 42 anywhere within it
             - `[patex] [42, (*)*]` - Array starting with 42, followed by any elements
             - `[patex] [(*)*, 42]` - Array ending with 42, preceded by any elements
 - Map
-    - `[patex] {*}`
+    - `[patex] map`
         - Matches any map.
     - `[patex] {{n}}`
         - Matches a map with exactly `n` entries.

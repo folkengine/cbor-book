@@ -95,7 +95,7 @@ All value patterns match atomic CBOR values.
 
 Structure patterns match parts of dCBOR items.
 - Array
-    - `[patex] [*]`
+    - `[patex] array`
         - Matches any array.
     - `[patex] [{n}]`
         - Matches an array with exactly `n` elements.
@@ -103,16 +103,17 @@ Structure patterns match parts of dCBOR items.
         - Matches an array with between `n` and `m` elements, inclusive.
     - `[patex] [{n,}]`
         - Matches an array with at least `n` elements.
-    - `[patex] [<patex>, <patex>, <patex>, ...]`
+    - `[patex] [<patex>, <patex>, ...]`
         - Matches an array where the elements match the specified pattern. The pattern can be a simple pattern, a sequence of patterns, or patterns with repeat quantifiers.
         - Examples:
+            - `[patex] [*]` - Array containing exactly one element of any type
             - `[patex] [42]` - Array containing exactly one element: the number 42
             - `[patex] ["a", "b", "c"]` - Array containing exactly `[dcbor] ["a", "b", "c"]` in sequence
             - `[patex] [(*)*, 42, (*)*]` - Array containing 42 anywhere within it
             - `[patex] [42, (*)*]` - Array starting with 42, followed by any elements
             - `[patex] [(*)*, 42]` - Array ending with 42, preceded by any elements
 - Map
-    - `[patex] {*}`
+    - `[patex] map`
         - Matches any map.
     - `[patex] {{n}}`
         - Matches a map with exactly `n` entries.
@@ -143,7 +144,7 @@ Precedence: Repeat has the highest precedence, followed by And, Not, Sequence, a
         - Matches if all specified patterns match.
 - Any
     - `[patex] *`
-        - A bare asterisk matches any value.
+        - A bare asterisk matches any single item.
 - Capture
     - `[patex] @name ( <patex> )`
         - Matches the specified pattern and captures the match for later use with the given name.

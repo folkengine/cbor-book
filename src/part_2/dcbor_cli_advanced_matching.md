@@ -10,6 +10,7 @@ This chapter assumes familiarity with basic pattern matching concepts covered in
 
 This chapter covers the advanced pattern matching features:
 
+1. **Repeated Patterns** - Patterns that can match multiple items or structures
 1. **Search Patterns** - Recursive searching through data structures
 2. **Named Captures** - Extracting and labeling matched data
 3. **Advanced Pattern Features** - Sequences, quantifiers, and logical combinations

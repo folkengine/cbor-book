@@ -647,7 +647,7 @@ Explaining the full syntax of regular expressions is beyond the scope of this bo
 
 #### Byte String Regular Expressions
 
-Byte strings also support regular expression matching, useful for matching binary patterns or encoded data. Binary regexes operate on raw byte content, not on the hex string representation you see in diagnostic notation. The syntax is like `[dcbor] h'hex'` above, but for regexes its: `[dcbor] h'/regex/'`.
+Byte strings also support regular expression matching, useful for matching binary patterns or encoded data. Binary regexes operate on raw byte content, not on the hex string representation you see in diagnostic notation. The syntax is like `[patex] h'<hex>'` above, but for regexes its: `[patex] h'/<regex>/'`.
 
 ```admonish note "Flags for Binary Regexes"
 Binary regexes must start with the `(?s-u)` flags to work correctly:
@@ -842,11 +842,11 @@ Beyond matching individual values, dCBOR patterns support matching complex struc
 
 #### Basic Array Matching
 
-The `[patex] [*]` pattern matches any array structure
+The `[patex] array` pattern matches any array structure:
 
 ```patex
 ANY_ARRAY=$(cat <<'EOF'
-[*]
+array
 EOF
 )
 ```
@@ -875,9 +875,17 @@ dcbor match $ANY_ARRAY '[]'
 │ []
 ```
 
+```admonish note
+If you want to match the empty array specifically, then the pattern is just the empty array: `[patex] []`.
+```
+
 #### Array Sequence Patterns
 
 The array pattern can contain a comma-separated list of patterns, where each pattern matches zero or more elements in the array in sequence.
+
+```patex
+[ <patex>, <patex>, ... ]
+```
 
 ##### Match an array with a number followed by text
 
@@ -979,6 +987,45 @@ We'll cover repeating patterns more thoroughly later.
 
 ### Map Patterns
 
+#### Basic Map Matching
+
+The `[patex] map` pattern matches any map structure
+
+```patex
+ANY_MAP=$(cat <<'EOF'
+map
+EOF
+)
+```
+
+```bash
+dcbor match $ANY_MAP '{1: 2, 3: 4}'
+```
+
+```dcbor
+│ {1: 2, 3: 4}
+```
+
+```bash
+dcbor match $ANY_MAP '{"hello": "world"}'
+```
+
+```dcbor
+│ {"hello": "world"}
+```
+
+```bash
+dcbor match $ANY_MAP '{}'
+```
+
+```dcbor
+│ {}
+```
+
+```admonish note
+If you want to match the empty map specifically, then the pattern is just the empty map: `[patex] {}`.
+```
+
 #### Key-Value Constraints
 
 Maps can be matched by specifying key-value constraints using `[patex] <key>: <value>` notation. For each constraint, the target map must have at least one key-value pair that satisfies the constraint.
@@ -1077,8 +1124,15 @@ CBOR tagged values apply semantic meaning to data. Patterns can match both the t
 
 ##### Match any value with tag 1234 containing a number
 
+```patex
+NUMBER_TAGGED_1234=$(cat <<'EOF'
+tagged(1234, number)
+EOF
+)
+```
+
 ```bash
-dcbor match "tagged(1234, number)" "1234(42)"
+dcbor match $NUMBER_TAGGED_1234 "1234(42)"
 ```
 
 ```dcbor
@@ -1087,8 +1141,15 @@ dcbor match "tagged(1234, number)" "1234(42)"
 
 ##### Match tag 12345 with any content
 
+```patex
+ANY_TAGGED_12345=$(cat <<'EOF'
+tagged(12345, *)
+EOF
+)
+```
+
 ```bash
-dcbor match "tagged(12345, *)" '12345("tagged string")'
+dcbor match $ANY_TAGGED_12345 '12345("tagged string")'
 ```
 
 ```dcbor
@@ -1101,8 +1162,15 @@ Tagged patterns specify both the tag value and required content patterns:
 
 ##### Match tag 2 (bignum) with byte string content
 
+```patex
+BIGNUM=$(cat <<'EOF'
+tagged(2, bstr)
+EOF
+)
+```
+
 ```bash
-dcbor match "tagged(2, bstr)" "2(h'0102')"
+dcbor match $BIGNUM "2(h'0102')"
 ```
 
 ```dcbor
@@ -1111,22 +1179,29 @@ dcbor match "tagged(2, bstr)" "2(h'0102')"
 
 ##### Match tag with array content having specific structure
 
+```patex
+NUMBER_TEXT_ARRAY_TAGGED_42=$(cat <<'EOF'
+tagged(42, [number, text])
+EOF
+)
+```
+
 ```bash
-dcbor match "tagged(42, [number, text])" '42([1, "data"])'
+dcbor match $NUMBER_TEXT_ARRAY_TAGGED_42 '42([1, "data"])'
 ```
 
 ```dcbor
 │ 42([1, "data"])
 ```
 
-## Basic Output Understanding
+## Introducing Paths
 
-### Default Path Output
+### Single Path, Single Element Output
 
 When a pattern matches, the default output shows the matching value. For structures, this represents the entire matching structure:
 
 ```bash
-dcbor match '[*]' '[1, 2, 3]'
+dcbor match 'array' '[1, 2, 3]'
 ```
 
 ```dcbor
@@ -1141,11 +1216,13 @@ dcbor match '{"key": *}' '{"key": "value", "other": 42}'
 │ {"key": "value", "other": 42}
 ```
 
-The output shows you what matched, which becomes more meaningful when working with search patterns or captures that can match multiple items or nested elements. For example, later we'll discuss the `search` pattern, which visits all the elements in a dcbor item. For a quick example, if you match a pattern that finds all numbers in an array, the output will show each number along with its context, or _path_ from the root of the structure:
+The examples above only include one match, and one way to get there. But dCBOR items are actually *trees*, with arrays and maps representing possible branchs. This becomes more meaningful when working with search patterns or captures that can match multiple items or nested elements. For example, later we'll discuss the `search` pattern, which visits all the elements in a dcbor item. For a quick example, if you match a pattern that finds all numbers in an array, the output will show each number along with its context, or _path_ from the root of the structure:
 
 ```bash
 dcbor match 'search(number)' '[1, [2, 3]]'
 ```
+
+The output shows three _paths_ from the root item to numbers within it:
 
 ```dcbor
 │ [1, [2, 3]]
@@ -1177,3 +1254,7 @@ The `dcbor match` command provides several options for controlling output format
 - `--captures`: Show named capture information (covered in advanced chapter)
 - `--last-only`: Show only the final matched items
 - `--in FORMAT` / `--out FORMAT`: Control input/output formats (hex, diag, etc.)
+
+```admonish wip "Work in Progress"
+The next chapter will cover advanced matching techniques.
+```
