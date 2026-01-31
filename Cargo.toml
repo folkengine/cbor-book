@@ -6,6 +6,6 @@ license = "BSD-2-Clause-Patent"
 
 [dependencies]
 dcbor = "^0.25.0"
-bc-envelope = "^0.41.0"
+bc-envelope = "^0.41.1"
 anyhow = "1.0.98"
 hex = "0.4.3"
