@@ -29,14 +29,14 @@ The pinned versions are needed in order to build specifically for ePub. These ar
 
 To enable build-time syntax highlighting for CBOR, dCBOR, and Envelope code blocks in the documentation, you need to set up the `mdbook-dcbor-shiki` preprocessor. Follow these steps:
 
-1. Build the `mdbook-dcbor-shiki` preprocessor:
+2. Build the `mdbook-dcbor-shiki` preprocessor:
 
 ```bash
 cd cbor-book/mdbook-dcbor-shiki
 cargo install --path .
 ```
 
-1. Install the required Node.js dependencies:
+3. Install the required Node.js dependencies:
 
 ```bash
 cd cbor-book
@@ -45,7 +45,7 @@ npm install
 
 ## Building and Serving the Documentation
 
-1. Serve the documentation locally:
+4. Serve the documentation locally:
 
 ```bash
 cd cbor-book
