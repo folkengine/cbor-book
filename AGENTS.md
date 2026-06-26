@@ -23,21 +23,20 @@ cargo install mdbook --version 0.4.52 \
   && cargo install mdbook-epub --version 0.4.51
 ```
 
-The pinned versions are needed in order to build specifically for ePub. These are te newest versions of the plugins compatible
-with `mdbook ^0.4` and able to build the book without issues.
+The pinned versions are needed in order to build specifically for ePub. These are the newest versions of the plugins compatible with `mdbook ^0.4` and able to build the book without issues.
 
 ## CBOR, dCBOR, and Envelope Syntax Highlighting
 
 To enable build-time syntax highlighting for CBOR, dCBOR, and Envelope code blocks in the documentation, you need to set up the `mdbook-dcbor-shiki` preprocessor. Follow these steps:
 
-2. Build the `mdbook-dcbor-shiki` preprocessor:
+1. Build the `mdbook-dcbor-shiki` preprocessor:
 
 ```bash
 cd cbor-book/mdbook-dcbor-shiki
 cargo install --path .
 ```
 
-3. Install the required Node.js dependencies:
+1. Install the required Node.js dependencies:
 
 ```bash
 cd cbor-book
@@ -46,7 +45,7 @@ npm install
 
 ## Building and Serving the Documentation
 
-4. Serve the documentation locally:
+1. Serve the documentation locally:
 
 ```bash
 cd cbor-book
